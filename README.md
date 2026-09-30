@@ -23,10 +23,10 @@ Read [AGENTS.md](AGENTS.md) before changes. Reuse is an architectural preference
 See [Validation/RECOVERY.md](Validation/RECOVERY.md) for exact source hashes, actual screenshots/video, commands and limitations.
 
 - Native iOS Simulator build, installation, launch and real screenshot capture succeeded on a dedicated recovery simulator.
-- macOS SwiftPM tests exercised the production connection store/model with controlled fake boundaries: 25 integration tests and 5 portable core tests passed.
+- macOS SwiftPM tests exercised the production connection store/model with controlled fake boundaries: 66 integration tests in 8 suites and 5 portable core tests passed at source `58d9ef8`.
 - Exact-commit privacy guard and synthetic production helper checks passed. These are not OSLog sink or live-server security tests.
 - Actual renders cover disconnected welcome, synthetic chat/history, local address validation, keyboard, AX5 and a labelled static drawing fixture.
-- A bounded XCUITest attempt stalled during automation-session setup and timed out. Repeated interactive sheet/navigation QA is not passed; screenshots alone do not prove it.
+- A rebuilt test runner at `58d9ef8` also stalled during automation-session setup and reached the 100-second outer timeout. Repeated interactive sheet/navigation QA is not passed; screenshots alone do not prove it.
 
 Still unverified: live pairing/authentication, real sending/streaming/reconnect, server approvals/artifacts/browser control, VoiceOver interaction, real OS Reduce Motion/Transparency settings, phone installation/signing and release distribution. The app does not implement fake activity, purchase approval, browser takeover or voice success surfaces.
 
@@ -56,7 +56,7 @@ The macOS test target omits app entry views and replaces gateway/credential boun
 
 ## Debug rendering fixtures
 
-Launch arguments: `--ui-testing` (paused mascot/empty endpoint), `--ui-preview`, `--ui-history`, `--ui-settings`, `--ui-keyboard`, `--ui-invalid-address`, `--ui-motion-gallery`, `--ui-send-recovery` and `--ui-artifact-preview` (the latter two also require `--ui-preview`). Preview content is synthetic and visually labelled. `--ui-accessibility-static` exercises static/opaque drawing branches with an on-screen label; it does not alter system accessibility preferences. Fixtures are Debug-only.
+Launch arguments: `--ui-testing` (paused mascot/empty endpoint), `--ui-preview`, `--ui-history`, `--ui-settings`, `--ui-keyboard`, `--ui-invalid-address`, `--ui-model-settings` (also requires preview/settings), `--ui-motion-gallery`, `--ui-send-recovery` and `--ui-artifact-preview` (the latter two also require `--ui-preview`). Preview content is synthetic and visually labelled. `--ui-accessibility-static` exercises static/opaque drawing branches with an on-screen label; it does not alter system accessibility preferences. Fixtures are Debug-only.
 
 ## Sources and licenses
 

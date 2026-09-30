@@ -1,0 +1,2 @@
+PASS: synthetic remote marker excluded in 8 helper cases across 7 categories; auth, wire, scope and legacy outbox classifier checks passed
+PASS: public error/diagnostic policy in 180 source files; synthetic leak mutations rejected

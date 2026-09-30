@@ -1,8 +1,35 @@
 # Recovery evidence — 2026-10-01 KST
 
-## Authoritative checkpoint
+## Current authoritative follow-up — 58d9ef8
 
-Application source: **`72cc293b24052518cfe03ae87f4a9a801d3e33ac`**. Later evidence/documentation commits do not change the application. Use only [`final-72cc293/manifest.json`](final-72cc293/manifest.json) and its named media for the final visual review. Each capture records launch arguments, content-size setting, UTC timestamp and SHA-256; the manifest also records the installed executable hash and build settings.
+Application/test source: **`58d9ef8311663acf8ca427fa55d8f2b18154af62`**. This supersedes 72cc293 and intermediate 7539fec for current UI and recovery behavior. Later documentation/evidence commits do not change this source. See [`followup-58d9ef8/manifest.json`](followup-58d9ef8/manifest.json): seven actual PNGs, raw logs, SHA-256 values, launch flags, UTC capture times, build settings and directly compared installed/built executable hashes are joined there.
+
+- Reused one-row native composer; model/effort/branch and model-access controls moved into settings. Repetitive timestamps/ellipsis removed; actual message context actions retained, with Korean timestamps/actions. No dummy microphone.
+- Same-endpoint in-memory snapshots preserve text, ready attachment bytes and reply; interrupted imports are identified, and delayed imports cannot mutate the replacement draft.
+- Submitted-send ledger retains unknown/error/timeout ACK outcomes. Only pinned gateway acceptance statuses `started`, `ok`, `in_flight`, `accepted` retire originals. History review requires a settled entry whose revision still matches. Explicit restoration is checked again and preserves newer text/attachments/replies; unchanged restored drafts reuse their idempotency key.
+- Retained sends can return directly to their originating session even if that new session is absent from the server listing. Endpoint/connection/attachment ownership guards apply. There is no automatic resend.
+- Cancelled/retired model sign-in and refresh completions cannot change new errors/input/catalog state. Shared login presentation keeps settings dismissal/owner fencing.
+- Connected input attachments use upstream encoding and advertised size limits. The gateway's missing output-media loader is represented as unavailable; disconnected inline widgets wait without pretending to have loaded.
+
+| Check at exact source 58d9ef8 | Result | Evidence and limits |
+|---|---|---|
+| macOS production regression | PASS | `logs/tests-58d9ef8.log`: 66 test functions in 8 suites, plus 5 core tests. Includes parameterized cases. Fake transport/credential boundaries; not live-server or iOS execution. |
+| Native normal app build | PASS | `logs/build-58d9ef8.log`: exit 0, 8.8 s; Xcode 27, arm64 Simulator, jobs 2, signing disabled, Debug dylib disabled. |
+| Native test product build | PASS | `logs/build-testing-58d9ef8.log`: exit 0, 24.4 s. Compiled app and tests; execution is separate. |
+| Privacy archive scan/harness | PASS | `logs/privacy-58d9ef8.log`: 180 source files plus synthetic leak mutations; 8 production-helper cases across 7 categories. Not an OSLog sink, complete dataflow proof or live app security test. |
+| Cancel UI source guard | PASS | `logs/cancel-wiring-58d9ef8.log`; source/mutation check only. |
+| Actual native render | PASS with stated scope | `logs/capture-58d9ef8.log`, seven PNGs, 113.3 s. Dedicated simulator only, programmatic fixture launch/focus/scroll, no live server. AX5 welcome now has two-line introduction and visible safe-area CTA. |
+| XCUITest interaction | BLOCKED | `logs/ui-interaction-58d9ef8.log`: automation setup stalled, test exceeded its allowance, runner restarted with 0 tests, outer timeout exit 124 at 100 s. This is **not a pass**. No further unchanged retries. |
+
+All log paths above are relative to `followup-58d9ef8/`; hashes are in the manifest. Outer process exit codes and elapsed times were returned by the bounded command tool; child stdout/stderr is preserved verbatim. Installed executable SHA was read from the dedicated simulator container and matched the built executable before captures.
+
+Library deliverables: `Companion-58d9ef8-native-renders.png` (`libfile_773e5eb78d588191b1c08cc82873bbeb`) and `Companion-composer-before-after.png` (`libfile_1201b90dca908191bac9026fbcc2713f`). The latter intentionally compares 72cc293 with intermediate 7539fec; its after panel is not labelled as 58d9ef8. Intermediate source 7539fec had 56 integration + 5 core tests and 180-source privacy checks; its images/logs remain in `followup-7539fec/` for that comparison.
+
+Remaining gates: live pairing/auth/sending/streaming/reconnect; server interpretation of incoming attachments; remote media downloads; real tap/long-press/repeated-sheet behavior; VoiceOver and real OS Reduce Motion/Transparency settings; physical phone/signing/distribution. The model-settings screenshot exposes the section entry after programmatic scroll, not proof of all lower-row hit targets. Recovery is memory-only and does not survive process termination; the UI now says so. Prior motion footage establishes a labelled gallery's blink/microposes, not live state transitions or frame-time performance. Character body shading is still flatter than the reference. **This checkpoint is not a claim that the complete app or live integration is finished.**
+
+## Earlier preserved checkpoint — 72cc293
+
+Earlier application source: **`72cc293b24052518cfe03ae87f4a9a801d3e33ac`**. Later evidence/documentation commits do not change the application. For this earlier checkpoint, use [`final-72cc293/manifest.json`](final-72cc293/manifest.json) and its named media; the newer follow-up below supersedes its composer/recovery presentation. Each capture records launch arguments, content-size setting, UTC timestamp and SHA-256; the manifest also records the installed executable hash and build settings.
 
 The older local `recovery-*.png` and `final-*-777d4e5.png` files are intermediate diagnostics, not final evidence. In particular, `recovery-preview-settled.png` predates the disconnected sign-in/footer fix and `recovery-large-type-final.png` predates the fixed accessibility connection action. They are not included in this delivery.
 

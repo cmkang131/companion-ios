@@ -1,0 +1,123 @@
+{
+  "source_commit": "58d9ef8311663acf8ca427fa55d8f2b18154af62",
+  "simulator_id": "022EC407-377F-4563-A350-CD12D1BA7795",
+  "simulator_name": "Companion Recovery Task5",
+  "built_executable_sha256": "b6ddc4615d965545da60da5120d903fedf929326332331e5562554110c4a8b43",
+  "installed_executable_sha256": "b6ddc4615d965545da60da5120d903fedf929326332331e5562554110c4a8b43",
+  "captures": [
+    {
+      "file": "compact.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:11:50.201257+00:00",
+      "sha256": "e265fa8724a66b8fa98b53e3acc18ea5240c4920b38d207c6ed3200409431eb6",
+      "size_bytes": 279932
+    },
+    {
+      "file": "ax5-welcome.png",
+      "flags": [
+        "--ui-testing",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T19:12:06.450939+00:00",
+      "sha256": "032d0081cdd1759b36b064b7e86e56caa724f3d93679d2c4b5a6202a25e1467e",
+      "size_bytes": 267196
+    },
+    {
+      "file": "ax5-chat.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T19:12:22.472260+00:00",
+      "sha256": "3b1cf3a7ac1b450b40e053ead07ad4f891c5940910c292d23e326958ce0bf44c",
+      "size_bytes": 304660
+    },
+    {
+      "file": "recovery.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-send-recovery",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:12:38.772105+00:00",
+      "sha256": "251af36b059c48c8040d1edd2c0c34ff82e36d466a06584e7093e590ae7f7216",
+      "size_bytes": 176443
+    },
+    {
+      "file": "artifact.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-artifact-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:12:54.662021+00:00",
+      "sha256": "31764a6a2afee903e80e6243cb41d231e85776d5db5a78b386756d64686cf3c6",
+      "size_bytes": 234448
+    },
+    {
+      "file": "keyboard.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-settings",
+        "--ui-keyboard",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:13:09.760659+00:00",
+      "sha256": "fa2567f92973c78297a086de446c085adfe2da017cabe4bd1d42b04b0e84aadd",
+      "size_bytes": 320249
+    },
+    {
+      "file": "settings.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-settings",
+        "--ui-model-settings",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:13:25.772997+00:00",
+      "sha256": "7bce61de0fc78d5772861dd4f5685bd55aeacd376df6703c71e666670b903378",
+      "size_bytes": 348049
+    }
+  ],
+  "limits": [
+    "Debug synthetic fixtures, no live server",
+    "Programmatic launch/keyboard focus, not tap interaction",
+    "Simulator content-size category only; no VoiceOver or OS Reduce Motion verification"
+  ]
+}

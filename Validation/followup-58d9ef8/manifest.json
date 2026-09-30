@@ -1,0 +1,227 @@
+{
+  "source_commit": "58d9ef8311663acf8ca427fa55d8f2b18154af62",
+  "simulator_id": "022EC407-377F-4563-A350-CD12D1BA7795",
+  "simulator_name": "Companion Recovery Task5",
+  "built_executable_sha256": "b6ddc4615d965545da60da5120d903fedf929326332331e5562554110c4a8b43",
+  "installed_executable_sha256": "b6ddc4615d965545da60da5120d903fedf929326332331e5562554110c4a8b43",
+  "captures": [
+    {
+      "file": "compact.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:11:50.201257+00:00",
+      "sha256": "e265fa8724a66b8fa98b53e3acc18ea5240c4920b38d207c6ed3200409431eb6",
+      "size_bytes": 279932
+    },
+    {
+      "file": "ax5-welcome.png",
+      "flags": [
+        "--ui-testing",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T19:12:06.450939+00:00",
+      "sha256": "032d0081cdd1759b36b064b7e86e56caa724f3d93679d2c4b5a6202a25e1467e",
+      "size_bytes": 267196
+    },
+    {
+      "file": "ax5-chat.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T19:12:22.472260+00:00",
+      "sha256": "3b1cf3a7ac1b450b40e053ead07ad4f891c5940910c292d23e326958ce0bf44c",
+      "size_bytes": 304660
+    },
+    {
+      "file": "recovery.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-send-recovery",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:12:38.772105+00:00",
+      "sha256": "251af36b059c48c8040d1edd2c0c34ff82e36d466a06584e7093e590ae7f7216",
+      "size_bytes": 176443
+    },
+    {
+      "file": "artifact.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-artifact-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:12:54.662021+00:00",
+      "sha256": "31764a6a2afee903e80e6243cb41d231e85776d5db5a78b386756d64686cf3c6",
+      "size_bytes": 234448
+    },
+    {
+      "file": "keyboard.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-settings",
+        "--ui-keyboard",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:13:09.760659+00:00",
+      "sha256": "fa2567f92973c78297a086de446c085adfe2da017cabe4bd1d42b04b0e84aadd",
+      "size_bytes": 320249
+    },
+    {
+      "file": "settings.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-settings",
+        "--ui-model-settings",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:13:25.772997+00:00",
+      "sha256": "7bce61de0fc78d5772861dd4f5685bd55aeacd376df6703c71e666670b903378",
+      "size_bytes": 348049
+    }
+  ],
+  "limits": [
+    "Debug synthetic fixtures, no live server",
+    "Programmatic launch/keyboard focus, not tap interaction",
+    "Simulator content-size category only; no VoiceOver or OS Reduce Motion verification"
+  ],
+  "manifest_created_utc": "2026-09-30T19:15:27.282931+00:00",
+  "configuration": "Debug",
+  "xcode": "27",
+  "runtime": "iOS 27.0",
+  "device": "iPhone 17e",
+  "build_action_for_installed_product": "build",
+  "build_settings": {
+    "jobs": 2,
+    "ARCHS": "arm64",
+    "ONLY_ACTIVE_ARCH": "YES",
+    "ENABLE_DEBUG_DYLIB": "NO",
+    "CODE_SIGNING_ALLOWED": "NO"
+  },
+  "checks": [
+    {
+      "kind": "macOS production integration fixtures",
+      "status": "passed",
+      "exit_code": 0,
+      "source_commit": "58d9ef8311663acf8ca427fa55d8f2b18154af62",
+      "log": "logs/tests-58d9ef8.log",
+      "sha256": "770532e4fb8394f56a36783b21a41b872839e57d1733e24a0664526f717cd7f9",
+      "scope": "66 tests in 8 suites plus 5 core tests; parameterized cases are not extra suites"
+    },
+    {
+      "kind": "iOS build-for-testing",
+      "status": "passed",
+      "exit_code": 0,
+      "source_commit": "58d9ef8311663acf8ca427fa55d8f2b18154af62",
+      "log": "logs/build-testing-58d9ef8.log",
+      "sha256": "81b6d7ea9f4d63dc93492570916e075240cc02af81ed787538bb2480ef6ba162",
+      "scope": "Compilation only; does not prove XCTest execution"
+    },
+    {
+      "kind": "iOS normal build",
+      "status": "passed",
+      "exit_code": 0,
+      "source_commit": "58d9ef8311663acf8ca427fa55d8f2b18154af62",
+      "log": "logs/build-58d9ef8.log",
+      "sha256": "76474f4c50a1d0f2669896949b1ef3ab1f3aee0ce849af395f1cd071131e7ac8",
+      "scope": "Normal app product installed for captures"
+    },
+    {
+      "kind": "Exact git archive privacy guard",
+      "status": "passed",
+      "exit_code": 0,
+      "source_commit": "58d9ef8311663acf8ca427fa55d8f2b18154af62",
+      "log": "logs/privacy-58d9ef8.log",
+      "sha256": "43d9a3c89784508dd043cf92ad46140f0ed378081e25f6a80a628a0d182bafa6",
+      "scope": "180 sources lexical scan + mutation tests; production error/helper harness 8 cases across 7 categories, not OSLog sink or whole-program dataflow"
+    },
+    {
+      "kind": "Cancel UI source contract",
+      "status": "passed",
+      "exit_code": 0,
+      "source_commit": "58d9ef8311663acf8ca427fa55d8f2b18154af62",
+      "log": "logs/cancel-wiring-58d9ef8.log",
+      "sha256": "6fc683de47a78b8f1a145456ed3d0e7dfa03b6c1199a9f469ab2252779b33b6c",
+      "scope": "Narrow source assertion plus destructive mutation guard; not taps"
+    },
+    {
+      "kind": "Bounded XCUITest",
+      "status": "blocked",
+      "exit_code": 124,
+      "source_commit": "58d9ef8311663acf8ca427fa55d8f2b18154af62",
+      "log": "logs/ui-interaction-58d9ef8.log",
+      "sha256": "a33d8986eee55df82f53a4dfb7d50b4735021c996b94087e2599104e317c129a",
+      "scope": "Automation session setup stalled; original case exceeded allowance, restart ran 0 tests; outer timeout 100 seconds. Not a pass."
+    },
+    {
+      "kind": "Dedicated simctl captures",
+      "status": "passed",
+      "exit_code": 0,
+      "source_commit": "58d9ef8311663acf8ca427fa55d8f2b18154af62",
+      "log": "logs/capture-58d9ef8.log",
+      "sha256": "c431a4f3d85e546b2ee5ed9cfe923f77a916e3680ee2a2e6336b372f81b787b4",
+      "scope": "113.3 seconds, launch/focus/scroll fixtures; not taps"
+    }
+  ],
+  "exit_code_evidence": "Outer process exit codes reported by bounded_command tool execution; child stdout/stderr are preserved verbatim in logs.",
+  "contact_sheet": {
+    "file": "Companion-58d9ef8-native-renders.png",
+    "sha256": "e2431be593056d41b4cca47db9f6c199ce450eafcd86c9ad13ea1fff3de7b252",
+    "sources": [
+      "compact.png",
+      "ax5-welcome.png",
+      "ax5-chat.png",
+      "recovery.png",
+      "artifact.png",
+      "keyboard.png"
+    ],
+    "transformation": "Uncropped screenshots arranged with captions; no UI pixel synthesis",
+    "library_file_id": "libfile_773e5eb78d588191b1c08cc82873bbeb",
+    "file_id": "file_000000000e3c8209978ebbc3c9ca0e5d",
+    "version": 0
+  },
+  "remaining_limits": [
+    "No live OpenClaw host/credentials: no pairing, live send/streaming, model authentication, or server-side file interpretation verified",
+    "XCUITest blocked; no successful tap/keyboard typing/sheet-repeat/long-press interaction proof",
+    "AX5 uses real Simulator content-size setting, not VoiceOver or real OS Reduce Motion/Transparency verification",
+    "Recovery is memory-only; process termination can discard drafts",
+    "Input file encoding/limits tested with synthetic bytes; output media download unsupported in current gateway adapter",
+    "Settings screenshot was programmatically scrolled to section entry and does not establish lower-row hit targets or full-sheet accessibility",
+    "Character rendering remains an approximation with flatter body shading than reference; prior motion fixture does not establish live state transitions or fps performance"
+  ]
+}

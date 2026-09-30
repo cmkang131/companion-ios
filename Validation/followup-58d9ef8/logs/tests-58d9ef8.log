@@ -1,0 +1,238 @@
+Building for debugging...
+[Computing dependencies]
+[Constructing description]
+[Pre-planning 1 / 571]
+[Planning deferred tasks]
+[3 / 4] CompanionCoreTests-product
+[7 / 48] OpenClawProtocol
+[11 / 34] OpenClawChatUI
+[14 / 37] OpenClawChatUI
+[15 / 40] OpenClawChatUI
+[16 / 40] OpenClawChatUI
+[17 / 40] OpenClawChatUI
+[23 / 46] OpenClawChatUI
+[24 / 46] OpenClawChatUI
+[25 / 46] Companion
+[27 / 48]
+[32 / 49] Companion
+[36 / 45] CompanionIntegrationTests-product
+[39 / 50] CompanionIntegrationTests-product
+[41 / 50] CompanionIntegrationTests-product
+[46 / 50] CompanionIntegrationTests-product
+[48 / 50] CompanionIntegrationTests-product
+[50 / 50] CompanionIntegrationTests-product
+[51 / 51] Companion-product
+Build complete! (13.95초)
+Test Suite 'All tests' started at 2026-10-01 04:07:32.172.
+Test Suite 'All tests' passed at 2026-10-01 04:07:32.176.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.004) seconds
+Test Suite 'All tests' started at 2026-10-01 04:07:32.320.
+Test Suite 'All tests' passed at 2026-10-01 04:07:32.322.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite AttachmentContractTests started.
+◇ Suite InlineWidgetAvailabilityTests started.
+◇ Suite AttachmentSnapshotTests started.
+◇ Suite ConnectionTests started.
+◇ Suite ModelSignInPresentationTests started.
+◇ Suite SendRecoveryTests started.
+◇ Test defaultResolverReportsUnsupportedWithoutRequestingConnection() started.
+◇ Suite CharacterStateTests started.
+◇ Suite MediaArtifactAvailabilityTests started.
+◇ Test pdfFilePayloadRoundTripsThroughProductionRequestEncoder() started.
+◇ Test changedGatewayBudgetRejectsTheCombinedDraftBeforeSending() started.
+◇ Test implementedResolverWaitsForConnectionThenRetriesAfterRecovery() started.
+◇ Test emptyAndOversizedFilesDoNotDisplaceAnAcceptedAttachment() started.
+◇ Test refreshIsSingleFlightAndCanRunAgainAfterCompletion() started.
+◇ Test otherEndpointAndExplicitDisconnectNeverRestoreSelectedAttachments(otherEndpoint:) started.
+◇ Test invalidatedOpenCannotReplaceOrClearANewerRequest() started.
+◇ Test interruptedCaptureOwnerIsReportedWithoutInventingAttachmentBytes() started.
+◇ Test missingImportBytesProduceOfflineNoticeAcrossFailedAndCancelledRetries() started.
+◇ Test cancelledContextCannotChangeNewerErrorOrDraft(returnsContext:) started.
+◇ Test optedInAdapterLosesMediaActionsWhenDisconnected() started.
+◇ Test historyCheckBeforePendingRPCSettlesCannotAuthorizeLaterRestoration(historyCompletesFirst:) started.
+◇ Test productionAdapterDoesNotClaimMediaSupportWhenChatHealthChanges() started.
+◇ Test editingRestoredDraftUsesNewDeduplicationKey() started.
+◇ Test sessionChangeDiscardsDelayedContextWithoutUnsupportedNotice() started.
+◇ Test credentialActionsValidateEndpointBeforeStorageAccess() started.
+◇ Test selectedAttachmentBytesReplyAndTextSurviveFailedAndCancelledRetries() started.
+◇ Test detachedOwnerCannotPublishContextForTheSameSessionKey(returnsContext:) started.
+◇ Test disabledOpenDoesNotRequestAndUnsupportedOpenExplainsFailure() started.
+◇ Test onlyOwnedFinalOutputAcknowledgesOnce() started.
+◇ Test emptiedCurrentDraftDoesNotResurrectOlderSavedText() started.
+◇ Test interruptedRealImportKeepsReadyBytesAndNeverOverwritesReplacementDraft() started.
+◇ Test cancelledMainKeyAwaitCannotPublishIntoReplacement() started.
+◇ Test endpointReplacementCannotImportOrReviveOldRecovery() started.
+◇ Test historyReviewOfEarlierAttemptCannotAuthorizeRetriedSameKey() started.
+◇ Test recoveryNavigationHonorsEndpointConnectionAndAttachmentGuards() started.
+◇ Test anotherEndpointNeverReceivesRetainedDrafts() started.
+◇ Test emptyTokenNeverStartsConnection() started.
+◇ Test missingCorrelationNeverAcknowledges(missingRun:missingSession:) started.
+◇ Test recoveryOpensUnlistedNewSessionAndRestoresAttachmentWithOriginalKey() started.
+◇ Test emptyFinalAndDetachedTransportNeverAcknowledge() started.
+◇ Test foreignSessionOrLateFinalNeverAcknowledges() started.
+◇ Test cancelledRetryKeepsEveryDraftAndTokenAndFencesLateSuccess() started.
+◇ Test recoveryCannotOverwriteNewReplySelection() started.
+◇ Test reconnectKeepsUnconfirmedSendUntilHistoryReviewAndExplicitRestore() started.
+◇ Test cancelledRefreshCannotReplaceNewerCatalogNoticeOrDraft(fails:) started.
+◇ Test failureAfterNavigationRetainsOriginalInItsSession(newConversation:) started.
+◇ Test onlyCanonicalMatchingUserHistoryRetiresUnconfirmedSend() started.
+◇ Test canonicalSessionCannotBeReroutedBySelectedAgent() started.
+◇ Test submittedReplyDoesNotReappearAfterLateAckOrOverwriteNewComposer(hasNewDraft:) started.
+◇ Test structuredConnectionErrorsExplainTheRecovery(detail:expected:) started.
+◇ Test everySessionDraftSurvivesFailedRetryToNormalizedEndpoint() started.
+◇ Test tokenRevocationWinsOverDelayedSuccessEvenAfterReoptIn(deleteFails:) started.
+◇ Test cancelledSendRetainsUnconfirmedDraftAndDoesNotReplay() started.
+◇ Test cancelledHistoryReviewCannotAuthorizeUncertainRestoration() started.
+◇ Test recoveryEligibilityAllowsOriginalReplyAndRechecksNewerDraft() started.
+◇ Test repeatedDisconnectClearsSensitiveInput() started.
+◇ Test cancellingBeforeAttemptStartsStillPreservesRetryInput() started.
+◇ Test failedOrCancelledRetryKeepsOfflineRecoveryReadableAndEndpointScoped(retryFails:) started.
+◇ Test case passing 1 argument otherEndpoint → true to otherEndpointAndExplicitDisconnectNeverRestoreSelectedAttachments(otherEndpoint:) started.
+◇ Test olderHistoryCannotClearLatestSpinnerAndCancellationCannotPublish() started.
+◇ Test failedHistoryCheckCannotAuthorizeUncertainRestoration() started.
+◇ Test acceptedAckAfterSessionSwitchNeverResurrectsSubmittedText(status:) started.
+◇ Test failedAttachmentSendRetainsBytesAndDoesNotOverwriteNewAttachment() started.
+◇ Test olderHistoryCompletionCannotReplaceLatestSuccess(oldFails:) started.
+◇ Test case passing 1 argument returnsContext → false to cancelledContextCannotChangeNewerErrorOrDraft(returnsContext:) started.
+◇ Test case passing 1 argument returnsContext → true to cancelledContextCannotChangeNewerErrorOrDraft(returnsContext:) started.
+◇ Test case passing 1 argument otherEndpoint → false to otherEndpointAndExplicitDisconnectNeverRestoreSelectedAttachments(otherEndpoint:) started.
+◇ Test nonFinalEventsNeverAcknowledgeCompletion(state:) started.
+◇ Test unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test invalidEndpointNeverStartsConnection() started.
+◇ Test terminalFailureAckRetainsTextAndRemainsUncertain(status:) started.
+◇ Test failureNeverOverwritesNewerComposerDraft() started.
+◇ Test case passing 1 argument historyCompletesFirst → false to historyCheckBeforePendingRPCSettlesCannotAuthorizeLaterRestoration(historyCompletesFirst:) started.
+◇ Test explicitDisconnectErasesAllDraftsAndInputButKeepsSavedToken() started.
+◇ Test case passing 1 argument historyCompletesFirst → true to historyCheckBeforePendingRPCSettlesCannotAuthorizeLaterRestoration(historyCompletesFirst:) started.
+◇ Test previewHistoryIsReadableWithoutDispatchCapability() started.
+◇ Test case passing 1 argument returnsContext → false to detachedOwnerCannotPublishContextForTheSameSessionKey(returnsContext:) started.
+◇ Test case passing 1 argument returnsContext → true to detachedOwnerCannotPublishContextForTheSameSessionKey(returnsContext:) started.
+◇ Test disconnectedTransportRefusesDispatch() started.
+◇ Test lateAcceptedAckRemovesTransferredRecoveryWithoutTouchingNewDraft() started.
+◇ Test case passing 2 arguments missingRun → true, missingSession → true to missingCorrelationNeverAcknowledges(missingRun:missingSession:) started.
+◇ Test case passing 2 arguments missingRun → false, missingSession → true to missingCorrelationNeverAcknowledges(missingRun:missingSession:) started.
+◇ Test case passing 2 arguments missingRun → true, missingSession → false to missingCorrelationNeverAcknowledges(missingRun:missingSession:) started.
+◇ Test case passing 1 argument newConversation → false to failureAfterNavigationRetainsOriginalInItsSession(newConversation:) started.
+◇ Test case passing 1 argument fails → false to cancelledRefreshCannotReplaceNewerCatalogNoticeOrDraft(fails:) started.
+◇ Test retiredPhysicalRouteCannotPublishFallbackModelAfterMainKeyAwait() started.
+◇ Test case passing 1 argument newConversation → true to failureAfterNavigationRetainsOriginalInItsSession(newConversation:) started.
+◇ Test disconnectInvalidatesHistoryAndBlocksSessionChanges() started.
+◇ Test case passing 1 argument fails → true to cancelledRefreshCannotReplaceNewerCatalogNoticeOrDraft(fails:) started.
+◇ Test case passing 1 argument hasNewDraft → false to submittedReplyDoesNotReappearAfterLateAckOrOverwriteNewComposer(hasNewDraft:) started.
+◇ Test case passing 1 argument hasNewDraft → true to submittedReplyDoesNotReappearAfterLateAckOrOverwriteNewComposer(hasNewDraft:) started.
+◇ Test case passing 1 argument deleteFails → false to tokenRevocationWinsOverDelayedSuccessEvenAfterReoptIn(deleteFails:) started.
+◇ Test case passing 1 argument deleteFails → true to tokenRevocationWinsOverDelayedSuccessEvenAfterReoptIn(deleteFails:) started.
+◇ Test case passing 1 argument retryFails → false to failedOrCancelledRetryKeepsOfflineRecoveryReadableAndEndpointScoped(retryFails:) started.
+◇ Test case passing 1 argument retryFails → true to failedOrCancelledRetryKeepsOfflineRecoveryReadableAndEndpointScoped(retryFails:) started.
+◇ Test case passing 2 arguments detail → "PROTOCOL_MISMATCH", expected → "규격" to structuredConnectionErrorsExplainTheRecovery(detail:expected:) started.
+◇ Test case passing 1 argument status → "accepted" to acceptedAckAfterSessionSwitchNeverResurrectsSubmittedText(status:) started.
+◇ Test case passing 1 argument status → "ok" to acceptedAckAfterSessionSwitchNeverResurrectsSubmittedText(status:) started.
+◇ Test case passing 1 argument status → "in_flight" to acceptedAckAfterSessionSwitchNeverResurrectsSubmittedText(status:) started.
+◇ Test case passing 1 argument oldFails → false to olderHistoryCompletionCannotReplaceLatestSuccess(oldFails:) started.
+◇ Test case passing 1 argument state → "aborted" to nonFinalEventsNeverAcknowledgeCompletion(state:) started.
+◇ Test case passing 1 argument state → "error" to nonFinalEventsNeverAcknowledgeCompletion(state:) started.
+◇ Test case passing 1 argument state → "delta" to nonFinalEventsNeverAcknowledgeCompletion(state:) started.
+◇ Test case passing 1 argument status → "" to unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test case passing 1 argument status → "error" to terminalFailureAckRetainsTextAndRemainsUncertain(status:) started.
+◇ Test case passing 2 arguments detail → "AUTH_TOKEN_MISMATCH", expected → "토큰" to structuredConnectionErrorsExplainTheRecovery(detail:expected:) started.
+◇ Test case passing 1 argument status → "started" to acceptedAckAfterSessionSwitchNeverResurrectsSubmittedText(status:) started.
+◇ Test case passing 1 argument oldFails → true to olderHistoryCompletionCannotReplaceLatestSuccess(oldFails:) started.
+◇ Test case passing 1 argument status → "pending" to unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test case passing 2 arguments detail → "PAIRING_REQUIRED", expected → "승인" to structuredConnectionErrorsExplainTheRecovery(detail:expected:) started.
+◇ Test case passing 1 argument status → "queued" to unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test case passing 1 argument status → "OK" to unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test case passing 1 argument status → " started " to unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test case passing 1 argument status → "future_status" to unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test case passing 1 argument status → "timeout" to terminalFailureAckRetainsTextAndRemainsUncertain(status:) started.
+✔ Test defaultResolverReportsUnsupportedWithoutRequestingConnection() passed after 0.007 seconds.
+✔ Test implementedResolverWaitsForConnectionThenRetriesAfterRecovery() passed after 0.008 seconds.
+✔ Suite InlineWidgetAvailabilityTests passed after 0.009 seconds.
+✔ Test repeatedDisconnectClearsSensitiveInput() passed after 0.013 seconds.
+✔ Test disconnectedTransportRefusesDispatch() passed after 0.028 seconds.
+✔ Test previewHistoryIsReadableWithoutDispatchCapability() passed after 0.028 seconds.
+✔ Test pdfFilePayloadRoundTripsThroughProductionRequestEncoder() passed after 0.029 seconds.
+✔ Test interruptedCaptureOwnerIsReportedWithoutInventingAttachmentBytes() passed after 0.030 seconds.
+✔ Test optedInAdapterLosesMediaActionsWhenDisconnected() passed after 0.030 seconds.
+✔ Test productionAdapterDoesNotClaimMediaSupportWhenChatHealthChanges() passed after 0.030 seconds.
+✔ Suite MediaArtifactAvailabilityTests passed after 0.031 seconds.
+✔ Test credentialActionsValidateEndpointBeforeStorageAccess() passed after 0.030 seconds.
+✔ Test emptiedCurrentDraftDoesNotResurrectOlderSavedText() passed after 0.030 seconds.
+✔ Test onlyOwnedFinalOutputAcknowledgesOnce() passed after 0.030 seconds.
+✔ Test emptyFinalAndDetachedTransportNeverAcknowledge() passed after 0.030 seconds.
+✔ Test foreignSessionOrLateFinalNeverAcknowledges() passed after 0.031 seconds.
+✔ Test missingCorrelationNeverAcknowledges(missingRun:missingSession:) with 3 test cases passed after 0.031 seconds.
+✔ Test emptyTokenNeverStartsConnection() passed after 0.031 seconds.
+✔ Test sessionChangeDiscardsDelayedContextWithoutUnsupportedNotice() passed after 0.032 seconds.
+✔ Test canonicalSessionCannotBeReroutedBySelectedAgent() passed after 0.031 seconds.
+✔ Test invalidEndpointNeverStartsConnection() passed after 0.032 seconds.
+✔ Test nonFinalEventsNeverAcknowledgeCompletion(state:) with 3 test cases passed after 0.033 seconds.
+✔ Test disabledOpenDoesNotRequestAndUnsupportedOpenExplainsFailure() passed after 0.033 seconds.
+✔ Test structuredConnectionErrorsExplainTheRecovery(detail:expected:) with 3 test cases passed after 0.033 seconds.
+✔ Suite CharacterStateTests passed after 0.033 seconds.
+✔ Test cancelledContextCannotChangeNewerErrorOrDraft(returnsContext:) with 2 test cases passed after 0.035 seconds.
+✔ Test detachedOwnerCannotPublishContextForTheSameSessionKey(returnsContext:) with 2 test cases passed after 0.039 seconds.
+✔ Test emptyAndOversizedFilesDoNotDisplaceAnAcceptedAttachment() passed after 0.040 seconds.
+✔ Test otherEndpointAndExplicitDisconnectNeverRestoreSelectedAttachments(otherEndpoint:) with 2 test cases passed after 0.040 seconds.
+✔ Test recoveryCannotOverwriteNewReplySelection() passed after 0.040 seconds.
+✔ Test tokenRevocationWinsOverDelayedSuccessEvenAfterReoptIn(deleteFails:) with 2 test cases passed after 0.041 seconds.
+✔ Test submittedReplyDoesNotReappearAfterLateAckOrOverwriteNewComposer(hasNewDraft:) with 2 test cases passed after 0.041 seconds.
+✔ Test failedAttachmentSendRetainsBytesAndDoesNotOverwriteNewAttachment() passed after 0.041 seconds.
+✔ Test cancelledRefreshCannotReplaceNewerCatalogNoticeOrDraft(fails:) with 2 test cases passed after 0.041 seconds.
+✔ Test recoveryEligibilityAllowsOriginalReplyAndRechecksNewerDraft() passed after 0.041 seconds.
+✔ Test terminalFailureAckRetainsTextAndRemainsUncertain(status:) with 2 test cases passed after 0.041 seconds.
+✔ Test failureNeverOverwritesNewerComposerDraft() passed after 0.041 seconds.
+✔ Test changedGatewayBudgetRejectsTheCombinedDraftBeforeSending() passed after 0.042 seconds.
+✔ Suite AttachmentContractTests passed after 0.043 seconds.
+✔ Test refreshIsSingleFlightAndCanRunAgainAfterCompletion() passed after 0.043 seconds.
+✔ Test invalidatedOpenCannotReplaceOrClearANewerRequest() passed after 0.043 seconds.
+✔ Suite ModelSignInPresentationTests passed after 0.043 seconds.
+✔ Test cancelledSendRetainsUnconfirmedDraftAndDoesNotReplay() passed after 0.042 seconds.
+✔ Test acceptedAckAfterSessionSwitchNeverResurrectsSubmittedText(status:) with 4 test cases passed after 0.043 seconds.
+✔ Test cancellingBeforeAttemptStartsStillPreservesRetryInput() passed after 0.044 seconds.
+✔ Test failedHistoryCheckCannotAuthorizeUncertainRestoration() passed after 0.044 seconds.
+✔ Test retiredPhysicalRouteCannotPublishFallbackModelAfterMainKeyAwait() passed after 0.045 seconds.
+✔ Test unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) with 6 test cases passed after 0.045 seconds.
+✔ Test failureAfterNavigationRetainsOriginalInItsSession(newConversation:) with 2 test cases passed after 0.046 seconds.
+✔ Test missingImportBytesProduceOfflineNoticeAcrossFailedAndCancelledRetries() passed after 0.047 seconds.
+✔ Test selectedAttachmentBytesReplyAndTextSurviveFailedAndCancelledRetries() passed after 0.047 seconds.
+✔ Test endpointReplacementCannotImportOrReviveOldRecovery() passed after 0.047 seconds.
+✔ Test failedOrCancelledRetryKeepsOfflineRecoveryReadableAndEndpointScoped(retryFails:) with 2 test cases passed after 0.047 seconds.
+✔ Test explicitDisconnectErasesAllDraftsAndInputButKeepsSavedToken() passed after 0.047 seconds.
+✔ Test onlyCanonicalMatchingUserHistoryRetiresUnconfirmedSend() passed after 0.049 seconds.
+✔ Test recoveryNavigationHonorsEndpointConnectionAndAttachmentGuards() passed after 0.049 seconds.
+✔ Test cancelledHistoryReviewCannotAuthorizeUncertainRestoration() passed after 0.049 seconds.
+✔ Test lateAcceptedAckRemovesTransferredRecoveryWithoutTouchingNewDraft() passed after 0.048 seconds.
+✔ Test disconnectInvalidatesHistoryAndBlocksSessionChanges() passed after 0.048 seconds.
+✔ Test cancelledMainKeyAwaitCannotPublishIntoReplacement() passed after 0.049 seconds.
+✔ Test editingRestoredDraftUsesNewDeduplicationKey() passed after 0.050 seconds.
+✔ Test interruptedRealImportKeepsReadyBytesAndNeverOverwritesReplacementDraft() passed after 0.050 seconds.
+✔ Suite AttachmentSnapshotTests passed after 0.051 seconds.
+✔ Test anotherEndpointNeverReceivesRetainedDrafts() passed after 0.051 seconds.
+✔ Test cancelledRetryKeepsEveryDraftAndTokenAndFencesLateSuccess() passed after 0.051 seconds.
+✔ Test everySessionDraftSurvivesFailedRetryToNormalizedEndpoint() passed after 0.051 seconds.
+✔ Test olderHistoryCannotClearLatestSpinnerAndCancellationCannotPublish() passed after 0.051 seconds.
+✔ Test olderHistoryCompletionCannotReplaceLatestSuccess(oldFails:) with 2 test cases passed after 0.051 seconds.
+✔ Suite ConnectionTests passed after 0.052 seconds.
+✔ Test historyReviewOfEarlierAttemptCannotAuthorizeRetriedSameKey() passed after 0.052 seconds.
+✔ Test historyCheckBeforePendingRPCSettlesCannotAuthorizeLaterRestoration(historyCompletesFirst:) with 2 test cases passed after 0.053 seconds.
+✔ Test recoveryOpensUnlistedNewSessionAndRestoresAttachmentWithOriginalKey() passed after 0.053 seconds.
+✔ Test reconnectKeepsUnconfirmedSendUntilHistoryReviewAndExplicitRestore() passed after 0.053 seconds.
+✔ Suite SendRecoveryTests passed after 0.054 seconds.
+✔ Test run with 66 tests in 8 suites passed after 0.054 seconds.
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Test endpointPreservesProxyPathAndNormalizesScheme() started.
+◇ Test preservesMessageIdentity() started.
+◇ Test rejectsInvalidPortsAndWhitespace() started.
+◇ Test secureEndpoint() started.
+◇ Test rejectsUnsafeInputs() started.
+✔ Test secureEndpoint() passed after 0.001 seconds.
+✔ Test preservesMessageIdentity() passed after 0.001 seconds.
+✔ Test endpointPreservesProxyPathAndNormalizesScheme() passed after 0.001 seconds.
+✔ Test rejectsInvalidPortsAndWhitespace() passed after 0.001 seconds.
+✔ Test rejectsUnsafeInputs() passed after 0.001 seconds.
+✔ Test run with 5 tests in 0 suites passed after 0.001 seconds.

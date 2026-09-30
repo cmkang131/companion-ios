@@ -30,3 +30,9 @@ Research/Upstream/
 !/Validation/ui-preview-777d4e5.log
 !/Validation/recovery-unit-tests.log
 !/Validation/companion-launch-sample.txt
+
+# Attributed follow-up evidence; older checkpoint retained for comparison.
+!/Validation/followup-7539fec/
+!/Validation/followup-7539fec/logs/*.log
+!/Validation/followup-58d9ef8/
+!/Validation/followup-58d9ef8/logs/*.log

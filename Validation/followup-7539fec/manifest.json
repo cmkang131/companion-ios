@@ -1,0 +1,147 @@
+{
+  "source_commit": "7539fec97a6a93a88fa94a8aa418029dc1d8cc24",
+  "simulator_id": "022EC407-377F-4563-A350-CD12D1BA7795",
+  "simulator_name": "Companion Recovery Task5",
+  "built_executable_sha256": "eba0cb0a2ecb83d8afb64de1600f1e19c746936408bfe9ad9207c2220e3ac28b",
+  "installed_executable_sha256": "eba0cb0a2ecb83d8afb64de1600f1e19c746936408bfe9ad9207c2220e3ac28b",
+  "captures": [
+    {
+      "file": "compact.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T18:59:39.237590+00:00",
+      "sha256": "fe799991d211c6186f8466e9fc712a9b91902d155ceef196e3a88fa6c1407a74",
+      "size_bytes": 282145
+    },
+    {
+      "file": "ax5-welcome.png",
+      "flags": [
+        "--ui-testing",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T18:59:55.381791+00:00",
+      "sha256": "5f7c95fedfd0451d70707b2a540f7abb607f518802ed8b0bd3e9f851639a37f1",
+      "size_bytes": 297599
+    },
+    {
+      "file": "ax5-chat.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T19:00:11.395446+00:00",
+      "sha256": "cd145e165d567aebdd248f5512be4b9fcb156179086794ff9f9519cea8761a1f",
+      "size_bytes": 305351
+    },
+    {
+      "file": "recovery.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-send-recovery",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:00:27.588964+00:00",
+      "sha256": "b1d984bb87ad828f5e366c04352c450d9069f09924fc3683d9646a7207dc109c",
+      "size_bytes": 149128
+    },
+    {
+      "file": "artifact.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-artifact-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:00:43.703093+00:00",
+      "sha256": "54ff9d3400e8c5ab8b770a39c1802437fcd2e05fc6dd97f3b96323c11e86136d",
+      "size_bytes": 234739
+    },
+    {
+      "file": "keyboard.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-settings",
+        "--ui-keyboard",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:00:58.942202+00:00",
+      "sha256": "7f9c8a73df3f551b245931d7d07e2767c64ddc3b22f108e42ea84c261b3cbf1e",
+      "size_bytes": 320552
+    },
+    {
+      "file": "settings.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-settings",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T19:01:15.102587+00:00",
+      "sha256": "6255b0f50dbbf8603d870b87aa1a8667113ac3fd48b8fe9622f679bd6532370f",
+      "size_bytes": 225182
+    }
+  ],
+  "limits": [
+    "Debug synthetic fixtures, no live server",
+    "Programmatic launch/keyboard focus, not tap interaction",
+    "Simulator content-size category only; no VoiceOver or OS Reduce Motion verification"
+  ],
+  "status": "Superseded rendering checkpoint; retained for before/after comparison",
+  "logs": [
+    {
+      "file": "logs/tests-7539fec.log",
+      "sha256": "311b1c5783a56556412b41f8f83cfaa47a917e2a83de551e493b144efd1a57ce"
+    },
+    {
+      "file": "logs/build-7539fec.log",
+      "sha256": "04d22858c8440396089ca53800f0e98936fa8ba9b0ddebd10bb1e8795876bbe6"
+    },
+    {
+      "file": "logs/privacy-7539fec.log",
+      "sha256": "43d9a3c89784508dd043cf92ad46140f0ed378081e25f6a80a628a0d182bafa6"
+    },
+    {
+      "file": "logs/cancel-wiring-7539fec.log",
+      "sha256": "6fc683de47a78b8f1a145456ed3d0e7dfa03b6c1199a9f469ab2252779b33b6c"
+    },
+    {
+      "file": "logs/capture-7539fec.log",
+      "sha256": "a58f3b13debdfdd9de280fe8207db14326e8a471aac19cbfda657db25f9c3658"
+    }
+  ],
+  "comparison_library_file_id": "libfile_1201b90dca908191bac9026fbcc2713f",
+  "comparison_sha256": "388f76ad145f26948c07c98678cc7946e073f137a96d09574d8213a3dc303f24"
+}

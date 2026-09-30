@@ -1,0 +1,36 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun .build-xcode/Build/Products/Companion_iphonesimulator27.0-arm64.xctestrun -destination "platform=iOS Simulator,id=022EC407-377F-4563-A350-CD12D1BA7795" "-only-testing:CompanionUITests/CompanionUITests/testPreviewTranscriptAndHistory" -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 40 -maximum-test-execution-time-allowance 45 -jobs 2
+
+2026-10-01 04:08:51.465045+0900 CompanionUITests-Runner[41251:44495787] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'Selected tests' started at 2026-10-01 04:08:55.661.
+Test Suite 'CompanionUITests.xctest' started at 2026-10-01 04:08:55.663.
+Test Suite 'CompanionUITests' started at 2026-10-01 04:08:55.663.
+Test Case '-[CompanionUITests.CompanionUITests testPreviewTranscriptAndHistory]' started.
+    t =     0.01s Start Test at 2026-10-01 04:08:55.668
+    t =     0.18s Set Up
+    t =     0.20s Open com.cmkang131.companion
+    t =     0.20s     Launch com.cmkang131.companion
+    t =     0.20s         Terminate com.cmkang131.companion:32752
+objc[41251]: Class UIAccessibilityLoaderWebShared is implemented in both /private/var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.v85ond/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x10a184398) and /private/var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.v85ond/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x10aaf0310). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+2026-10-01 04:08:57.278 xcodebuild[41227:44495329] [MT] IDELaunchParametersSnapshot: debugger version lookup failed for path '<nil>': noURL
+2026-10-01 04:08:57.278 xcodebuild[41227:44495329] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     2.67s         Setting up automation session
+Test Case '-[CompanionUITests.CompanionUITests testPreviewTranscriptAndHistory]' exceeded execution time allowance of 1분. The test may have hung; check Xcode's test report for additional diagnostics. If the test requires additional time, use -[XCTestCase executionTimeAllowance] or one of xcodebuild's command-line overrides.
+    t =    62.71s         Wait for com.cmkang131.companion to idle
+
+
+*** If you believe this error represents a bug, please attach the result bundle at /Users/changmin/Library/Developer/Xcode/DerivedData/Companion-hcwldqrbdatavefwqussqimchulk/Logs/Test/Test-Companion-2026.10.01_04-08-44-+0900.xcresult
+
+2026-10-01 04:10:04.244007+0900 CompanionUITests-Runner[41811:44500451] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+
+Restarting after unexpected exit, crash, or test timeout; summary will include totals from previous launches.
+
+Test Suite 'Selected tests' started at 2026-10-01 04:10:08.936.
+Test Suite 'CompanionUITests.xctest' started at 2026-10-01 04:10:08.938.
+Test Suite 'CompanionUITests.xctest' passed at 2026-10-01 04:10:08.938.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-01 04:10:08.939.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.002) seconds
+** BUILD INTERRUPTED **
