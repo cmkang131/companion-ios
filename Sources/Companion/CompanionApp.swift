@@ -7,7 +7,7 @@ struct CompanionApp: App {
         WindowGroup {
             #if DEBUG
             if ProcessInfo.processInfo.arguments.contains("--ui-motion-gallery") {
-                CompanionMotionGallery().preferredColorScheme(.light)
+                CompanionMotionGallery().modifier(CompanionAccessibilityFixture()).preferredColorScheme(.light)
             } else {
                 CompanionHome().modifier(CompanionAccessibilityFixture()).preferredColorScheme(.light)
             }
