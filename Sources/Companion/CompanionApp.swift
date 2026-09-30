@@ -24,6 +24,7 @@ struct CompanionHome: View {
     @State private var responseArrived = false
     @State private var acknowledgementTask: Task<Void, Never>?
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.scenePhase) private var scenePhase
     private enum Sheet: String, Identifiable { case connection, history; var id: String { rawValue } }
 
@@ -128,7 +129,8 @@ struct CompanionHome: View {
             Spacer(minLength: 24)
             VStack(spacing: -14) {
                 CompanionCharacterView(mood: connection.phase == .connecting ? .curious : .attentive,
-                    paused: sheet != nil).frame(width: 156, height: 156)
+                    paused: sheet != nil).frame(width: dynamicTypeSize.isAccessibilitySize ? 96 : 156,
+                        height: dynamicTypeSize.isAccessibilitySize ? 96 : 156)
                 CompanionNamePill()
             }.padding(.bottom, 28)
             Text("여기 있어요").font(.title2.weight(.semibold))
@@ -136,20 +138,34 @@ struct CompanionHome: View {
             Text("당신의 OpenClaw에 연결하면\n이곳에서 이야기를 이어갈 수 있어요.")
                 .font(.body).foregroundStyle(.secondary).multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-            Button { sheet = .connection } label: {
-                HStack(spacing: 9) {
-                    if connection.phase == .connecting { ProgressView() }
-                    Text(connection.phase == .connecting ? "연결 확인" : "서버 연결")
-                }.padding(.horizontal, 12).frame(minHeight: 36)
-            }
-            .buttonStyle(.glass).controlSize(.large)
-            .padding(.top, 26).accessibilityIdentifier("connectWelcomeButton")
+            if !dynamicTypeSize.isAccessibilitySize { connectButton.padding(.top, 26) }
             Spacer(minLength: 32)
-            Text(connection.status).font(.footnote).foregroundStyle(.secondary)
-                .padding(.bottom, 24)
+            if !dynamicTypeSize.isAccessibilitySize {
+                Text(connection.status).font(.footnote).foregroundStyle(.secondary)
+                    .padding(.bottom, 24)
+            }
         }.padding(.horizontal, 28).frame(maxWidth: .infinity, minHeight: viewport.size.height)
         }.scrollBounceBehavior(.basedOnSize)
         }
+        .safeAreaInset(edge: .bottom) {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 8) {
+                    connectButton
+                    Text(connection.status).font(.footnote).foregroundStyle(.secondary)
+                }.frame(maxWidth: .infinity).padding(16).background(Color(white: 0.985))
+            }
+        }
+    }
+
+    private var connectButton: some View {
+        Button { sheet = .connection } label: {
+            HStack(spacing: 9) {
+                if connection.phase == .connecting { ProgressView() }
+                Text(connection.phase == .connecting ? "연결 확인" : "서버 연결")
+            }.padding(.horizontal, 12).frame(minHeight: 44)
+        }
+        .buttonStyle(.glass).controlSize(.large)
+        .accessibilityIdentifier("connectWelcomeButton")
     }
 }
 

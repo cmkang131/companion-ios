@@ -15,6 +15,8 @@ struct CompanionNamePill: View {
             .font(.title3.weight(.semibold))
             .padding(.horizontal, 24).padding(.vertical, 8)
             .modifier(NamePillSurface(opaque: usesOpaqueSurface))
+            // Decorative name is duplicated by the accessible navigation title.
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
             .accessibilityHidden(true)
     }
 }
