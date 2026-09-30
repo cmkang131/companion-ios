@@ -71,8 +71,8 @@ struct QuestionLifecycleTests {
     func permissionLossDuringRouteAcquisitionNeverDispatches(scope: OpenClawConversationQuestionScope,
                                                             skip: Bool) async throws {
         for loss in ["host", "health"] {
-            var allowed = true
-            let fixture = try QuestionFixture(questionActionsAllowed: { allowed })
+            let policy = QuestionHostPolicy()
+            let fixture = try QuestionFixture(questionActionsAllowed: { policy.allowed })
             defer { fixture.cleanup() }
             let card = try fixture.addQuestion(secret: true)
             card.setOtherText(questionID: "answer", value: "synthetic-retained-answer")
@@ -82,7 +82,7 @@ struct QuestionLifecycleTests {
             let action = Task { if skip { await callbacks.skip(card) } else { await callbacks.submit(card) } }
             defer { action.cancel() }
             try await self.waitUntil { fixture.boundary.leaseRequestCount == 1 }
-            if loss == "host" { allowed = false } else { fixture.model.healthOK = false }
+            if loss == "host" { policy.allowed = false } else { fixture.model.healthOK = false }
             fixture.boundary.releaseLeaseAcquisition()
             await action.value
             #expect(fixture.boundary.mutations.isEmpty)
@@ -95,8 +95,8 @@ struct QuestionLifecycleTests {
 
     @Test(arguments: ["server-answer", "server-cancel", "server-expiry", "local-expiry"], [false, true])
     func policyLossCannotReplaceTerminalOrExpiryDuringLeaseAcquisition(outcome: String, skip: Bool) async throws {
-        var allowed = true
-        let fixture = try QuestionFixture(questionActionsAllowed: { allowed })
+        let policy = QuestionHostPolicy()
+        let fixture = try QuestionFixture(questionActionsAllowed: { policy.allowed })
         defer { fixture.cleanup() }
         let card = try fixture.addQuestion()
         card.setOtherText(questionID: "answer", value: "draft retired on terminal")
@@ -106,7 +106,7 @@ struct QuestionLifecycleTests {
         let action = Task { if skip { await callbacks.skip(card) } else { await callbacks.submit(card) } }
         defer { action.cancel() }
         try await self.waitUntil { fixture.boundary.leaseRequestCount == 1 }
-        allowed = false
+        policy.allowed = false
         if outcome == "local-expiry" {
             #expect(card.observeLocalExpiry(at: Date(timeIntervalSince1970: Double(card.record.expiresatms) / 1000 + 1)))
         } else {
@@ -589,6 +589,11 @@ struct QuestionLifecycleTests {
             try await Task.sleep(for: .milliseconds(1))
         }
     }
+}
+
+@MainActor
+private final class QuestionHostPolicy {
+    var allowed = true
 }
 
 @MainActor
