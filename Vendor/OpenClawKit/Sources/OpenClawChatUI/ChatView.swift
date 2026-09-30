@@ -122,6 +122,9 @@ public struct OpenClawChatView: View {
     @Environment(\.openClawChatDesktopLayout) private var isDesktopLayout
     @State private var contentWidth: CGFloat = 0
     @State private var scrollerBottomID = UUID()
+    #if DEBUG
+    @State private var questionFixtureID = UUID()
+    #endif
     @State private var scrollCommand = ChatScrollCommand()
     @State private var hasPerformedInitialScroll = false
     @State private var lastTurnStartID: UUID?
@@ -487,6 +490,19 @@ extension OpenClawChatView {
             }
         }
         .modifier(ChatScrollCommandModifier(command: self.$scrollCommand) { self.viewModel.currentSessionTarget })
+        #if DEBUG
+        .task(id: self.viewModel.visibleQuestionCards.count) {
+            let arguments = ProcessInfo.processInfo.arguments
+            guard arguments.contains("--ui-testing"), arguments.contains("--ui-preview"),
+                  arguments.contains("--ui-question-transcript"),
+                  !self.viewModel.visibleQuestionCards.isEmpty else { return }
+            // Capture positioning only, not a real scroll/tap interaction.
+            do { try await Task.sleep(for: .seconds(1)) } catch { return }
+            self.followTarget = nil
+            self.moveScrollPosition(to: self.questionFixtureID,
+                anchor: arguments.contains("--ui-questions-end") ? .bottom : .top)
+        }
+        #endif
         // Ensure the message list claims vertical space on the first layout pass.
         .frame(maxHeight: .infinity, alignment: .top)
         .layoutPriority(1)
@@ -613,6 +629,9 @@ extension OpenClawChatView {
             }
         }
         OpenClawConversationQuestionsView(viewModel: self.viewModel, scope: .all)
+            #if DEBUG
+            .id(self.questionFixtureID)
+            #endif
     }
 
     @ViewBuilder

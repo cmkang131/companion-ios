@@ -120,7 +120,9 @@ struct CompanionHome: View {
             if arguments.contains("--ui-settings") { sheet = .connection }
             if arguments.contains("--ui-history") { sheet = .history }
             if arguments.contains("--ui-activity") {
-                sheet = .activity
+                // Inspect the same preview questions in the transcript without
+                // pretending a sheet-dismissal tap was exercised.
+                if !arguments.contains("--ui-question-transcript") { sheet = .activity }
                 // Explicit Debug fixture: the real model consumes a controlled
                 // local transport. This never enables production send/credentials.
                 if arguments.contains("--ui-stop"), connection.isPreview, let model = connection.model {

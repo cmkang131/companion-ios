@@ -30,6 +30,9 @@ MODES = {
     'questions-unscoped': ('large', ['--ui-preview', '--ui-activity', '--ui-unscoped-questions']),
     'questions-ax5': ('accessibility-extra-extra-extra-large', ['--ui-preview', '--ui-activity', '--ui-questions']),
     'questions-ax5-footer': ('accessibility-extra-extra-extra-large', ['--ui-preview', '--ui-activity', '--ui-questions', '--ui-questions-end']),
+    'transcript-current': ('large', ['--ui-preview', '--ui-activity', '--ui-questions', '--ui-question-transcript']),
+    'transcript-unscoped': ('large', ['--ui-preview', '--ui-activity', '--ui-unscoped-questions', '--ui-question-transcript']),
+    'transcript-unscoped-ax5': ('accessibility-extra-extra-extra-large', ['--ui-preview', '--ui-activity', '--ui-unscoped-questions', '--ui-question-transcript']),
 }
 
 def run(args, allowed=(0,)):
