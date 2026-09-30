@@ -632,9 +632,9 @@ extension OpenClawChatViewModel {
             // Settle by send identity before the presentation/session guard. The
             // shared ledger survives navigation and same-endpoint reconnects.
             self.sendRecoveryLedger.settle(attempt.runId,
-                delivery: response.status == "error" || response.status == "timeout" ? .unconfirmed : nil)
+                delivery: Self.isAcceptedSendStatus(response.status) ? nil : .unconfirmed)
             guard isCurrentSession(attempt.draft.session) else {
-                if response.status != "error", response.status != "timeout" {
+                if Self.isAcceptedSendStatus(response.status) {
                     self.finishAcceptedComposerSend(attempt.draft)
                 }
                 return
@@ -653,13 +653,20 @@ extension OpenClawChatViewModel {
         attempt: LiveSendAttempt) async
     {
         let sessionKey = attempt.draft.session.key
+        guard Self.isAcceptedSendStatus(response.status) else {
+            // Neither a terminal error nor an unrecognized payload proves
+            // non-delivery. Keep the original send for explicit history review.
+            removePendingLocalUserEcho(for: attempt.runId)
+            runMessageScopesByRunID.removeValue(forKey: attempt.runId)
+            errorText = "전달 여부를 확인하지 못했어요. 대화 기록을 확인한 뒤 보관된 원문을 복원할 수 있어요."
+            clearPendingRun(attempt.runId, hapticEvent: .runFailed)
+            return
+        }
         logDiagnostic(
             "chat.ui transport send accepted sessionKey=\(sessionKey) "
                 + "localRunId=\(attempt.runId) remoteRunId=\(response.runId)")
-        if response.status != "error", response.status != "timeout" {
-            haptics.perform(.messageSent)
-            self.finishAcceptedComposerSend(attempt.draft)
-        }
+        haptics.perform(.messageSent)
+        self.finishAcceptedComposerSend(attempt.draft)
         let reusedRunAlreadyFinal = response.runId == attempt.runId
             ? false
             : self.adoptRemoteRunID(response.runId, replacing: attempt.runId)
@@ -669,10 +676,6 @@ extension OpenClawChatViewModel {
             await refreshHistoryAfterRun(historyRequest: historyContext)
             guard isCurrentSession(attempt.draft.session) else { return }
             finishPendingRunAfterTerminalOkSendAck(response)
-            return
-        }
-        if finishPendingRunIfTerminalSendAck(response) {
-            errorText = "전달 여부를 확인하지 못했어요. 대화 기록을 확인한 뒤 보관된 원문을 복원할 수 있어요."
             return
         }
         guard !reusedRunAlreadyFinal else {

@@ -31,6 +31,7 @@ final class ChatSendRecoveryLedger {
         var delivery: OpenClawChatSendRecovery.Delivery?
         var isAwaitingAcknowledgement = true
         var hasCheckedHistory = false
+        var historyReviewRevision = UUID()
     }
 
     var entries: [Entry] = []
@@ -57,6 +58,7 @@ final class ChatSendRecoveryLedger {
         entries[index].delivery = delivery
         entries[index].isAwaitingAcknowledgement = false
         entries[index].hasCheckedHistory = false
+        entries[index].historyReviewRevision = UUID()
     }
 }
 
@@ -74,14 +76,24 @@ extension OpenClawChatViewModel {
         guard !isTransportDetached else { return false }
         let session = currentSessionSnapshot()
         let key = composerSessionKey(for: session.key)
-        let ids = Set(sendRecoveryLedger.entries.filter { $0.composerSessionKey == key }.map(\.id))
+        // A history request begun before an RPC settles cannot review that
+        // outcome. An entry may also be restored and retried with the same
+        // deduplication ID while this request waits, so fence its revision too.
+        let revisions = Dictionary(uniqueKeysWithValues: sendRecoveryLedger.entries.compactMap { entry in
+            guard entry.composerSessionKey == key, !entry.isAwaitingAcknowledgement,
+                  entry.delivery != nil else { return nil as (String, UUID)? }
+            return (entry.id, entry.historyReviewRevision)
+        })
         let result = await refreshHistoryAfterRun(historyRequest: beginHistoryRequest(for: session))
         guard !Task.isCancelled, isCurrentSession(session) else { return false }
         guard result.applied else {
             errorText = "전송 기록을 확인하지 못했어요. 연결 상태를 확인한 뒤 다시 시도해 주세요."
             return false
         }
-        for index in sendRecoveryLedger.entries.indices where ids.contains(sendRecoveryLedger.entries[index].id) {
+        for index in sendRecoveryLedger.entries.indices {
+            let entry = sendRecoveryLedger.entries[index]
+            guard !entry.isAwaitingAcknowledgement,
+                  revisions[entry.id] == entry.historyReviewRevision else { continue }
             sendRecoveryLedger.entries[index].hasCheckedHistory = true
         }
         return true
@@ -151,5 +163,16 @@ extension OpenClawChatViewModel {
             return .notSent
         }
         return .unconfirmed
+    }
+
+    static func isAcceptedSendStatus(_ status: String) -> Bool {
+        // Pinned gateway ebe57ef: chat-send-handler.ts emits started/ok;
+        // chat-send-pre-admission.ts returns in_flight for an existing owner;
+        // chat-send-message-injection.ts caches accepted after accepted steering.
+        // Unknown statuses are not evidence that the server took custody.
+        switch status {
+        case "started", "ok", "in_flight", "accepted": true
+        default: false
+        }
     }
 }
