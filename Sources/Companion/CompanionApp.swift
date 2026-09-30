@@ -79,7 +79,9 @@ struct CompanionHome: View {
                     }.buttonStyle(.plain).accessibilityIdentifier("sendRecoveryButton")
                 } else if connection.model != nil {
                     Button { sheet = .connection } label: {
-                        Text(activityStatus).font(.footnote).foregroundStyle(.secondary)
+                        Text(dynamicTypeSize.isAccessibilitySize && connection.isPreview
+                            ? "미리보기\n서버 미연결" : activityStatus).font(.footnote).foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
                             .padding(.horizontal, 15).padding(.vertical, 7)
                             .background(Color(white: reduceTransparency ? 0.94 : 0.965), in: Capsule())
                             .frame(minHeight: 44)
@@ -150,7 +152,7 @@ struct CompanionHome: View {
             }.padding(.bottom, 28)
             Text("여기 있어요").font(.title2.weight(.semibold))
                 .padding(.bottom, 10)
-            Text("OpenClaw에 연결해\n이야기를 시작하세요.")
+            Text("연결하고\n이야기해요.")
                 .font(.body).foregroundStyle(.secondary).multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
             if !dynamicTypeSize.isAccessibilitySize { connectButton.padding(.top, 26) }
@@ -240,22 +242,32 @@ struct SendRecoverySheet: View {
                             Button(checkingHistory ? "기록 확인 중" : "대화 기록 확인", systemImage: "arrow.clockwise") {
                                 Task { await checkHistory() }
                             }.disabled(!connection.canSend || checkingHistory)
+                                .foregroundStyle(connection.canSend && !checkingHistory ? Color.primary : Color.secondary)
                             Button("초안에 복원", systemImage: "square.and.pencil") {
                                 if item.delivery == .unconfirmed { confirmation = item }
                                 else { restore(item) }
                             }.disabled(!canRestore(item))
+                                .foregroundStyle(canRestore(item) ? Color.primary : Color.secondary)
+                            if !connection.canSend {
+                                Text("서버에 연결하면 기록 확인과 초안 복원을 할 수 있어요.")
+                                    .font(.footnote).foregroundStyle(.secondary)
+                            }
                             if item.isAwaitingAcknowledgement {
                                 Text("이전 전송의 응답을 기다리고 있어요. 원문은 복사할 수 있어요.")
                                     .font(.footnote).foregroundStyle(.secondary)
                             } else if connection.model?.isSubmittingDraft == true || connection.model?.isSending == true || connection.model?.isAttachmentOwnerPinned == true {
                                 Text("현재 전송이나 첨부 준비가 끝나면 복원할 수 있어요.")
                                     .font(.footnote).foregroundStyle(.secondary)
-                            } else if connection.model?.input.isEmpty == false || connection.model?.attachments.isEmpty == false || connection.model?.replyTarget != nil {
+                            } else if !canRestore(item) && (connection.model?.input.isEmpty == false || connection.model?.attachments.isEmpty == false || connection.model?.replyTarget != nil) {
                                 Text("새 초안과 첨부, 답장 선택은 그대로 유지돼요. 복원하려면 먼저 입력창을 확인해 주세요.")
                                     .font(.footnote).foregroundStyle(.secondary)
                             }
                         } else if connection.canSend {
-                            Button("원래 대화 찾기", action: openHistory)
+                            Button("원래 대화로 이동", systemImage: "bubble.left") {
+                                feedback = connection.openSendRecovery(id: item.id)
+                                    ? "원래 대화로 돌아왔어요. 전달 상태를 확인한 뒤 복원해 주세요."
+                                    : "이동하지 못했어요. 현재 전송이나 첨부 선택을 마친 뒤 다시 시도해 주세요. 보관한 원문은 유지돼요."
+                            }
                         } else {
                             Text("연결 후 원래 대화에서 기록 확인과 초안 복원을 할 수 있어요.")
                                 .font(.footnote).foregroundStyle(.secondary)
@@ -263,6 +275,10 @@ struct SendRecoverySheet: View {
                     }
                 }
                 if let feedback { Section { Text(feedback).font(.footnote) } }
+                Section {
+                    Text("이 내용은 앱 메모리에 보관돼요. 앱이 종료되면 사라질 수 있어요.")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
             }
             .navigationTitle("보관한 내용").navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("완료") { dismiss() } } }
@@ -281,11 +297,7 @@ struct SendRecoverySheet: View {
         connection.model?.currentSendRecoveries.contains(where: { $0.id == item.id }) == true
     }
     private func canRestore(_ item: OpenClawChatSendRecovery) -> Bool {
-        connection.canSend && item.canRestore && isCurrentSession(item)
-            && connection.model?.input.isEmpty == true && connection.model?.attachments.isEmpty == true
-            && connection.model?.replyTarget == nil
-            && connection.model?.isSubmittingDraft == false && connection.model?.isSending == false
-            && connection.model?.isAttachmentOwnerPinned == false
+        connection.canSend && connection.model?.canRestoreSendRecovery(id: item.id) == true
     }
     private func restore(_ item: OpenClawChatSendRecovery) {
         guard connection.canSend, connection.model?.restoreSendRecovery(id: item.id) == true else {
@@ -385,7 +397,7 @@ struct ConnectionSettings: View {
                 if let model = connection.model {
                     Section("대화 설정") {
                         OpenClawChatSessionSettings(viewModel: model, isEnabled: connection.canSend)
-                    }
+                    }.id("modelSettings")
                 }
             }
             .onChange(of: validationAttempt) { _, _ in
@@ -417,6 +429,10 @@ struct ConnectionSettings: View {
                 #if DEBUG
                 let arguments = ProcessInfo.processInfo.arguments
                 if arguments.contains("--ui-keyboard") { focus = .endpoint }
+                if arguments.contains("--ui-model-settings") {
+                    await Task.yield()
+                    proxy.scrollTo("modelSettings", anchor: .bottom)
+                }
                 if arguments.contains("--ui-invalid-address") {
                     connection.endpoint = "http://example.com"
                     connection.connect()

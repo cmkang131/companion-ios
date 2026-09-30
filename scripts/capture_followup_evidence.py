@@ -20,7 +20,7 @@ MODES = {
     'recovery': ('large', ['--ui-preview', '--ui-send-recovery']),
     'artifact': ('large', ['--ui-preview', '--ui-artifact-preview']),
     'keyboard': ('large', ['--ui-settings', '--ui-keyboard']),
-    'settings': ('large', ['--ui-preview', '--ui-settings']),
+    'settings': ('large', ['--ui-preview', '--ui-settings', '--ui-model-settings']),
 }
 
 def run(args, allowed=(0,)):

@@ -38,7 +38,7 @@ extension OpenClawChatViewModel {
             let catalog = try await transport.loadModelCatalog(
                 sessionKey: session.key,
                 agentID: session.deliveryAgentID)
-            guard self.isCurrentSession(session), requestID == self.nextModelCatalogRequestID else {
+            guard !Task.isCancelled, self.isCurrentSession(session), requestID == self.nextModelCatalogRequestID else {
                 return
             }
             self.modelChoices = catalog.choices
@@ -54,7 +54,7 @@ extension OpenClawChatViewModel {
             }
             syncThinkingLevelOptions()
         } catch {
-            guard self.isCurrentSession(session), requestID == self.nextModelCatalogRequestID else { return }
+            guard !Task.isCancelled, self.isCurrentSession(session), requestID == self.nextModelCatalogRequestID else { return }
             self.modelCatalogMessage = String(localized: "Model choices could not load. Reconnect and try again.")
             self.syncThinkingLevelOptions()
         }
@@ -65,12 +65,14 @@ extension OpenClawChatViewModel {
     public func modelSignInContext() async -> OpenClawChatModelSignInContext? {
         let session = self.currentSessionSnapshot()
         let agentID = session.deliveryAgentID ?? OpenClawChatSessionKey.agentID(from: session.key) ?? self.activeAgentId
-        guard let context = await self.transport.acquireModelSignInContext(agentID: agentID) else {
-            guard self.isCurrentSession(session) else { return nil }
+        let context = await self.transport.acquireModelSignInContext(agentID: agentID)
+        // A dismissed sign-in presentation can receive a late nil just as it
+        // can receive a late context. Neither may change the chat after cancel.
+        guard !Task.isCancelled, self.isCurrentSession(session) else { return nil }
+        guard let context else {
             self.errorText = String(localized: "Model sign-in needs a newer Gateway. Update it or use /login.")
             return nil
         }
-        guard self.isCurrentSession(session) else { return nil }
         return OpenClawChatModelSignInContext(
             agentID: context.agentID,
             request: context.request,
