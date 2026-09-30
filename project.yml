@@ -1,0 +1,99 @@
+name: Companion
+options:
+  bundleIdPrefix: com.cmkang131
+  deploymentTarget:
+    iOS: '26.0'
+  xcodeVersion: '27.0'
+packages:
+  OpenClawKit:
+    path: Vendor/OpenClawKit
+settings:
+  base:
+    SWIFT_VERSION: '6.0'
+    TARGETED_DEVICE_FAMILY: '1'
+    IPHONEOS_DEPLOYMENT_TARGET: '26.0'
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ''
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_EMIT_LOC_STRINGS: NO
+targets:
+  Companion:
+    type: application
+    platform: iOS
+    sources:
+      - Sources/Companion
+    dependencies:
+      - target: CompanionCore
+      - package: OpenClawKit
+        product: OpenClawChatUI
+      - package: OpenClawKit
+        product: OpenClawKit
+      - package: OpenClawKit
+        product: OpenClawProtocol
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.cmkang131.companion
+        MARKETING_VERSION: '0.2.0'
+        CURRENT_PROJECT_VERSION: '2'
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Companion
+        UIUserInterfaceStyle: Light
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSLocalNetworkUsageDescription: 개인 OpenClaw 서버에 연결합니다.
+        ITSAppUsesNonExemptEncryption: false
+  CompanionCore:
+    type: framework
+    platform: iOS
+    sources: [Sources/CompanionCore]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.cmkang131.companion.core
+        GENERATE_INFOPLIST_FILE: YES
+  CompanionCoreTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests/CompanionCoreTests]
+    dependencies:
+      - target: CompanionCore
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+  CompanionIntegrationTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests/CompanionIntegrationTests]
+    dependencies:
+      - target: Companion
+      - package: OpenClawKit
+        product: OpenClawChatUI
+      - package: OpenClawKit
+        product: OpenClawKit
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+  CompanionUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [Tests/CompanionUITests]
+    dependencies:
+      - target: Companion
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  Companion:
+    build:
+      targets:
+        Companion: all
+    test:
+      targets:
+        - CompanionCoreTests
+        - CompanionIntegrationTests
+        - CompanionUITests
