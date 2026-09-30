@@ -99,6 +99,16 @@ final class ConnectionStore {
 
     var canSend: Bool { phase == .connected && !isPreview }
 
+    /// Copy/review remains available after a failed or cancelled retry. Merely
+    /// editing the endpoint hides another server's retained submitted text.
+    var retainedSendRecoveries: [OpenClawChatSendRecovery] {
+        guard !isPreview, let address = try? ConnectionEndpoint(endpoint).url,
+              address == activeEndpoint else { return [] }
+        if let model { return model.allSendRecoveries }
+        guard let retryDrafts, retryDrafts.endpoint == address else { return [] }
+        return retryDrafts.snapshot.sendRecoveries
+    }
+
     init(dependencies: ConnectionDependencies = .live, enablesLaunchFixtures: Bool = true) {
         self.dependencies = dependencies
         #if DEBUG

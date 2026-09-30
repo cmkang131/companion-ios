@@ -40,8 +40,9 @@ extension OpenClawChatViewModel {
             fallbackGeneration: runOwnershipGeneration)
     }
 
-    public func send() {
-        guard !self.usesWebConversation else { return }
+    @discardableResult
+    public func send() -> Task<Void, Never>? {
+        guard !self.usesWebConversation else { return nil }
         logDiagnostic(
             "chat.ui send invoked sessionKey=\(sessionKey) "
                 + "inputLen=\(input.count) attachments=\(attachments.count) "
@@ -49,9 +50,9 @@ extension OpenClawChatViewModel {
                 + "health=\(healthOK)")
         // Reserve the accepted draft before scheduling work so initial route
         // hydration cannot retire its owner before asynchronous validation starts.
-        guard let draft = captureSendDraft() else { return }
+        guard let draft = captureSendDraft() else { return nil }
         isSubmittingDraft = true
-        Task { await self.performSend(draft) }
+        return Task { await self.performSend(draft) }
     }
 
     public func loadSlashCommandsIfNeeded() {
@@ -513,7 +514,9 @@ extension OpenClawChatViewModel {
 
     private func beginLiveSend(_ draft: SendDraft) -> LiveSendAttempt {
         errorText = nil
-        let runId = UUID().uuidString
+        let runId = self.reserveSendRecovery(proposedRunID: UUID().uuidString,
+            sessionKey: draft.session.key, composerSessionKey: draft.composerSessionKey, text: draft.input,
+            attachments: draft.attachments, replyTarget: draft.replyTarget)
         let storedThinkingLevel = preferredThinkingLevel
         pendingRuns.insert(runId)
         logDiagnostic(
@@ -606,7 +609,10 @@ extension OpenClawChatViewModel {
                     canPreserveInOutbox: false)
                 return
             }
-            guard isCurrentSession(attempt.draft.session) else { return }
+            guard isCurrentSession(attempt.draft.session) else {
+                self.sendRecoveryLedger.settle(attempt.runId, delivery: .notSent)
+                return
+            }
             let sendSessionSettingsExpectation = self.composerSessionSettingsExpectation()
             durableSessionSettingsExpectation = self.durableSessionSettingsExpectation()
             logDiagnostic(
@@ -623,6 +629,10 @@ extension OpenClawChatViewModel {
                 thinking: thinkingLevel,
                 idempotencyKey: attempt.runId,
                 attachments: attempt.encodedAttachments)
+            // Settle by send identity before the presentation/session guard. The
+            // shared ledger survives navigation and same-endpoint reconnects.
+            self.sendRecoveryLedger.settle(attempt.runId,
+                delivery: response.status == "error" || response.status == "timeout" ? .unconfirmed : nil)
             guard isCurrentSession(attempt.draft.session) else {
                 if response.status != "error", response.status != "timeout" {
                     self.finishAcceptedComposerSend(attempt.draft)
@@ -661,9 +671,11 @@ extension OpenClawChatViewModel {
             finishPendingRunAfterTerminalOkSendAck(response)
             return
         }
-        guard !finishPendingRunIfTerminalSendAck(response),
-              !reusedRunAlreadyFinal
-        else {
+        if finishPendingRunIfTerminalSendAck(response) {
+            errorText = "전달 여부를 확인하지 못했어요. 대화 기록을 확인한 뒤 보관된 원문을 복원할 수 있어요."
+            return
+        }
+        guard !reusedRunAlreadyFinal else {
             return
         }
 
@@ -716,6 +728,8 @@ extension OpenClawChatViewModel {
         durableSessionSettingsExpectation: OpenClawChatSessionSettingsExpectation? = nil,
         canPreserveInOutbox: Bool = true) async
     {
+        self.sendRecoveryLedger.settle(attempt.runId,
+            delivery: Self.sendRecoveryDelivery(for: error, beforeDispatch: !canPreserveInOutbox))
         guard isCurrentSession(attempt.draft.session) else { return }
         if canPreserveInOutbox,
            let durableSessionSettingsExpectation,
@@ -735,6 +749,7 @@ extension OpenClawChatViewModel {
                 expectedSessionSettings: durableSessionSettingsExpectation,
                 deliveryIsAmbiguous: deliveryIsAmbiguous)
             if preserved {
+                self.sendRecoveryLedger.settle(attempt.runId, delivery: nil)
                 self.finishAcceptedComposerSend(attempt.draft)
                 applyTransportHealth(false)
                 let outcome = deliveryIsAmbiguous ? "delivery unconfirmed" : "queued after route change"
@@ -745,28 +760,16 @@ extension OpenClawChatViewModel {
             }
             guard isCurrentSession(attempt.draft.session) else { return }
         }
-        self.restoreDraftAfterLiveSendFailure(attempt)
         removePendingLocalUserEcho(for: attempt.runId)
         runMessageScopesByRunID.removeValue(forKey: attempt.runId)
-        errorText = error.localizedDescription
+        errorText = Self.sendRecoveryDelivery(for: error, beforeDispatch: !canPreserveInOutbox) == .unconfirmed
+            ? "전달 여부를 확인하지 못했어요. 대화 기록을 확인한 뒤 보관된 원문을 복원할 수 있어요."
+            : "메시지를 보내지 못했어요. 보관된 원문을 복원해 다시 보낼 수 있어요."
         clearPendingRun(attempt.runId, hapticEvent: .runFailed)
         logDiagnostic(
             "chat.ui send failed sessionKey=\(attempt.draft.session.key) "
                 + "localRunId=\(attempt.runId) error=\(GatewayErrorDiagnostics.category(for: error))")
         chatSendingLogger.error("chat transport send failed \(error.localizedDescription, privacy: .private)")
-    }
-
-    private func restoreDraftAfterLiveSendFailure(_ attempt: LiveSendAttempt) {
-        if input.isEmpty {
-            input = attempt.draft.input
-        }
-        if !attempt.encodedAttachments.isEmpty {
-            let currentAttachmentIDs = Set(attachments.map(\.id))
-            let removedDraftAttachments = attempt.draft.attachments.filter {
-                !currentAttachmentIDs.contains($0.id)
-            }
-            attachments.insert(contentsOf: removedDraftAttachments, at: 0)
-        }
     }
 
     private static func isSlashCommandDraft(_ text: String) -> Bool {

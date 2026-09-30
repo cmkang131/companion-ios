@@ -16,6 +16,10 @@ public struct OpenClawChatDraftSnapshot: Sendable {
     fileprivate let explicitSessionAgentID: String?
     fileprivate let sessionRoutingContract: String?
     fileprivate let draftsBySession: [String: String]
+    fileprivate let sendRecoveryLedger: ChatSendRecoveryLedger
+
+    /// Read-only recovery access while a replacement connection has no model.
+    @MainActor public var sendRecoveries: [OpenClawChatSendRecovery] { sendRecoveryLedger.recoveries() }
 }
 
 @MainActor
@@ -46,6 +50,8 @@ public final class OpenClawChatViewModel {
     /// The staging guard prevents session switches while attachments are being prepared.
     @ObservationIgnored
     var draftsBySession: [String: String] = [:]
+    @ObservationIgnored
+    var sendRecoveryLedger = ChatSendRecoveryLedger()
     @ObservationIgnored
     var composerRevisionsBySession: [String: UInt64] = [:]
     @ObservationIgnored
@@ -600,6 +606,7 @@ public final class OpenClawChatViewModel {
         self.attachmentOwnerIsActive = attachmentOwnerIsActive
 
         if let draftSnapshot {
+            self.sendRecoveryLedger = draftSnapshot.sendRecoveryLedger
             self.explicitSessionAgentID = draftSnapshot.explicitSessionAgentID
             self.scopedSessionTransport = draftSnapshot.explicitSessionAgentID.flatMap {
                 transport.scoped(toAgentID: $0)
@@ -651,12 +658,14 @@ public final class OpenClawChatViewModel {
             activeAgentID: self.activeAgentId ?? self.agentCatalog?.defaultId,
             explicitSessionAgentID: self.explicitSessionAgentID,
             sessionRoutingContract: self.agentCatalog?.sessionRoutingContract ?? self.sessionRoutingContract,
-            draftsBySession: drafts)
+            draftsBySession: drafts,
+            sendRecoveryLedger: self.sendRecoveryLedger)
     }
 
     /// Permanently retires a replaced presentation without aborting its gateway run.
     public func detachTransport() {
         guard !self.isTransportDetached else { return }
+        self.suspendSendRecoveriesForDetach()
         self.cancelHistoryInvalidationRefresh()
         self.retireQuestionAuthority()
         self.isTransportDetached = true

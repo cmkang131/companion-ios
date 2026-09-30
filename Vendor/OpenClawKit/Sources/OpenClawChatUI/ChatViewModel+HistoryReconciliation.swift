@@ -753,6 +753,7 @@ extension OpenClawChatViewModel {
             unmatchedProvisionalFinalIDs.isEmpty &&
             (!preservingOptimisticLocalMessages || !incoming.isEmpty)
         replaceMessages(nextMessages, narrationSettled: narrationSettled)
+        self.reconcileSendRecoveries(in: incoming, sessionKey: request.session.key)
         confirmOutboxCommands(in: incoming)
         self.prunePendingLocalUserEchoMessageIDs()
         self.clearProvisionalFinalMarkersAdoptedByHistory(incoming)
