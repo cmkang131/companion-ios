@@ -287,6 +287,7 @@ private struct ChatBubbleShape: InsettableShape {
 
 @MainActor
 struct ChatMessageBubble: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.openClawAssistantUsesReadingColumn) private var usesReadingColumn
     @Environment(\.openClawAssistantRunContent) private var isRunContent
     @Environment(\.openClawAssistantBubblesInCleanChrome) private var assistantBubblesInClean
@@ -516,7 +517,7 @@ extension ChatMessageBubble {
 
         if preview != nil {
             Button {
-                withAnimation(.easeOut(duration: 0.16)) {
+                withAnimation(self.reduceMotion ? nil : .easeOut(duration: 0.16)) {
                     self.onToggleUserMessageExpanded()
                 }
             } label: {
@@ -524,7 +525,7 @@ extension ChatMessageBubble {
                     .font(OpenClawChatTypography.caption)
                     .foregroundStyle(textColor.opacity(self.isDesktopLayout ? 1 : 0.78))
                     .padding(.horizontal, 10)
-                    .frame(minHeight: 30)
+                    .frame(minHeight: 44)
                     .background(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .fill(Color.white.opacity(self.isDesktopLayout ? 0.04 : 0.14)))

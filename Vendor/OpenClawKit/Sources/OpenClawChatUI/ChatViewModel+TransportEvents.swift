@@ -570,6 +570,15 @@ extension OpenClawChatViewModel {
         }
 
         guard isTerminal, let terminalRunID else { return }
+        // A visible final assistant response is the sole completion signal for
+        // Companion's brief acknowledgement. This does not assert that an
+        // external action succeeded. Abort/error/idle/history never celebrate.
+        if chat.state == "final",
+           !(OpenClawChatEventText.assistantText(from: chat) ?? "")
+               .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        {
+            self.companionRunCompletionRevision &+= 1
+        }
         if chat.state == "error" {
             self.errorText = chat.errorMessage ?? "Chat failed"
         }

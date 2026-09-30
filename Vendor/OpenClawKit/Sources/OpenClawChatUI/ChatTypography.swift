@@ -48,9 +48,7 @@ enum OpenClawChatTypography {
 
     #if os(iOS)
     static var bodyUIFont: UIFont {
-        let base = UIFont(name: self.bodyPostScriptName, size: self.bodySize) ??
-            UIFont.systemFont(ofSize: self.bodySize)
-        return UIFontMetrics(forTextStyle: .body).scaledFont(for: base)
+        UIFont.preferredFont(forTextStyle: .body)
     }
     #endif
 
@@ -80,7 +78,7 @@ enum OpenClawChatTypography {
 
     static func body(size: CGFloat, weight: Font.Weight, relativeTo textStyle: Font.TextStyle) -> Font {
         #if os(iOS)
-        Font.custom(self.bodyPostScriptName, size: size, relativeTo: textStyle).weight(weight)
+        Font.system(textStyle, design: .default).weight(weight)
         #elseif os(macOS)
         Font.custom(self.macSystemFontName(size: size), size: size, relativeTo: textStyle).weight(weight)
         #else
@@ -90,7 +88,7 @@ enum OpenClawChatTypography {
 
     static func display(size: CGFloat, weight: Font.Weight, relativeTo textStyle: Font.TextStyle) -> Font {
         #if os(iOS)
-        Font.custom(self.displayPostScriptName, size: size, relativeTo: textStyle).weight(weight)
+        Font.system(textStyle, design: .default).weight(weight)
         #elseif os(macOS)
         Font.custom(self.macSystemFontName(size: size), size: size, relativeTo: textStyle).weight(weight)
         #else

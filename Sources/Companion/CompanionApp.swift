@@ -11,6 +11,9 @@ struct CompanionApp: App {
 struct CompanionHome: View {
     @State private var connection = ConnectionStore()
     @State private var sheet: Sheet?
+    @State private var responseArrived = false
+    @State private var acknowledgementTask: Task<Void, Never>?
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.scenePhase) private var scenePhase
     private enum Sheet: String, Identifiable { case connection, history; var id: String { rawValue } }
 
@@ -21,7 +24,7 @@ struct CompanionHome: View {
                     OpenClawChatView(viewModel: model, drawsBackground: false,
                         showsSessionSwitcher: false,
                         userAccent: Color(red: 0.82, green: 0.91, blue: 0.98),
-                        showsAssistantTrace: false, assistantName: "companion",
+                        showsAssistantTrace: false, assistantName: "dot",
                         showsAssistantAvatars: false, composerChrome: .clean,
                         isComposerEnabled: connection.canSend,
                         isAttachmentInputEnabled: false,
@@ -32,7 +35,7 @@ struct CompanionHome: View {
                     welcome
                 }
             }
-            .background(Color.white)
+            .background(Color(white: 0.985))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -42,10 +45,10 @@ struct CompanionHome: View {
                 ToolbarItem(placement: .principal) {
                     HStack(spacing: 7) {
                         if connection.model != nil {
-                            CompanionCharacterView(mood: connection.canSend && (connection.model?.pendingRunCount ?? 0) > 0 ? .thinking : .attentive,
+                            CompanionCharacterView(mood: characterMood,
                                 paused: sheet != nil || !connection.canSend).frame(width: 28, height: 28)
                         }
-                        Text("companion").font(.headline.weight(.medium))
+                        Text("dot").font(.headline.weight(.medium))
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -54,11 +57,13 @@ struct CompanionHome: View {
                 }
             }
             .safeAreaInset(edge: .top, spacing: 0) {
-                if connection.model != nil && !connection.canSend {
+                if connection.model != nil {
                     Button { sheet = .connection } label: {
-                        Text(connection.status).font(.footnote).foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity).padding(.vertical, 10)
-                    }.buttonStyle(.plain)
+                        Text(activityStatus).font(.footnote).foregroundStyle(.secondary)
+                            .padding(.horizontal, 15).padding(.vertical, 7)
+                            .background(Color(white: reduceTransparency ? 0.94 : 0.965), in: Capsule())
+                            .frame(minHeight: 44)
+                    }.buttonStyle(.plain).accessibilityHint("서버 연결 설정 열기")
                 }
             }
             .sheet(item: $sheet) { selection in
@@ -70,6 +75,18 @@ struct CompanionHome: View {
         }
         .tint(.primary)
         .onChange(of: scenePhase) { _, value in if value == .active { connection.foreground() } }
+        .onChange(of: connection.canSend) { _, value in if !value { clearAcknowledgement() } }
+        .onChange(of: connection.model?.sessionKey) { _, _ in clearAcknowledgement() }
+        .onChange(of: connection.model?.companionRunCompletionRevision ?? 0) { oldValue, newValue in
+            guard newValue > oldValue, connection.canSend else { return }
+            clearAcknowledgement()
+            responseArrived = true
+            acknowledgementTask = Task { @MainActor in
+                do { try await Task.sleep(for: .seconds(2.4)) } catch { return }
+                responseArrived = false
+            }
+        }
+        .onDisappear { clearAcknowledgement() }
         .task {
             #if DEBUG
             let arguments = ProcessInfo.processInfo.arguments
@@ -79,14 +96,31 @@ struct CompanionHome: View {
         }
     }
 
+    private var isResponding: Bool { connection.canSend && connection.model?.companionHasActiveResponse == true }
+    private var characterMood: OpenClawMascotMood {
+        guard connection.canSend else { return .attentive }
+        return isResponding ? .thinking : responseArrived ? .happy : .attentive
+    }
+    private var activityStatus: String {
+        guard connection.canSend else { return connection.status }
+        return isResponding ? "응답 작성 중" : responseArrived ? "응답 도착" : "대화할 수 있어요"
+    }
+    private func clearAcknowledgement() {
+        acknowledgementTask?.cancel()
+        acknowledgementTask = nil
+        responseArrived = false
+    }
+
     private var welcome: some View {
         GeometryReader { viewport in
         ScrollView {
         VStack(spacing: 0) {
             Spacer(minLength: 24)
-            CompanionCharacterView(mood: connection.phase == .connecting ? .curious : .attentive,
-                paused: sheet != nil).frame(width: 112, height: 112)
-                .padding(.bottom, 22)
+            VStack(spacing: -14) {
+                CompanionCharacterView(mood: connection.phase == .connecting ? .curious : .attentive,
+                    paused: sheet != nil).frame(width: 156, height: 156)
+                CompanionNamePill()
+            }.padding(.bottom, 28)
             Text("여기 있어요").font(.title2.weight(.semibold))
                 .padding(.bottom, 10)
             Text("당신의 OpenClaw에 연결하면\n이곳에서 이야기를 이어갈 수 있어요.")
@@ -148,9 +182,9 @@ struct ConnectionSettings: View {
                 Section {
                     Toggle("이 기기에 토큰 저장", isOn: $connection.rememberToken)
                         .disabled(connection.phase == .connecting || connection.phase == .connected)
-                    Button("저장된 토큰 사용") { connection.useSavedToken() }
+                    Button("저장된 토큰 사용") { connection.useSavedToken(); validationAttempt += 1 }
                         .disabled(connection.phase == .connecting || connection.phase == .connected)
-                    Button("저장된 토큰 삭제", role: .destructive) { connection.forgetToken() }
+                    Button("저장된 토큰 삭제", role: .destructive) { connection.forgetToken(); validationAttempt += 1 }
                 } footer: {
                     Text("선택하면 연결 성공 후 이 기기의 키체인에만 저장해요. 첫 연결 시 기기 인증 키가 생성되며, 서버에서 기기 승인이 필요할 수 있어요.")
                 }
@@ -159,7 +193,7 @@ struct ConnectionSettings: View {
                         Button("연결 해제", role: .destructive) { Task { await connection.disconnect() } }
                     } else if connection.phase == .connecting {
                         HStack { ProgressView(); Text("서버에 연결하는 중이에요") }
-                        Button("연결 취소", role: .cancel) { Task { await connection.disconnect() } }
+                        Button("연결 취소", role: .cancel) { Task { await connection.cancelConnection() } }
                     } else {
                         Button(connection.phase == .failed ? "다시 연결" : "연결") {
                             focus = nil

@@ -92,6 +92,7 @@ struct OpenClawChatComposer: View {
     @Environment(\.openClawChatDesktopLayout) private var isDesktopLayout
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.colorSchemeContrast) private var colorSchemeContrast
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Bindable var viewModel: OpenClawChatViewModel
     let style: OpenClawChatView.Style
     let showsSessionSwitcher: Bool
@@ -847,6 +848,7 @@ struct OpenClawChatComposer: View {
             #if !os(macOS)
             if self.viewModel.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 Text(self.placeholderText)
+                    .accessibilityHidden(true)
                     .font(OpenClawChatTypography.body)
                     .foregroundStyle(.tertiary)
                     .padding(.horizontal, self.cleanFieldTextInset)
@@ -1124,7 +1126,7 @@ extension OpenClawChatComposer {
     }
 
     private func setSlashPanelPresented(_ presented: Bool) {
-        withAnimation(.easeInOut(duration: 0.18)) {
+        withAnimation(self.reduceMotion ? nil : .easeInOut(duration: 0.18)) {
             self.isSlashPopoverPresented = presented
         }
         if presented {
