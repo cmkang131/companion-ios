@@ -16,6 +16,7 @@ struct PreviewTransport: OpenClawChatTransport {
         return try JSONDecoder().decode(OpenClawChatSessionsListResponse.self, from: Data(json.utf8))
     }
     func requestHealth(timeoutMs: Int) async throws -> Bool { false }
+    func listModels(agentID: String?) async throws -> [OpenClawChatModelChoice] { [] }
     func events() -> AsyncStream<OpenClawChatTransportEvent> { AsyncStream { $0.finish() } }
     func setActiveSessionKey(_ sessionKey: String) async throws {}
 }

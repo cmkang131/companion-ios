@@ -147,7 +147,7 @@ struct OpenClawChatComposer: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            if self.usesDesktopModelMenu,
+            if self.isComposerEnabled, self.usesDesktopModelMenu,
                let message = self.viewModel.composerModelAvailabilityMessage
             {
                 HStack(alignment: .center, spacing: 10) {
@@ -184,7 +184,7 @@ struct OpenClawChatComposer: View {
                 .accessibilityIdentifier("chat-composer-model-sign-in-notice")
             }
             self.lifecycleComposer
-            if self.viewModel.modelCatalogMessage != nil || !self.usesDesktopModelMenu {
+            if self.isComposerEnabled && (self.viewModel.modelCatalogMessage != nil || !self.usesDesktopModelMenu) {
                 HStack {
                     if let message = self.viewModel.modelCatalogMessage {
                         Text(message).font(OpenClawChatTypography.caption)
@@ -235,7 +235,7 @@ struct OpenClawChatComposer: View {
     }
 
     private func performModelSignInAction(_ action: ModelSignInAction) {
-        guard self.modelSignInAction == nil else { return }
+        guard self.isComposerEnabled, self.modelSignInAction == nil else { return }
         let owner = self.presentationOwner
         let request = ModelSignInRequest(action: action)
         self.modelSignInRequest = request
