@@ -17,3 +17,16 @@ xcuserdata/
 !core-test-final.log
 !bundle-validation.log
 Research/Upstream/
+
+# Retain intermediate recovery diagnostics locally; deliver only the attributed set.
+/Validation/*
+!/Validation/RECOVERY.md
+!/Validation/final-72cc293/
+!/Validation/final-72cc293/logs/*.log
+!/Validation/final-source-build.log
+!/Validation/tests-72cc293.log
+!/Validation/privacy-72cc293.log
+!/Validation/cancel-wiring-72cc293.log
+!/Validation/ui-preview-777d4e5.log
+!/Validation/recovery-unit-tests.log
+!/Validation/companion-launch-sample.txt

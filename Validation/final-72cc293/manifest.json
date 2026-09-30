@@ -1,0 +1,191 @@
+{
+  "source_commit": "72cc293b24052518cfe03ae87f4a9a801d3e33ac",
+  "simulator_id": "022EC407-377F-4563-A350-CD12D1BA7795",
+  "runtime": "iOS 27.0",
+  "device": "iPhone 17e",
+  "xcode": "27",
+  "configuration": "Debug",
+  "build_action": "build",
+  "build_settings": {
+    "ENABLE_DEBUG_DYLIB": "NO",
+    "CODE_SIGNING_ALLOWED": "NO",
+    "ARCHS": "arm64",
+    "ONLY_ACTIVE_ARCH": "YES",
+    "jobs": 2
+  },
+  "executable_sha256": "9918f66af8219692e66ab3357060d1df65894649304968fafafe58e9e77cd996",
+  "captures": [
+    {
+      "file": "welcome.png",
+      "flags": [
+        "--ui-testing"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T18:19:54.270039+00:00",
+      "sha256": "3a340889c8abfd2a21230a310f03b0e7b6f364b8aea10e0848c38bbb1f7a8011",
+      "size_bytes": 306985
+    },
+    {
+      "file": "preview.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T18:20:10.236204+00:00",
+      "sha256": "8f621f7efcd7ce13018df502ba9825b5a4d50be5ab46ff93c48d0b3ce71d8be0",
+      "size_bytes": 314814
+    },
+    {
+      "file": "history.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-history"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T18:20:26.070358+00:00",
+      "sha256": "1be5c62c6549a546a4fb24b282a2117a559a265d1df6de8bdd914885166fc3b9",
+      "size_bytes": 117853
+    },
+    {
+      "file": "ax5.png",
+      "flags": [
+        "--ui-testing"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T18:22:29.337912+00:00",
+      "sha256": "6708d149538acbe952e83059b39ad02bc0d4d1de4efb0daa25202e4c66b6b919",
+      "size_bytes": 298100
+    },
+    {
+      "file": "static.png",
+      "flags": [
+        "--ui-motion-gallery",
+        "--ui-accessibility-static"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T18:22:46.290579+00:00",
+      "sha256": "937d5a06418a2d21a01816ec8cc306e90e7b1bca52e2f21423e699a09b682fe7",
+      "size_bytes": 352265
+    },
+    {
+      "file": "keyboard.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-settings",
+        "--ui-keyboard"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T18:23:02.399937+00:00",
+      "sha256": "725be134f1998d35cf883786fcfebedc669be83cf831ec8cf6077bbe74ebcfd4",
+      "size_bytes": 321229
+    },
+    {
+      "file": "error.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-settings",
+        "--ui-invalid-address"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T18:23:45.940998+00:00",
+      "sha256": "aa1dc9292bc082848d82f48d134aa00d35e3793ec99a809ba9e1c18cf4d5db96",
+      "size_bytes": 342231
+    },
+    {
+      "file": "Companion-72cc293-motion-fixture.mp4",
+      "flags": [
+        "--ui-motion-gallery"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T18:24:09.408020+00:00",
+      "sha256": "7275643bfe0f69b159862f9a3a03f53ed4b6edb8a87b157cd6f1723d799252c0",
+      "media": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1170,
+            "height": 2532,
+            "r_frame_rate": "30/1"
+          }
+        ],
+        "format": {
+          "duration": "10.820000",
+          "size": "2042904"
+        }
+      },
+      "size_bytes": 2042904
+    }
+  ],
+  "limits": [
+    "No live gateway or credentials",
+    "Launch fixtures are not tap-driven interaction tests",
+    "Static drawing fixture does not set OS accessibility preferences",
+    "30 fps video container is not a frame-rate performance measurement"
+  ],
+  "contact_sheet": {
+    "file": "Companion-72cc293-actual-renders.png",
+    "sha256": "f280506f91a15b3451b488bb6ef7724d43ede45cb2adc1ae771831bf02022ea5",
+    "sources": [
+      "welcome.png",
+      "preview.png",
+      "history.png",
+      "ax5.png",
+      "error.png",
+      "static.png"
+    ],
+    "operation": "uncropped scaled arrangement of actual screenshots"
+  },
+  "review": {
+    "inspected": "All screenshots; motion frames at 2 and 7 seconds",
+    "observed": "Correct blue silhouette, black eyes, bump, glass pill; disconnected labels; fixed AX5 CTA; keyboard; static opaque pill; gallery blink and microposes",
+    "not_proven": "Live task transitions, fps performance, VoiceOver, real OS Reduce Motion/Transparency, tap-driven navigation"
+  },
+  "checks": [
+    {
+      "file": "logs/final-source-build.log",
+      "source_commit": "72cc293b24052518cfe03ae87f4a9a801d3e33ac",
+      "result": "PASS",
+      "scope": "iOS Simulator normal build exit 0",
+      "sha256": "1ffa64df5c18d0bea84256d43dc4d31b77236d5390f660f58657b2dc8a5ba834"
+    },
+    {
+      "file": "logs/tests-72cc293.log",
+      "source_commit": "72cc293b24052518cfe03ae87f4a9a801d3e33ac",
+      "result": "PASS",
+      "scope": "macOS production model 25 integration + 5 core",
+      "sha256": "3972ff9ddb7735fbc73c3c18f23c7afda08ee0811bc3dd7df04ce1c482760ae4"
+    },
+    {
+      "file": "logs/privacy-72cc293.log",
+      "source_commit": "72cc293b24052518cfe03ae87f4a9a801d3e33ac",
+      "result": "PASS",
+      "scope": "git archive source guard 175 files; 8 helper cases / 7 categories",
+      "sha256": "490aa55c845e7f4bfc617f638a6be4afec8d02c138def27f5fefee0c8e89b541"
+    },
+    {
+      "file": "logs/cancel-wiring-72cc293.log",
+      "source_commit": "72cc293b24052518cfe03ae87f4a9a801d3e33ac",
+      "result": "PASS",
+      "scope": "static source cancel wiring",
+      "sha256": "6fc683de47a78b8f1a145456ed3d0e7dfa03b6c1199a9f469ab2252779b33b6c"
+    }
+  ],
+  "installed_executable_verification": {
+    "actual_sha256": "9918f66af8219692e66ab3357060d1df65894649304968fafafe58e9e77cd996",
+    "matches_built_executable": true,
+    "method": "read installed app container executable via simctl get_app_container"
+  },
+  "library": [
+    {
+      "file": "Companion-72cc293-actual-renders.png",
+      "library_file_id": "libfile_681f3de814b481918bab18effcb5b272"
+    },
+    {
+      "file": "Companion-72cc293-motion-fixture.mp4",
+      "library_file_id": "libfile_4886ebe42a88819191224a7ec1961e2e"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project Companion.xcodeproj -scheme Companion -configuration Debug -destination "platform=iOS Simulator,id=022EC407-377F-4563-A350-CD12D1BA7795" -derivedDataPath .build-xcode -clonedSourcePackagesDirPath .build-xcode/SourcePackages -jobs 2 -parallel-testing-enabled NO "-only-testing:CompanionCoreTests" "-only-testing:CompanionIntegrationTests" -resultBundlePath .build-xcode/recovery-unit-tests.xcresult CODE_SIGNING_ALLOWED=NO test-without-building
+
+Build settings from command line:
+    CODE_SIGNING_ALLOWED = NO
+
+Resolve Package Graph
+
+
+Resolved source packages:
+  GRDB: https://github.com/groue/GRDB.swift.git @ 7.11.1
+  SwiftMath: https://github.com/mgriebling/SwiftMath @ 1.7.3
+  OpenClawKit: /Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/Vendor/OpenClawKit
+  cmark-gfm: https://github.com/swiftlang/swift-cmark.git @ 0.9.0
+  swift-markdown: https://github.com/swiftlang/swift-markdown @ 0.8.0
+
+Writing result bundle at path:
+	/Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-xcode/recovery-unit-tests.xcresult
+
+** BUILD INTERRUPTED **

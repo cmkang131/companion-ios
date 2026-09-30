@@ -1,0 +1,102 @@
+Building for debugging...
+[Computing dependencies]
+[Provisioning 1 / 29]
+[2 / 6] OpenClawChatUI
+[3 / 7] OpenClawChatUI
+[7 / 11] OpenClawChatUI
+[8 / 11] OpenClawChatUI
+[9 / 12] OpenClawChatUI
+[10 / 11] CompanionIntegrationTests-product
+[12 / 12] CompanionIntegrationTests-product
+Build complete! (8.90초)
+Test Suite 'All tests' started at 2026-10-01 03:20:16.652.
+Test Suite 'All tests' passed at 2026-10-01 03:20:16.654.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.002) seconds
+Test Suite 'All tests' started at 2026-10-01 03:20:16.742.
+Test Suite 'All tests' passed at 2026-10-01 03:20:16.743.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite CharacterStateTests started.
+◇ Suite ConnectionTests started.
+◇ Test onlyOwnedFinalOutputAcknowledgesOnce() started.
+◇ Test missingCorrelationNeverAcknowledges(missingRun:missingSession:) started.
+◇ Test retiredPhysicalRouteCannotPublishFallbackModelAfterMainKeyAwait() started.
+◇ Test foreignSessionOrLateFinalNeverAcknowledges() started.
+◇ Test nonFinalEventsNeverAcknowledgeCompletion(state:) started.
+◇ Test previewHistoryIsReadableWithoutDispatchCapability() started.
+◇ Test tokenRevocationWinsOverDelayedSuccessEvenAfterReoptIn(deleteFails:) started.
+◇ Test repeatedDisconnectClearsSensitiveInput() started.
+◇ Test emptyFinalAndDetachedTransportNeverAcknowledge() started.
+◇ Test invalidEndpointNeverStartsConnection() started.
+◇ Test emptyTokenNeverStartsConnection() started.
+◇ Test credentialActionsValidateEndpointBeforeStorageAccess() started.
+◇ Test explicitDisconnectErasesAllDraftsAndInputButKeepsSavedToken() started.
+◇ Test everySessionDraftSurvivesFailedRetryToNormalizedEndpoint() started.
+◇ Test canonicalSessionCannotBeReroutedBySelectedAgent() started.
+◇ Test structuredConnectionErrorsExplainTheRecovery(detail:expected:) started.
+◇ Test olderHistoryCannotClearLatestSpinnerAndCancellationCannotPublish() started.
+◇ Test disconnectedTransportRefusesDispatch() started.
+◇ Test olderHistoryCompletionCannotReplaceLatestSuccess(oldFails:) started.
+◇ Test anotherEndpointNeverReceivesRetainedDrafts() started.
+◇ Test cancellingBeforeAttemptStartsStillPreservesRetryInput() started.
+◇ Test cancelledMainKeyAwaitCannotPublishIntoReplacement() started.
+◇ Test disconnectInvalidatesHistoryAndBlocksSessionChanges() started.
+◇ Test cancelledRetryKeepsEveryDraftAndTokenAndFencesLateSuccess() started.
+◇ Test emptiedCurrentDraftDoesNotResurrectOlderSavedText() started.
+◇ Test case passing 1 argument state → "error" to nonFinalEventsNeverAcknowledgeCompletion(state:) started.
+◇ Test case passing 1 argument deleteFails → true to tokenRevocationWinsOverDelayedSuccessEvenAfterReoptIn(deleteFails:) started.
+◇ Test case passing 1 argument state → "aborted" to nonFinalEventsNeverAcknowledgeCompletion(state:) started.
+◇ Test case passing 2 arguments missingRun → false, missingSession → true to missingCorrelationNeverAcknowledges(missingRun:missingSession:) started.
+◇ Test case passing 1 argument state → "delta" to nonFinalEventsNeverAcknowledgeCompletion(state:) started.
+◇ Test case passing 2 arguments missingRun → true, missingSession → true to missingCorrelationNeverAcknowledges(missingRun:missingSession:) started.
+◇ Test case passing 1 argument deleteFails → false to tokenRevocationWinsOverDelayedSuccessEvenAfterReoptIn(deleteFails:) started.
+◇ Test case passing 2 arguments missingRun → true, missingSession → false to missingCorrelationNeverAcknowledges(missingRun:missingSession:) started.
+◇ Test case passing 2 arguments detail → "PAIRING_REQUIRED", expected → "승인" to structuredConnectionErrorsExplainTheRecovery(detail:expected:) started.
+◇ Test case passing 2 arguments detail → "AUTH_TOKEN_MISMATCH", expected → "토큰" to structuredConnectionErrorsExplainTheRecovery(detail:expected:) started.
+◇ Test case passing 1 argument oldFails → false to olderHistoryCompletionCannotReplaceLatestSuccess(oldFails:) started.
+◇ Test case passing 2 arguments detail → "PROTOCOL_MISMATCH", expected → "규격" to structuredConnectionErrorsExplainTheRecovery(detail:expected:) started.
+◇ Test case passing 1 argument oldFails → true to olderHistoryCompletionCannotReplaceLatestSuccess(oldFails:) started.
+✔ Test repeatedDisconnectClearsSensitiveInput() passed after 0.004 seconds.
+✔ Test disconnectedTransportRefusesDispatch() passed after 0.011 seconds.
+✔ Test previewHistoryIsReadableWithoutDispatchCapability() passed after 0.011 seconds.
+✔ Test onlyOwnedFinalOutputAcknowledgesOnce() passed after 0.012 seconds.
+✔ Test foreignSessionOrLateFinalNeverAcknowledges() passed after 0.012 seconds.
+✔ Test emptyTokenNeverStartsConnection() passed after 0.012 seconds.
+✔ Test nonFinalEventsNeverAcknowledgeCompletion(state:) with 3 test cases passed after 0.013 seconds.
+✔ Test missingCorrelationNeverAcknowledges(missingRun:missingSession:) with 3 test cases passed after 0.013 seconds.
+✔ Test credentialActionsValidateEndpointBeforeStorageAccess() passed after 0.013 seconds.
+✔ Test emptyFinalAndDetachedTransportNeverAcknowledge() passed after 0.013 seconds.
+✔ Test canonicalSessionCannotBeReroutedBySelectedAgent() passed after 0.013 seconds.
+✔ Test invalidEndpointNeverStartsConnection() passed after 0.013 seconds.
+✔ Test emptiedCurrentDraftDoesNotResurrectOlderSavedText() passed after 0.013 seconds.
+✔ Test structuredConnectionErrorsExplainTheRecovery(detail:expected:) with 3 test cases passed after 0.013 seconds.
+✔ Suite CharacterStateTests passed after 0.013 seconds.
+✔ Test tokenRevocationWinsOverDelayedSuccessEvenAfterReoptIn(deleteFails:) with 2 test cases passed after 0.013 seconds.
+✔ Test retiredPhysicalRouteCannotPublishFallbackModelAfterMainKeyAwait() passed after 0.014 seconds.
+✔ Test cancellingBeforeAttemptStartsStillPreservesRetryInput() passed after 0.014 seconds.
+✔ Test explicitDisconnectErasesAllDraftsAndInputButKeepsSavedToken() passed after 0.016 seconds.
+✔ Test disconnectInvalidatesHistoryAndBlocksSessionChanges() passed after 0.016 seconds.
+✔ Test cancelledMainKeyAwaitCannotPublishIntoReplacement() passed after 0.016 seconds.
+✔ Test everySessionDraftSurvivesFailedRetryToNormalizedEndpoint() passed after 0.016 seconds.
+✔ Test anotherEndpointNeverReceivesRetainedDrafts() passed after 0.016 seconds.
+✔ Test olderHistoryCannotClearLatestSpinnerAndCancellationCannotPublish() passed after 0.017 seconds.
+✔ Test olderHistoryCompletionCannotReplaceLatestSuccess(oldFails:) with 2 test cases passed after 0.017 seconds.
+✔ Test cancelledRetryKeepsEveryDraftAndTokenAndFencesLateSuccess() passed after 0.017 seconds.
+✔ Suite ConnectionTests passed after 0.017 seconds.
+✔ Test run with 25 tests in 2 suites passed after 0.017 seconds.
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Test secureEndpoint() started.
+◇ Test rejectsInvalidPortsAndWhitespace() started.
+◇ Test preservesMessageIdentity() started.
+◇ Test endpointPreservesProxyPathAndNormalizesScheme() started.
+◇ Test rejectsUnsafeInputs() started.
+✔ Test secureEndpoint() passed after 0.001 seconds.
+✔ Test preservesMessageIdentity() passed after 0.001 seconds.
+✔ Test endpointPreservesProxyPathAndNormalizesScheme() passed after 0.001 seconds.
+✔ Test rejectsInvalidPortsAndWhitespace() passed after 0.001 seconds.
+✔ Test rejectsUnsafeInputs() passed after 0.001 seconds.
+✔ Test run with 5 tests in 0 suites passed after 0.001 seconds.
