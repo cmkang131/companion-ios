@@ -279,7 +279,7 @@ struct RunControlTests {
         await request.value
         #expect(model.companionRunActivity.stopState == .unconfirmed)
         #expect(model.pendingRunCount == 1)
-        model.handleTransportEvent(.health(false))
+        model.handleTransportEvent(.health(ok: false))
         #expect(!model.companionRunActivity.canStop)
         #expect(model.requestStopCurrentRuns() == nil)
         #expect(await transport.stopCount == 1)
