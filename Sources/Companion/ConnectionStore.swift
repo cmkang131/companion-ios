@@ -133,19 +133,32 @@ final class ConnectionStore {
     #if DEBUG
     /// Read-only local fixture. Never grants production dispatch capability.
     func usePreview() {
+        model?.detachTransport()
         isPreview = true
         if ProcessInfo.processInfo.arguments.contains("--ui-activity") {
             let preview = ActivityPreviewTransport()
             transport = preview
-            model = OpenClawChatViewModel(sessionKey: ActivityPreviewTransport.sessionKey, transport: preview)
+            model = makeChatModel(sessionKey: ActivityPreviewTransport.sessionKey, transport: preview)
             model?.input = "작성 중인 새 메시지는 유지돼요."
             return
         }
         let preview = PreviewTransport()
         transport = preview
-        model = OpenClawChatViewModel(sessionKey: "preview", transport: preview)
+        model = makeChatModel(sessionKey: "preview", transport: preview)
     }
     #endif
+
+    /// Every presentation, including Debug preview, receives the same live host
+    /// policy. No SwiftUI modifier or sheet lifetime grants dispatch authority.
+    private func makeChatModel(sessionKey: String, transport: any OpenClawChatTransport,
+                               draftSnapshot: OpenClawChatDraftSnapshot? = nil) -> OpenClawChatViewModel {
+        let owner = generation
+        return OpenClawChatViewModel(sessionKey: sessionKey, transport: transport,
+            draftSnapshot: draftSnapshot, questionActionsAllowed: { [weak self] in
+                guard let self else { return false }
+                return self.canSend && self.generation == owner
+            })
+    }
 
     @discardableResult
     func connect() -> Task<Void, Never>? {
@@ -218,7 +231,7 @@ final class ConnectionStore {
         if model == nil {
             let savedDrafts = retryDrafts.flatMap { $0.endpoint == activeEndpoint ? $0.snapshot : nil }
             self.transport = route.transport
-            model = OpenClawChatViewModel(sessionKey: mainKey ?? "agent:main:main",
+            model = makeChatModel(sessionKey: mainKey ?? "agent:main:main",
                 transport: route.transport, draftSnapshot: savedDrafts)
             retryDrafts = nil
         } else { model?.resumeFromForeground() }

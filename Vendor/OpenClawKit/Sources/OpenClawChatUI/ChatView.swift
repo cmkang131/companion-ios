@@ -612,7 +612,7 @@ extension OpenClawChatView {
                 if group.includesLive { self.liveAssistantContent }
             }
         }
-        OpenClawQuestionCards(viewModel: self.viewModel)
+        OpenClawConversationQuestionsView(viewModel: self.viewModel, scope: .all)
     }
 
     @ViewBuilder

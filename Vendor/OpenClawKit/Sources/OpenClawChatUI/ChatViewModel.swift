@@ -153,6 +153,9 @@ public final class OpenClawChatViewModel {
     public internal(set) var questionCards: [OpenClawQuestionCardModel] = []
     var questionAttentionOwnerID = UUID()
     public internal(set) var isQuestionAuthorityRetired = false
+    /// Host policy is read at action time, including after an awaited route acquisition.
+    /// Preview transports can report synthetic health without granting mutation access.
+    @ObservationIgnored let questionActionsAllowed: @MainActor () -> Bool
     var questionRefreshGeneration: UInt64 = 0
     var questionStateRevision: UInt64 = 0
     var questionExpiryTasks: [String: Task<Void, Never>] = [:]
@@ -570,6 +573,7 @@ public final class OpenClawChatViewModel {
         activeAgentId: String? = nil,
         sessionRoutingContract: String? = nil,
         attachmentOwnerIsActive: @escaping @MainActor () -> Bool = { false },
+        questionActionsAllowed: @escaping @MainActor () -> Bool = { true },
         haptics: OpenClawChatHaptics = OpenClawChatHaptics(),
         transcriptCache: (any OpenClawChatTranscriptCache)? = nil,
         outbox: (any OpenClawChatCommandOutbox)? = nil,
@@ -627,6 +631,7 @@ public final class OpenClawChatViewModel {
         self.onVerbosePreferenceChanged = onVerbosePreferenceChanged
         self.diagnosticsLog = diagnosticsLog
         self.attachmentOwnerIsActive = attachmentOwnerIsActive
+        self.questionActionsAllowed = questionActionsAllowed
 
         if let draftSnapshot {
             self.sendRecoveryLedger = draftSnapshot.sendRecoveryLedger

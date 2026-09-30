@@ -1,6 +1,7 @@
 import Foundation
 import Testing
-import OpenClawChatUI
+@testable import OpenClawChatUI
+import OpenClawProtocol
 import OpenClawKit
 @testable import Companion
 
@@ -19,6 +20,59 @@ struct ConnectionTests {
         #expect(store.phase == .disconnected)
         #expect(!store.canSend)
         await store.disconnect()
+    }
+
+    @Test(arguments: [OpenClawConversationQuestionScope.all, .unscoped], [false, true])
+    func previewQuestionCallbacksStayReadOnlyDespiteSyntheticHealth(scope: OpenClawConversationQuestionScope,
+                                                                  skip: Bool) async throws {
+        let store = ConnectionStore(enablesLaunchFixtures: false)
+        store.usePreview()
+        defer { store.model?.detachTransport() }
+        let model = try #require(store.model)
+        // Preview must remain read-only even with activity's synthetic health,
+        // or a mistakenly connected phase. This exercises the real store hook.
+        model.healthOK = true
+        store.phase = .connected
+        let card = try self.addQuestion(to: model, sessionKey: nil)
+        #expect(!store.canSend && !model.canPerformQuestionActions)
+        let callbacks = OpenClawConversationQuestionsView(viewModel: model, scope: scope)
+            .cards(for: .unscoped).actions
+        if skip { await callbacks.skip(card) } else { await callbacks.submit(card) }
+        #expect(card.status() == .pending)
+        #expect(card.otherText["answer"] == "retained question draft")
+        #expect(card.errorText == nil)
+    }
+
+    @Test(arguments: [OpenClawConversationQuestionScope.all, .currentConversation], [false, true])
+    func disconnectedStoreFencesBothCallbacksBeforeTransportHealthUpdates(scope: OpenClawConversationQuestionScope,
+                                                                       skip: Bool) async throws {
+        let harness = ConnectionHarness(sessionCount: 1)
+        let store = harness.makeStore()
+        try await harness.connect(store, using: 0)
+        let model = try #require(store.model)
+        model.healthOK = true
+        let card = try self.addQuestion(to: model, sessionKey: model.sessionKey)
+        let callbacks = OpenClawConversationQuestionsView(viewModel: model, scope: scope)
+            .cards(for: .currentConversation).actions
+        #expect(model.canPerformQuestionActions)
+        await harness.sessions[0].dropConnection()
+        #expect(model.healthOK) // Store callback arrives before the health event.
+        #expect(!model.canPerformQuestionActions)
+        if skip { await callbacks.skip(card) } else { await callbacks.submit(card) }
+        #expect(await harness.sessions[0].transport.questionLeaseRequestCount == 0)
+        #expect(card.status() == .pending)
+        #expect(card.otherText["answer"] == "retained question draft")
+        #expect(card.errorText == nil)
+        await store.disconnect()
+    }
+
+    private func addQuestion(to model: OpenClawChatViewModel, sessionKey: String?) throws -> OpenClawQuestionCardModel {
+        model.upsertQuestion(QuestionRecord(id: "store-question", questions: [Question(questionid: "answer",
+            header: "Synthetic", question: "Read-only policy", options: [], isother: true)], agentid: "main",
+            sessionkey: sessionKey, createdatms: 1, expiresatms: 4_000_000_000_000, status: .pending))
+        let card = try #require(model.questionCards.first)
+        card.setOtherText(questionID: "answer", value: "retained question draft")
+        return card
     }
 
     @Test(arguments: [
@@ -495,6 +549,11 @@ private final class ConnectionHarness {
 }
 
 private actor ControlledHistoryTransport: OpenClawChatTransport {
+    private(set) var questionLeaseRequestCount = 0
+    func acquireQuestionMutationRouteLease() async -> OpenClawChatQuestionMutationRouteLease? {
+        questionLeaseRequestCount += 1
+        return nil
+    }
     private var pending: [Int: CheckedContinuation<OpenClawChatSessionsListResponse, any Error>] = [:]
     private var startWaiters: [Int: [CheckedContinuation<Void, Never>]] = [:]
     private(set) var requestCount = 0

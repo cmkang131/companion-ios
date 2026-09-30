@@ -9,6 +9,105 @@ import Testing
 /// These synthetic replies do not establish live question or approval support.
 @MainActor
 struct QuestionLifecycleTests {
+    /// These are the same presentation factories and action callbacks used by
+    /// ChatView and the activity sheet, not a synthetic copy of their guards.
+    @Test(arguments: [OpenClawConversationQuestionScope.all, .unscoped], [false, true])
+    func bothEntrypointCallbacksRefuseReadOnlyHostAndKeepAnswers(scope: OpenClawConversationQuestionScope,
+                                                               skip: Bool) async throws {
+        let fixture = try QuestionFixture(questionActionsAllowed: { false })
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion(sessionKey: nil, secret: true)
+        card.setOtherText(questionID: "answer", value: "synthetic-retained-answer")
+        let presentation = OpenClawConversationQuestionsView(viewModel: fixture.model, scope: scope)
+        #expect(presentation.presentedScopes == [.unscoped])
+        #expect(!fixture.model.canPerformQuestionActions)
+        let callbacks = presentation.cards(for: .unscoped).actions
+        if skip { await callbacks.skip(card) } else { await callbacks.submit(card) }
+        // Direct model callers also cannot bypass the shared production gate.
+        await fixture.model.submitQuestion(card)
+        await fixture.model.skipQuestion(card)
+        #expect(fixture.boundary.leaseRequestCount == 0)
+        #expect(fixture.boundary.mutations.isEmpty)
+        #expect(card.status() == .pending)
+        #expect(card.otherText["answer"] == "synthetic-retained-answer")
+        #expect(card.errorText == nil)
+    }
+
+    @Test(arguments: [OpenClawConversationQuestionScope.all, .currentConversation], [false, true])
+    func bothEntrypointCallbacksRefuseUnhealthyTransport(scope: OpenClawConversationQuestionScope,
+                                                       skip: Bool) async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion()
+        card.setOtherText(questionID: "answer", value: "retained")
+        fixture.model.healthOK = false
+        let callbacks = OpenClawConversationQuestionsView(viewModel: fixture.model, scope: scope)
+            .cards(for: .currentConversation).actions
+        if skip { await callbacks.skip(card) } else { await callbacks.submit(card) }
+        #expect(fixture.boundary.leaseRequestCount == 0)
+        #expect(card.status() == .pending)
+        #expect(card.otherText["answer"] == "retained")
+    }
+
+    @Test(arguments: [OpenClawConversationQuestionScope.all, .currentConversation], [false, true])
+    func bothEntrypointCallbacksStillDispatchWhenConnected(scope: OpenClawConversationQuestionScope,
+                                                         skip: Bool) async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion()
+        card.setOtherText(questionID: "answer", value: "Synthetic answer")
+        let callbacks = OpenClawConversationQuestionsView(viewModel: fixture.model, scope: scope)
+            .cards(for: .currentConversation).actions
+        let action = Task { if skip { await callbacks.skip(card) } else { await callbacks.submit(card) } }
+        defer { action.cancel() }
+        try await self.waitUntil { fixture.boundary.mutations.count == 1 }
+        fixture.boundary.finishMutation(0, response: QuestionFixture.confirmedResponse(skip: skip))
+        await action.value
+        #expect(fixture.boundary.leaseRequestCount == 1)
+        #expect(card.status() == (skip ? .cancelled : .answered))
+    }
+
+    @Test(arguments: [OpenClawConversationQuestionScope.all, .currentConversation], [false, true])
+    func permissionLossDuringRouteAcquisitionNeverDispatches(scope: OpenClawConversationQuestionScope,
+                                                            skip: Bool) async throws {
+        for loss in ["host", "health"] {
+            var allowed = true
+            let fixture = try QuestionFixture(questionActionsAllowed: { allowed })
+            defer { fixture.cleanup() }
+            let card = try fixture.addQuestion(secret: true)
+            card.setOtherText(questionID: "answer", value: "synthetic-retained-answer")
+            fixture.boundary.holdLeaseAcquisition = true
+            let callbacks = OpenClawConversationQuestionsView(viewModel: fixture.model, scope: scope)
+                .cards(for: .currentConversation).actions
+            let action = Task { if skip { await callbacks.skip(card) } else { await callbacks.submit(card) } }
+            defer { action.cancel() }
+            try await self.waitUntil { fixture.boundary.leaseRequestCount == 1 }
+            if loss == "host" { allowed = false } else { fixture.model.healthOK = false }
+            fixture.boundary.releaseLeaseAcquisition()
+            await action.value
+            #expect(fixture.boundary.mutations.isEmpty)
+            #expect(card.status() == .pending)
+            #expect(!card.isSubmitting && !card.isSkipping)
+            #expect(card.otherText["answer"] == "synthetic-retained-answer")
+            #expect(card.errorText?.contains("서버 연결") == true)
+        }
+    }
+
+    @Test(arguments: [OpenClawConversationQuestionScope.all, .currentConversation], [false, true])
+    func retainedCallbackCannotStartForeignSessionQuestion(scope: OpenClawConversationQuestionScope,
+                                                          skip: Bool) async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion(sessionKey: "agent:main:foreign")
+        card.setOtherText(questionID: "answer", value: "retained")
+        let presentation = OpenClawConversationQuestionsView(viewModel: fixture.model, scope: scope)
+        #expect(presentation.presentedScopes.isEmpty)
+        let callbacks = presentation.cards(for: .currentConversation).actions
+        if skip { await callbacks.skip(card) } else { await callbacks.submit(card) }
+        #expect(fixture.boundary.leaseRequestCount == 0)
+        #expect(card.status() == .pending)
+    }
+
     @Test(arguments: [false, true])
     func unavailableRecoveryRetiresPendingControls(unadvertised: Bool) async throws {
         let fixture = try QuestionFixture()
@@ -467,7 +566,7 @@ private final class QuestionFixture {
     private let defaultsName: String
     private let defaults: UserDefaults
 
-    init() throws {
+    init(questionActionsAllowed: @escaping @MainActor () -> Bool = { true }) throws {
         let boundary = QuestionRPCBoundary()
         let name = "QuestionLifecycleTests.\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: name))
@@ -476,12 +575,14 @@ private final class QuestionFixture {
         self.defaults = defaults
         self.model = OpenClawChatViewModel(
             sessionKey: "agent:main:question-a", transport: QuestionRPCTransport(boundary: boundary),
+            questionActionsAllowed: questionActionsAllowed,
             modelPickerStore: ChatModelPickerStore(defaults: defaults))
+        self.model.healthOK = true
         self.model.questionRefreshRetryDelaysMs = []
     }
 
     func addQuestion(
-        id: String = "question-a", sessionKey: String = "agent:main:question-a", secret: Bool = false
+        id: String = "question-a", sessionKey: String? = "agent:main:question-a", secret: Bool = false
     ) throws -> OpenClawQuestionCardModel {
         let record = Self.record(id: id, sessionKey: sessionKey, secret: secret)
         self.boundary.listRecords.append(record)
@@ -500,7 +601,7 @@ private final class QuestionFixture {
     }
 
     static func record(
-        id: String = "question-a", sessionKey: String = "agent:main:question-a", secret: Bool = false,
+        id: String = "question-a", sessionKey: String? = "agent:main:question-a", secret: Bool = false,
         status: QuestionStatus = .pending, answers: QuestionAnswers? = nil
     ) -> QuestionRecord {
         QuestionRecord(

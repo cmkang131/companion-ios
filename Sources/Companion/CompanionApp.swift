@@ -227,18 +227,12 @@ struct ConversationActivitySheet: View {
                     if !model.visibleQuestionCards(scope: .currentConversation).isEmpty {
                         Section {
                             OpenClawConversationQuestionsView(viewModel: model, scope: .currentConversation)
-                                .disabled(!connection.canSend)
-                        } header: { Text("이 대화의 질문") } footer: {
-                            Text("질문에 대한 답변이에요. 실행 권한 승인과는 달라요.")
                         }.id("scopedQuestions")
                     }
                     if !model.visibleQuestionCards(scope: .unscoped).isEmpty {
                         Section {
-                            Text("서버가 대화를 지정하지 않았어요. 질문의 대상을 확인한 뒤 답변해 주세요.")
-                                .font(.subheadline).foregroundStyle(.secondary)
                             OpenClawConversationQuestionsView(viewModel: model, scope: .unscoped)
-                                .disabled(!connection.canSend)
-                        } header: { Text("대화가 지정되지 않은 질문") }.id("unscopedQuestions")
+                        }.id("unscopedQuestions")
                     }
                 } else {
                     Text("서버 연결 후 현재 대화의 활동을 확인할 수 있어요.")

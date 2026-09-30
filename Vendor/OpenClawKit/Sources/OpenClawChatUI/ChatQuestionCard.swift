@@ -604,38 +604,96 @@ struct OpenClawQuestionCard: View {
     #endif
 }
 
+/// Shared transcript/activity presentation. Unspecified scope is never shown
+/// under the current conversation's heading, even outside the activity sheet.
 @MainActor
 public struct OpenClawConversationQuestionsView: View {
     private let viewModel: OpenClawChatViewModel
     private let scope: OpenClawConversationQuestionScope
+    @Environment(\.locale) private var locale
 
-    public init(viewModel: OpenClawChatViewModel, scope: OpenClawConversationQuestionScope = .currentConversation) {
+    public init(viewModel: OpenClawChatViewModel, scope: OpenClawConversationQuestionScope = .all) {
         self.viewModel = viewModel
         self.scope = scope
     }
 
+    var presentedScopes: [OpenClawConversationQuestionScope] {
+        let scopes: [OpenClawConversationQuestionScope] = self.scope == .all
+            ? [.currentConversation, .unscoped] : [self.scope]
+        return scopes.filter { !self.viewModel.visibleQuestionCards(scope: $0).isEmpty }
+    }
+
+    func cards(for scope: OpenClawConversationQuestionScope) -> OpenClawQuestionCards {
+        OpenClawQuestionCards(viewModel: self.viewModel, scope: scope)
+    }
+
     public var body: some View {
-        OpenClawQuestionCards(viewModel: self.viewModel, scope: self.scope)
+        if !self.presentedScopes.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                ForEach(self.presentedScopes, id: \.self) { scope in
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(scope.title(isKorean: self.locale.identifier.hasPrefix("ko")))
+                            .font(.headline).accessibilityAddTraits(.isHeader)
+                        Text(scope.explanation(isKorean: self.locale.identifier.hasPrefix("ko")))
+                            .font(.subheadline).foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                        self.cards(for: scope)
+                    }
+                }
+                if !self.viewModel.canPerformQuestionActions {
+                    Text(self.locale.identifier.hasPrefix("ko")
+                         ? "서버 연결 후 질문에 답할 수 있어요." : "Connect to the server to answer questions.")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
+            }
+        }
     }
 }
 
-public enum OpenClawConversationQuestionScope: Sendable {
+public enum OpenClawConversationQuestionScope: Sendable, Hashable {
     case all, currentConversation, unscoped
+
+    func title(isKorean: Bool) -> String {
+        switch self {
+        case .currentConversation: return isKorean ? "이 대화의 질문" : "Questions for this conversation"
+        case .unscoped: return isKorean ? "대화가 지정되지 않은 질문" : "Questions without a conversation"
+        case .all: return isKorean ? "질문" : "Questions"
+        }
+    }
+
+    func explanation(isKorean: Bool) -> String {
+        switch self {
+        case .unscoped:
+            return isKorean ? "서버가 대화를 지정하지 않았어요. 질문의 대상을 확인한 뒤 답변해 주세요."
+                : "The server did not specify a conversation. Check what the question refers to before answering."
+        case .currentConversation, .all:
+            return isKorean ? "질문에 대한 답변이에요. 실행 권한 승인과는 달라요."
+                : "These are answers to questions, not permissions to execute actions."
+        }
+    }
+}
+
+/// The actual callbacks supplied to cards in both entry points. The view's
+/// disabled appearance is supplementary; the model enforces dispatch access.
+@MainActor
+struct OpenClawQuestionCardActions {
+    weak var viewModel: OpenClawChatViewModel?
+
+    func submit(_ card: OpenClawQuestionCardModel) async { await self.viewModel?.submitQuestion(card) }
+    func skip(_ card: OpenClawQuestionCardModel) async { await self.viewModel?.skipQuestion(card) }
 }
 
 @MainActor
 struct OpenClawQuestionCards: View {
     let viewModel: OpenClawChatViewModel
-    var scope: OpenClawConversationQuestionScope = .all
+    let scope: OpenClawConversationQuestionScope
+    var actions: OpenClawQuestionCardActions { .init(viewModel: self.viewModel) }
 
     var body: some View {
         ForEach(self.viewModel.visibleQuestionCards(scope: self.scope)) { card in
-            OpenClawQuestionCard(model: card) { [weak viewModel = self.viewModel] model in
-                await viewModel?.submitQuestion(model)
-            } onSkip: { [weak viewModel = self.viewModel] model in
-                await viewModel?.skipQuestion(model)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            OpenClawQuestionCard(model: card, onSubmit: self.actions.submit, onSkip: self.actions.skip)
+                .disabled(!self.viewModel.canPerformQuestionActions)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
@@ -652,6 +710,10 @@ private struct QuestionRefreshApplyResult {
 }
 
 extension OpenClawChatViewModel {
+    public var canPerformQuestionActions: Bool {
+        !self.isQuestionAuthorityRetired && self.healthOK && self.questionActionsAllowed()
+    }
+
     /// Retained attachment controls may outlive a Gateway account, but its questions cannot.
     public func retireQuestionAuthority() {
         guard !self.isQuestionAuthorityRetired else { return }
@@ -910,8 +972,8 @@ extension OpenClawChatViewModel {
     }
 
     func submitQuestion(_ model: OpenClawQuestionCardModel) async {
-        guard !self.isQuestionAuthorityRetired,
-              self.questionCards.contains(where: { $0 === model }),
+        guard self.canPerformQuestionActions,
+              self.visibleQuestionCards.contains(where: { $0 === model }),
               let answers = model.beginSubmission()
         else { return }
         let ownerID = self.questionAttentionOwnerID
@@ -926,6 +988,13 @@ extension OpenClawChatViewModel {
             guard !self.isQuestionAuthorityRetired, ownerID == self.questionAttentionOwnerID,
                   self.questionCards.contains(where: { $0 === model })
             else { return }
+            // The host can disconnect while route acquisition is suspended.
+            // No request was dispatched, so keep the person's pending answer.
+            guard self.canPerformQuestionActions else {
+                model.failSubmission("서버 연결 후 질문에 답할 수 있어요.", preserveSecretDraft: true)
+                self.questionStateRevision &+= 1
+                return
+            }
             guard model.status() == .submitting else {
                 self.expireQuestionIfNeeded(model)
                 return
@@ -949,8 +1018,8 @@ extension OpenClawChatViewModel {
     }
 
     func skipQuestion(_ model: OpenClawQuestionCardModel) async {
-        guard !self.isQuestionAuthorityRetired,
-              self.questionCards.contains(where: { $0 === model }),
+        guard self.canPerformQuestionActions,
+              self.visibleQuestionCards.contains(where: { $0 === model }),
               model.beginSkip()
         else { return }
         let ownerID = self.questionAttentionOwnerID
@@ -964,6 +1033,13 @@ extension OpenClawChatViewModel {
             guard !self.isQuestionAuthorityRetired, ownerID == self.questionAttentionOwnerID,
                   self.questionCards.contains(where: { $0 === model })
             else { return }
+            // The host can disconnect while route acquisition is suspended.
+            // No request was dispatched, so keep the person's pending answer.
+            guard self.canPerformQuestionActions else {
+                model.failSubmission("서버 연결 후 질문에 답할 수 있어요.", preserveSecretDraft: true)
+                self.questionStateRevision &+= 1
+                return
+            }
             guard model.status() == .submitting else {
                 self.expireQuestionIfNeeded(model)
                 return
