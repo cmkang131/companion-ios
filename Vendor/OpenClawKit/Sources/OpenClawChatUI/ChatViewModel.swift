@@ -7,16 +7,32 @@ import OSLog
 // Module-internal: ChatViewModel extension files share this logger.
 let chatUILogger = Logger(subsystem: "ai.openclaw", category: "OpenClawChatUI")
 
-/// Process-local text drafts for replacing a chat presentation on the same gateway.
-/// The caller must enforce endpoint isolation. This does not persist attachments,
-/// sent-input history, credentials, or pending-run ownership.
+/// Native previews remain main-actor owned; the immutable container prevents a
+/// retired attachment import from mutating a replacement presentation's draft.
+@MainActor
+fileprivate final class ChatComposerDraftSnapshot {
+    let attachments: [OpenClawPendingAttachment]
+    let replyTarget: OpenClawChatReplyTarget?
+
+    init(attachments: [OpenClawPendingAttachment], replyTarget: OpenClawChatReplyTarget?) {
+        self.attachments = attachments
+        self.replyTarget = replyTarget
+    }
+}
+
+/// Process-local drafts for replacing a chat presentation on the same gateway.
+/// Includes selected-session attachment bytes already staged in memory, but no
+/// ongoing imports, disk persistence, credentials, or pending-run ownership.
+/// The caller must enforce endpoint isolation.
 public struct OpenClawChatDraftSnapshot: Sendable {
     public let sessionKey: String
+    public let interruptedAttachmentSessionKeys: Set<String>
     fileprivate let activeAgentID: String?
     fileprivate let explicitSessionAgentID: String?
     fileprivate let sessionRoutingContract: String?
     fileprivate let draftsBySession: [String: String]
     fileprivate let sendRecoveryLedger: ChatSendRecoveryLedger
+    fileprivate let composer: ChatComposerDraftSnapshot
 
     /// Read-only recovery access while a replacement connection has no model.
     @MainActor public var sendRecoveries: [OpenClawChatSendRecovery] { sendRecoveryLedger.recoveries() }
@@ -42,6 +58,9 @@ public final class OpenClawChatViewModel {
     }
 
     public internal(set) var replyTarget: OpenClawChatReplyTarget?
+    /// These sessions had an import/capture interrupted by presentation replacement.
+    /// The missing bytes were not copied; successfully staged attachments were.
+    public internal(set) var interruptedAttachmentSessionKeys: Set<String> = []
     public let webConversation: OpenClawWebConversation?
     var isApplyingWebSession = false
     @ObservationIgnored
@@ -616,6 +635,9 @@ public final class OpenClawChatViewModel {
             self.composerRevisionsBySession = draftSnapshot.draftsBySession.mapValues { _ in 0 }
             self.savedDraftRevisionsBySession = self.composerRevisionsBySession
             self.restoreComposerAfterSessionSwitch()
+            self.attachments = draftSnapshot.composer.attachments
+            self.replyTarget = draftSnapshot.composer.replyTarget
+            self.interruptedAttachmentSessionKeys = draftSnapshot.interruptedAttachmentSessionKeys
         }
 
         let transport = self.transport
@@ -653,13 +675,34 @@ public final class OpenClawChatViewModel {
         let history = self.inputHistoriesBySession[key] ?? ChatInputHistory()
         let draft = history.draftForSessionSwitch(currentDraft: self.input)
         drafts[key] = draft.isEmpty ? nil : draft
+        var interruptions = self.interruptedAttachmentSessionKeys
+        if self.attachmentStagingCount > 0 || self.attachmentOwnerIsActive() {
+            interruptions.insert(self.sessionKey)
+        }
+        // An empty composer can still show the reply selection owned by a send
+        // awaiting acknowledgement. That selection travels with its recovery,
+        // not as a new unsent reply that could reappear after a successful ack.
+        let replyBelongsToSubmittedDraft = draft.isEmpty && self.attachments.isEmpty &&
+            self.replyTarget.map { reply in
+                self.sendRecoveryLedger.entries.contains {
+                    $0.composerSessionKey == key && $0.replyTarget?.selectionID == reply.selectionID
+                }
+            } == true
         return OpenClawChatDraftSnapshot(
             sessionKey: self.sessionKey,
+            interruptedAttachmentSessionKeys: interruptions,
             activeAgentID: self.activeAgentId ?? self.agentCatalog?.defaultId,
             explicitSessionAgentID: self.explicitSessionAgentID,
             sessionRoutingContract: self.agentCatalog?.sessionRoutingContract ?? self.sessionRoutingContract,
             draftsBySession: drafts,
-            sendRecoveryLedger: self.sendRecoveryLedger)
+            sendRecoveryLedger: self.sendRecoveryLedger,
+            composer: ChatComposerDraftSnapshot(attachments: self.attachments,
+                replyTarget: replyBelongsToSubmittedDraft ? nil : self.replyTarget))
+    }
+
+    /// Dismissing the notice does not restore or claim to restore missing bytes.
+    public func acknowledgeInterruptedAttachmentSelection(sessionKey: String) {
+        self.interruptedAttachmentSessionKeys.remove(sessionKey)
     }
 
     /// Permanently retires a replaced presentation without aborting its gateway run.

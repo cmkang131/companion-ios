@@ -109,6 +109,17 @@ final class ConnectionStore {
         return retryDrafts.snapshot.sendRecoveries
     }
 
+    /// An interrupted import cannot be reconstructed from bytes that were not
+    /// ready. Keep this notice available even while a cancelled/failed retry has
+    /// no model, and never expose another endpoint's composer state.
+    var interruptedAttachmentSessionKeys: Set<String> {
+        guard !isPreview, let address = try? ConnectionEndpoint(endpoint).url,
+              address == activeEndpoint else { return [] }
+        if let model { return model.interruptedAttachmentSessionKeys }
+        guard let retryDrafts, retryDrafts.endpoint == address else { return [] }
+        return retryDrafts.snapshot.interruptedAttachmentSessionKeys
+    }
+
     init(dependencies: ConnectionDependencies = .live, enablesLaunchFixtures: Bool = true) {
         self.dependencies = dependencies
         #if DEBUG
