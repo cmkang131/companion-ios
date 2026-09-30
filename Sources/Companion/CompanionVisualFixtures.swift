@@ -2,15 +2,13 @@
 import SwiftUI
 import OpenClawChatUI
 
-/// QA-only environment injection, labelled in captured output. It is not a
-/// system accessibility-setting test and is absent from Release builds.
+/// QA-only static/opaque drawing branches, labelled in captured output. These
+/// flags do not change the system's read-only accessibility preferences.
 struct CompanionAccessibilityFixture: ViewModifier {
     private let enabled = ProcessInfo.processInfo.arguments.contains("--ui-accessibility-static")
     @ViewBuilder func body(content: Content) -> some View {
         if enabled {
-            content.environment(\.accessibilityReduceMotion, true)
-                .environment(\.accessibilityReduceTransparency, true)
-                .safeAreaInset(edge: .bottom) {
+            content.safeAreaInset(edge: .bottom) {
                     Text("검증용 · 모션 및 투명도 감소").font(.caption).padding(6).background(.white)
                 }
         } else { content }

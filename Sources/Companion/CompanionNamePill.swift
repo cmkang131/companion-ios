@@ -2,12 +2,19 @@ import SwiftUI
 
 struct CompanionNamePill: View {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    private var usesOpaqueSurface: Bool {
+        #if DEBUG
+        reduceTransparency || ProcessInfo.processInfo.arguments.contains("--ui-accessibility-static")
+        #else
+        reduceTransparency
+        #endif
+    }
 
     var body: some View {
         Text("dot")
             .font(.title3.weight(.semibold))
             .padding(.horizontal, 24).padding(.vertical, 8)
-            .modifier(NamePillSurface(opaque: reduceTransparency))
+            .modifier(NamePillSurface(opaque: usesOpaqueSurface))
             .accessibilityHidden(true)
     }
 }

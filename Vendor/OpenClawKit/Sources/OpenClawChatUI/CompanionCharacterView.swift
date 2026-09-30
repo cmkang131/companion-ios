@@ -13,6 +13,7 @@ public struct CompanionCharacterView: View {
         self.mood = mood
         #if DEBUG
         self.paused = paused || ProcessInfo.processInfo.arguments.contains("--ui-testing")
+            || ProcessInfo.processInfo.arguments.contains("--ui-accessibility-static")
         #else
         self.paused = paused
         #endif
