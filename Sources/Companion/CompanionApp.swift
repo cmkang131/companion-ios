@@ -27,7 +27,7 @@ struct CompanionHome: View {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.scenePhase) private var scenePhase
-    private enum Sheet: String, Identifiable { case connection, history, recovery; var id: String { rawValue } }
+    private enum Sheet: String, Identifiable { case connection, history, recovery, activity; var id: String { rawValue } }
 
     var body: some View {
         NavigationStack {
@@ -57,13 +57,15 @@ struct CompanionHome: View {
                         .accessibilityLabel("대화 목록").accessibilityIdentifier("historyButton")
                 }
                 ToolbarItem(placement: .principal) {
-                    HStack(spacing: 7) {
+                    Button { sheet = .activity } label: { HStack(spacing: 7) {
                         if connection.model != nil {
                             CompanionCharacterView(mood: characterMood,
                                 paused: sheet != nil || !connection.canSend).frame(width: 28, height: 28)
                         }
                         Text("dot").font(.headline.weight(.medium))
-                    }
+                    }}.buttonStyle(.plain).disabled(connection.model == nil)
+                        .accessibilityLabel("dot, 현재 대화 활동")
+                        .accessibilityIdentifier("activityHeaderButton")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { sheet = .connection } label: { Image(systemName: "slider.horizontal.3") }
@@ -78,14 +80,15 @@ struct CompanionHome: View {
                             .background(Color(white: 0.955), in: Capsule()).frame(minHeight: 44)
                     }.buttonStyle(.plain).accessibilityIdentifier("sendRecoveryButton")
                 } else if connection.model != nil {
-                    Button { sheet = .connection } label: {
+                    Button { sheet = .activity } label: {
                         Text(dynamicTypeSize.isAccessibilitySize && connection.isPreview
                             ? "미리보기\n서버 미연결" : activityStatus).font(.footnote).foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 15).padding(.vertical, 7)
                             .background(Color(white: reduceTransparency ? 0.94 : 0.965), in: Capsule())
                             .frame(minHeight: 44)
-                    }.buttonStyle(.plain).accessibilityHint("서버 연결 설정 열기")
+                    }.buttonStyle(.plain).accessibilityHint("현재 대화 활동 열기")
+                        .accessibilityIdentifier("activityStatusButton")
                 }
             }
             .sheet(item: $sheet) { selection in
@@ -93,6 +96,7 @@ struct CompanionHome: View {
                 case .connection: ConnectionSettings(connection: connection)
                 case .history: ConversationHistory(connection: connection)
                 case .recovery: SendRecoverySheet(connection: connection, openHistory: { sheet = .history })
+                case .activity: ConversationActivitySheet(connection: connection)
                 }
             }
         }
@@ -115,6 +119,18 @@ struct CompanionHome: View {
             let arguments = ProcessInfo.processInfo.arguments
             if arguments.contains("--ui-settings") { sheet = .connection }
             if arguments.contains("--ui-history") { sheet = .history }
+            if arguments.contains("--ui-activity") {
+                sheet = .activity
+                // Explicit Debug fixture: the real model consumes a controlled
+                // local transport. This never enables production send/credentials.
+                if arguments.contains("--ui-stop"), connection.isPreview, let model = connection.model {
+                    for _ in 0..<80 {
+                        if model.companionRunActivity.canStop { break }
+                        do { try await Task.sleep(for: .milliseconds(100)) } catch { return }
+                    }
+                    await model.requestStopCurrentRuns()?.value
+                }
+            }
             if arguments.contains("--ui-send-recovery"), connection.isPreview, let model = connection.model {
                 model.input = "검증용 메시지: 오후 일정을 함께 정리해 주세요."
                 await model.send()?.value
@@ -131,7 +147,10 @@ struct CompanionHome: View {
     }
     private var activityStatus: String {
         guard connection.canSend else { return connection.status }
-        return isResponding ? "응답 작성 중" : responseArrived ? "응답 도착" : "대화할 수 있어요"
+        if connection.model?.visibleQuestionCards.contains(where: { $0.status() == .pending }) == true {
+            return "답변이 필요한 질문"
+        }
+        return isResponding ? "응답 진행 중" : responseArrived ? "응답 도착" : "대화할 수 있어요"
     }
     private func clearAcknowledgement() {
         acknowledgementTask?.cancel()
@@ -183,6 +202,123 @@ struct CompanionHome: View {
         }
         .buttonStyle(.glass).controlSize(.large)
         .accessibilityIdentifier("connectWelcomeButton")
+    }
+}
+
+/// Current-conversation control, not a global task dashboard. Actions remain
+/// backed by the same production model used by the composer and question cards.
+struct ConversationActivitySheet: View {
+    @Bindable var connection: ConnectionStore
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            List {
+                if connection.isPreview {
+                    Section { Text("미리보기 · 서버 미연결").foregroundStyle(.secondary) }
+                }
+                if let model = connection.model {
+                    activity(model)
+                    if model.progressCard != nil {
+                        Section {
+                            OpenClawConversationProgressView(viewModel: model)
+                        } header: { Text("진행 단계") } footer: {
+                            Text("서버가 보고한 진행 상황이에요. 단계 완료가 외부 작업의 성공을 보장하지는 않아요.")
+                        }
+                    }
+                    if !model.visibleQuestionCards.isEmpty {
+                        Section {
+                            OpenClawConversationQuestionsView(viewModel: model)
+                                .disabled(!connection.canSend)
+                        } header: { Text("질문") } footer: {
+                            Text("질문에 대한 답변이에요. 실행 권한 승인과는 달라요.")
+                        }
+                    }
+                } else {
+                    Text("서버 연결 후 현재 대화의 활동을 확인할 수 있어요.")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .navigationTitle("현재 대화 활동").navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("닫기") { dismiss() }.accessibilityIdentifier("closeActivityButton")
+                }
+            }
+        }
+        .environment(\.locale, Locale(identifier: "ko_KR"))
+    }
+
+    @ViewBuilder private func activity(_ model: OpenClawChatViewModel) -> some View {
+        let activity = model.companionRunActivity
+        Section {
+            VStack(alignment: .leading, spacing: 7) {
+                Text(statusTitle(model)).font(.headline)
+                    .accessibilityIdentifier("currentRunStatus")
+                Text(statusDetail(model)).font(.subheadline).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }.padding(.vertical, 4)
+            if activity.canStop || activity.stopState == .requesting || activity.stopState == .requested {
+                Button {
+                    model.requestStopCurrentRuns()
+                } label: {
+                    Label(activity.stopState == .requesting ? "중단 요청 중" : "현재 응답 중단",
+                          systemImage: "stop.circle")
+                }
+                .disabled(!connection.canSend || !activity.canStop)
+                .accessibilityIdentifier("stopCurrentRunsButton")
+            }
+            Button {
+                model.refreshCurrentRunActivity()
+            } label: {
+                Label(activity.isRefreshing ? "상태 확인 중" : "상태 다시 확인", systemImage: "arrow.clockwise")
+            }.disabled(!connection.canSend || !activity.canRefresh || activity.isRefreshing)
+                .accessibilityIdentifier("refreshRunActivityButton")
+            if !connection.canSend {
+                Text("서버 미연결 상태에서는 활동을 확인하거나 중단할 수 없어요.")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
+            if activity.hasActiveRun && (activity.stopState == .stopped || activity.stopState == .ended) {
+                Text("진행 정보가 남아 있어요. 새 응답이 있는지 상태를 다시 확인해 주세요.")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
+        } header: { Text("이 대화") } footer: {
+            Text("이 대화의 확인된 응답만 중단해요. 이미 수행한 일은 되돌리지 않으며, 새 초안은 유지돼요.")
+        }
+    }
+
+    private func statusTitle(_ model: OpenClawChatViewModel) -> String {
+        guard connection.canSend || connection.isPreview else { return "활동 상태 미확인" }
+        let activity = model.companionRunActivity
+        switch activity.stopState {
+        case .idle: return activity.hasActiveRun ? "응답 진행 중" : "확인된 진행 응답 없음"
+        case .requesting: return "중단 요청 전송 중"
+        case .requested: return "종료 확인 대기"
+        case .stopped: return "응답 중단 확인"
+        case .ended: return "응답 종료 확인"
+        case .failed: return "중단 요청 확인 실패"
+        case .unconfirmed: return "중단 여부 미확인"
+        }
+    }
+
+    private func statusDetail(_ model: OpenClawChatViewModel) -> String {
+        guard connection.canSend || connection.isPreview else {
+            return "연결이 끊긴 뒤 서버의 상태는 알 수 없어요. 재연결 후 확인해 주세요."
+        }
+        let activity = model.companionRunActivity
+        switch activity.stopState {
+        case .idle:
+            return activity.hasActiveRun
+                ? (activity.knownRunCount > 0 ? "확인된 응답 \(activity.knownRunCount)개가 진행 중이에요."
+                    : "진행 정보는 있지만 중단할 응답을 아직 확인하지 못했어요.")
+                : "현재 확인된 상태예요. 필요하면 서버에서 다시 확인할 수 있어요."
+        case .requesting: return "서버에 중단을 요청하고 있어요. 아직 중단이 확인되지는 않았어요."
+        case .requested: return "서버가 요청을 받았어요. 응답이 실제로 끝났는지 확인을 기다려요."
+        case .stopped: return "대상 응답의 중단을 확인했어요. 이미 수행한 일은 유지될 수 있어요."
+        case .ended: return "대상 응답이 끝났어요. 요청한 일의 결과는 대화에서 확인해 주세요."
+        case .failed: return "중단을 확인하지 못했어요. 상태를 확인한 뒤 다시 요청할 수 있어요."
+        case .unconfirmed: return "일부 응답의 상태를 확인하지 못했어요. 종료됐다고 판단하지 않아요."
+        }
     }
 }
 

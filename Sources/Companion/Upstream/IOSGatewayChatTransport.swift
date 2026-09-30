@@ -161,6 +161,48 @@ struct IOSGatewayChatTransport: OpenClawChatGatewayTransport {
         return await self.gateway.currentRoute()
     }
 
+    func acquireRunControlRouteLease() async -> OpenClawChatRunControlRouteLease? {
+        guard let route = await currentSessionMutationRoute() else { return nil }
+        let transport = self
+        return Self.runControlRouteLease(
+            target: { transport.sessionTarget(for: $0, overrideAgentID: $1) },
+            isCurrent: { await transport.gateway.currentRoute() == route },
+            request: { request in
+                try await transport.gateway.request(request, ifCurrentRoute: route,
+                    distinguishPreDispatchRouteChange: true)
+            })
+    }
+
+    /// The same factory is exercised with deterministic route replacements in
+    /// tests; the live request additionally fences the socket inside the gateway.
+    static func runControlRouteLease(
+        target: @escaping @Sendable (String, String?) -> OpenClawChatSessionTarget,
+        isCurrent: @escaping @Sendable () async -> Bool,
+        request: @escaping @Sendable (OpenClawChatGatewayRequest) async throws -> Data
+    ) -> OpenClawChatRunControlRouteLease {
+        OpenClawChatRunControlRouteLease(requestStop: { sessionKey, agentID, runID in
+            guard !Task.isCancelled, await isCurrent() else { throw OpenClawChatRunControlError.notDispatched }
+            let target = target(sessionKey, agentID)
+            let outgoing = OpenClawChatGatewayRequests.abortRun(
+                sessionKey: target.sessionKey, agentID: target.agentID, runID: runID)
+            let result: Result<Data, any Error>
+            do {
+                result = .success(try await request(outgoing))
+            } catch GatewayNodeSessionRequestError.routeChangedBeforeDispatch {
+                throw OpenClawChatRunControlError.notDispatched
+            } catch { result = .failure(error) }
+            guard !Task.isCancelled, await isCurrent() else { throw CancellationError() }
+            return try OpenClawChatGatewayPayloadCodec.decodeAbortReceipt(result.get(), runID: runID)
+        }, observe: { runID in
+            guard !Task.isCancelled, await isCurrent() else { return .unavailable }
+            do {
+                let data = try await request(OpenClawChatGatewayRequests.agentWait(runID: runID, timeoutMs: 1000))
+                guard !Task.isCancelled, await isCurrent() else { return .unavailable }
+                return try OpenClawChatGatewayPayloadCodec.decodeStopObservation(data)
+            } catch { return .unavailable }
+        })
+    }
+
     private func sessionRoutingContract(
         ifCurrentRoute route: GatewayNodeSessionRoute) async throws -> String
     {

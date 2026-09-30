@@ -37,6 +37,8 @@
 		19968207ED753D0A82CAEC27 /* SendRecoveryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE745B2A58D788F063FD5840 /* SendRecoveryTests.swift */; };
 		DB074C4BD16D5C43EEDCCC04 /* AttachmentSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB26F089476A99E055D6E16E /* AttachmentSnapshotTests.swift */; };
 		4B0201A78E837CAC6DB66652 /* ModelSignInPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBC55F12AF39149ACEE30BC9 /* ModelSignInPresentationTests.swift */; };
+		B0AD671A347178B4E4FC530D /* RunControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85CEAF5C7562474518BEE2C /* RunControlTests.swift */; };
+		5EC39BDA1CBFE0BB3B62A0EF /* QuestionLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660646DDD08E80C8AC2E843D /* QuestionLifecycleTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +125,8 @@
 		EE745B2A58D788F063FD5840 /* SendRecoveryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendRecoveryTests.swift; sourceTree = "<group>"; };
 		CB26F089476A99E055D6E16E /* AttachmentSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentSnapshotTests.swift; sourceTree = "<group>"; };
 		FBC55F12AF39149ACEE30BC9 /* ModelSignInPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelSignInPresentationTests.swift; sourceTree = "<group>"; };
+		B85CEAF5C7562474518BEE2C /* RunControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunControlTests.swift; sourceTree = "<group>"; };
+		660646DDD08E80C8AC2E843D /* QuestionLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionLifecycleTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,6 +183,8 @@
 			children = (
 				C2E6731290937B1E1F37DCA1 /* CharacterStateTests.swift */,
 				F73858C7CEC3436D21867897 /* ConnectionTests.swift */,
+				660646DDD08E80C8AC2E843D /* QuestionLifecycleTests.swift */,
+				B85CEAF5C7562474518BEE2C /* RunControlTests.swift */,
 				FBC55F12AF39149ACEE30BC9 /* ModelSignInPresentationTests.swift */,
 				CB26F089476A99E055D6E16E /* AttachmentSnapshotTests.swift */,
 				EE745B2A58D788F063FD5840 /* SendRecoveryTests.swift */,
@@ -486,6 +492,8 @@
 			files = (
 				9306C9AE0D742617E48D2D6E /* CharacterStateTests.swift in Sources */,
 				6FB992E41E111A101B97CFB1 /* ConnectionTests.swift in Sources */,
+				5EC39BDA1CBFE0BB3B62A0EF /* QuestionLifecycleTests.swift in Sources */,
+				B0AD671A347178B4E4FC530D /* RunControlTests.swift in Sources */,
 				4B0201A78E837CAC6DB66652 /* ModelSignInPresentationTests.swift in Sources */,
 				DB074C4BD16D5C43EEDCCC04 /* AttachmentSnapshotTests.swift in Sources */,
 				19968207ED753D0A82CAEC27 /* SendRecoveryTests.swift in Sources */,

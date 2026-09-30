@@ -257,27 +257,28 @@ public final class OpenClawQuestionCardModel: Identifiable {
         return max(0, Double(self.record.expiresatms) / 1000 - date.timeIntervalSince1970)
     }
 
-    public func terminalSummaryText(for question: Question) -> String {
+    public func terminalSummaryText(for question: Question, locale: Locale = .current) -> String {
         // Secret questions never echo answer text into the persisted timeline;
         // the record only carries a synthetic marker, but masking here keeps the
         // summary honest for every secret producer, not just store-bound ones.
         let echoedAnswers = question.issecret == true
             ? nil
             : self.answerValues(questionID: question.questionid)?.joined(separator: ", ")
+        let korean = locale.identifier.hasPrefix("ko")
         return switch self.status() {
         case .answered:
-            echoedAnswers ?? String(localized: "Answered")
+            echoedAnswers ?? (korean ? "답변 완료" : String(localized: "Answered"))
         case .answeredElsewhere:
             echoedAnswers
-                ?? String(localized: "Answered elsewhere")
+                ?? (korean ? "다른 곳에서 답변 완료" : String(localized: "Answered elsewhere"))
         case .cancelled:
-            String(localized: "Skipped")
+            korean ? "건너뜀" : String(localized: "Skipped")
         case .expired:
-            String(localized: "Expired")
+            korean ? "만료됨" : String(localized: "Expired")
         case .unavailable:
-            String(localized: "Unavailable")
+            korean ? "확인할 수 없음" : String(localized: "Unavailable")
         case .pending, .submitting:
-            String(localized: "Pending")
+            korean ? "답변 대기" : String(localized: "Pending")
         }
     }
 
@@ -314,6 +315,8 @@ public final class OpenClawQuestionCardModel: Identifiable {
 }
 
 struct OpenClawQuestionCard: View {
+    @Environment(\.locale) private var locale
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Bindable private var model: OpenClawQuestionCardModel
     private let onSubmit: @MainActor @Sendable (OpenClawQuestionCardModel) async -> Void
     private let onSkip: (@MainActor @Sendable (OpenClawQuestionCardModel) async -> Void)?
@@ -360,7 +363,7 @@ struct OpenClawQuestionCard: View {
                 HStack(alignment: .firstTextBaseline, spacing: 5) {
                     Text(verbatim: "\(question.header):")
                         .font(OpenClawChatTypography.body(size: 14, weight: .semibold, relativeTo: .callout))
-                    Text(self.model.terminalSummaryText(for: question))
+                    Text(self.model.terminalSummaryText(for: question, locale: self.locale))
                         .font(OpenClawChatTypography.body(size: 14, weight: .regular, relativeTo: .callout))
                         .foregroundStyle(.secondary)
                 }
@@ -371,7 +374,7 @@ struct OpenClawQuestionCard: View {
         .padding(.vertical, 9)
         .background(OpenClawChatTheme.subtleCard, in: RoundedRectangle(cornerRadius: 12))
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Question summary")
+        .accessibilityLabel(self.isKorean ? "질문 결과" : "Question summary")
     }
 
     private func questionSection(_ question: Question, now: Date) -> some View {
@@ -396,7 +399,7 @@ struct OpenClawQuestionCard: View {
                             get: { self.model.otherText[question.questionid] ?? "" },
                             set: { self.model.setOtherText(questionID: question.questionid, value: $0) }))
                     {
-                        Text("Secret value").font(OpenClawChatTypography.body)
+                        Text(self.isKorean ? "비공개 값" : "Secret value").font(OpenClawChatTypography.body)
                     }
                     .font(OpenClawChatTypography.body)
                     .textFieldStyle(.roundedBorder)
@@ -405,10 +408,10 @@ struct OpenClawQuestionCard: View {
                     .textInputAutocapitalization(.never)
                     #endif
                     .disabled(self.model.status(at: now) != .pending)
-                    .accessibilityLabel("Secret value")
+                    .accessibilityLabel(self.isKorean ? "비공개 값" : "Secret value")
                 } else {
                     TextField(
-                        "Other answer",
+                        self.isKorean ? "직접 답변" : "Other answer",
                         text: Binding(
                             get: { self.model.otherText[question.questionid] ?? "" },
                             set: { self.model.setOtherText(questionID: question.questionid, value: $0) }),
@@ -416,7 +419,7 @@ struct OpenClawQuestionCard: View {
                         .font(OpenClawChatTypography.body)
                         .textFieldStyle(.roundedBorder)
                         .disabled(self.model.status(at: now) != .pending)
-                        .accessibilityLabel("Other answer")
+                        .accessibilityLabel(self.isKorean ? "직접 답변" : "Other answer")
                 }
             }
         }
@@ -516,45 +519,53 @@ struct OpenClawQuestionCard: View {
         .buttonStyle(.plain)
         .disabled(self.model.status(at: now) != .pending)
         .accessibilityLabel(option.label)
-        .accessibilityValue(selected ? "Selected" : "Not selected")
+        .accessibilityValue(self.isKorean ? (selected ? "선택됨" : "선택되지 않음")
+            : (selected ? "Selected" : "Not selected"))
     }
 
     @ViewBuilder
     private func footer(now: Date) -> some View {
         let status = self.model.status(at: now)
         if status == .pending || status == .submitting {
-            HStack {
+            let layout = self.dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+                : AnyLayout(HStackLayout(spacing: 8))
+            layout {
                 Text(self.countdownText(now: now))
                     .font(OpenClawChatTypography.caption)
                     .foregroundStyle(.secondary)
-                Spacer()
+                    .accessibilityLabel(self.isKorean ? "답변 가능 시간 \(self.countdownText(now: now))"
+                        : "Time remaining \(self.countdownText(now: now))")
+                if !self.dynamicTypeSize.isAccessibilitySize { Spacer() }
                 if let onSkip = self.onSkip {
                     Button {
                         Task { await onSkip(self.model) }
                     } label: {
                         if self.model.isSkipping {
-                            Text("Skipping…")
+                            Text(self.isKorean ? "건너뛰는 중" : "Skipping…")
                                 .font(OpenClawChatTypography.body(size: 14, weight: .semibold, relativeTo: .callout))
                         } else {
-                            Text("Skip")
+                            Text(self.isKorean ? "건너뛰기" : "Skip")
                                 .font(OpenClawChatTypography.body(size: 14, weight: .semibold, relativeTo: .callout))
                         }
                     }
                     .buttonStyle(.bordered)
+                    .frame(minHeight: 44)
                     .disabled(status == .submitting)
                 }
                 Button {
                     Task { await self.onSubmit(self.model) }
                 } label: {
                     if status == .submitting, !self.model.isSkipping {
-                        Text("Submitting…")
+                        Text(self.isKorean ? "보내는 중" : "Submitting…")
                             .font(OpenClawChatTypography.body(size: 14, weight: .semibold, relativeTo: .callout))
                     } else {
-                        Text("Submit")
+                        Text(self.isKorean ? "답변 보내기" : "Submit")
                             .font(OpenClawChatTypography.body(size: 14, weight: .semibold, relativeTo: .callout))
                     }
                 }
                 .buttonStyle(.borderedProminent)
+                .frame(minHeight: 44)
                 .disabled(!self.model.canSubmit || status == .submitting)
             }
             if let errorText = self.model.errorText {
@@ -570,6 +581,8 @@ struct OpenClawQuestionCard: View {
         return String(format: "%d:%02d", seconds / 60, seconds % 60)
     }
 
+    private var isKorean: Bool { self.locale.identifier.hasPrefix("ko") }
+
     #if os(macOS)
     private func handleNumberKey(
         _ keyPress: KeyPress,
@@ -583,6 +596,19 @@ struct OpenClawQuestionCard: View {
         return .handled
     }
     #endif
+}
+
+@MainActor
+public struct OpenClawConversationQuestionsView: View {
+    private let viewModel: OpenClawChatViewModel
+
+    public init(viewModel: OpenClawChatViewModel) {
+        self.viewModel = viewModel
+    }
+
+    public var body: some View {
+        OpenClawQuestionCards(viewModel: self.viewModel)
+    }
 }
 
 @MainActor

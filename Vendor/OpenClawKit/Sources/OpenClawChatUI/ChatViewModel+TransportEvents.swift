@@ -24,6 +24,7 @@ extension OpenClawChatViewModel {
 
     func handleTransportEvent(_ evt: OpenClawChatTransportEvent) {
         guard !self.isTransportDetached else { return }
+        self.observeCompanionRunControlEvent(evt)
         self.handleSidebarEvent(evt)
         if case .sessionObserver = evt, self.sidebarData != nil { return }
         if self.usesWebConversation {

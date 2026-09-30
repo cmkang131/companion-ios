@@ -134,6 +134,13 @@ final class ConnectionStore {
     /// Read-only local fixture. Never grants production dispatch capability.
     func usePreview() {
         isPreview = true
+        if ProcessInfo.processInfo.arguments.contains("--ui-activity") {
+            let preview = ActivityPreviewTransport()
+            transport = preview
+            model = OpenClawChatViewModel(sessionKey: ActivityPreviewTransport.sessionKey, transport: preview)
+            model?.input = "작성 중인 새 메시지는 유지돼요."
+            return
+        }
         let preview = PreviewTransport()
         transport = preview
         model = OpenClawChatViewModel(sessionKey: "preview", transport: preview)

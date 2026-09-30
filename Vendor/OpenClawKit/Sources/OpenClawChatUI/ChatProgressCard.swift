@@ -2,6 +2,20 @@ import Foundation
 import OpenClawProtocol
 import SwiftUI
 
+/// Reuses the same server-backed progress presentation as the conversation.
+/// A completed step is a report from the server, not proof of an external outcome.
+public struct OpenClawConversationProgressView: View {
+    @Bindable private var viewModel: OpenClawChatViewModel
+
+    public init(viewModel: OpenClawChatViewModel) { self.viewModel = viewModel }
+
+    public var body: some View {
+        if let card = self.viewModel.progressCard {
+            ChatProgressCard(steps: card.steps ?? [], markdown: card.markdown, isInline: true)
+        }
+    }
+}
+
 private struct ChatProgressCardSurface: ViewModifier {
     let cornerRadius: CGFloat
 
@@ -33,6 +47,7 @@ private struct ChatProgressCardSurface: ViewModifier {
 
 struct ChatProgressCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.locale) private var locale
     let steps: [ProgressCardStep]
     let markdown: String?
     var isInline = false
@@ -90,7 +105,9 @@ struct ChatProgressCard: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel(self.summaryAccessibilityLabel)
-            .accessibilityHint(self.isExpanded ? "Collapse plan" : "Expand plan")
+            .accessibilityHint(self.isKorean
+                ? (self.isExpanded ? "진행 단계 접기" : "진행 단계 펼치기")
+                : (self.isExpanded ? "Collapse plan" : "Expand plan"))
 
             if self.isExpanded {
                 Divider()
@@ -120,10 +137,15 @@ struct ChatProgressCard: View {
 
     private var summaryAccessibilityLabel: String {
         if let currentStep {
+            if self.isKorean {
+                return "진행 단계 \(self.steps.count)개 중 \(self.completedCount)개 완료, "
+                    + "\(self.localizedStatus(currentStep.status)): \(currentStep.step)"
+            }
             return "Plan, \(self.completedCount) of \(self.steps.count) steps done, "
                 + "\(Self.accessibilityLabel(for: currentStep.status)): \(currentStep.step)"
         }
-        return "Plan, \(self.markdownSummary ?? "Progress update")"
+        return self.isKorean ? "진행, \(self.markdownSummary ?? "진행 상황")"
+            : "Plan, \(self.markdownSummary ?? "Progress update")"
     }
 
     private var summary: some View {
@@ -132,7 +154,7 @@ struct ChatProgressCard: View {
                 Image(systemName: "checkmark")
                     .font(OpenClawChatTypography.caption)
                     .foregroundStyle(OpenClawChatTheme.success)
-                Text(verbatim: self.completedCount == 1
+                Text(verbatim: self.isKorean ? "\(self.completedCount)단계 완료" : self.completedCount == 1
                     ? String(localized: "1 step completed")
                     : String(format: String(localized: "%lld steps completed"), self.completedCount))
                     .font(OpenClawChatTypography.caption)
@@ -184,7 +206,18 @@ struct ChatProgressCard: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Self.stepAccessibilityLabel(step))
+        .accessibilityLabel("\(self.localizedStatus(step.status)), \(step.step)")
+    }
+
+    private var isKorean: Bool { self.locale.identifier.hasPrefix("ko") }
+
+    private func localizedStatus(_ status: ProgressCardStepStatus) -> String {
+        guard self.isKorean else { return Self.accessibilityLabel(for: status) }
+        switch status {
+        case .completed: return "완료"
+        case .inProgress: return "진행 중"
+        case .pending: return "대기 중"
+        }
     }
 
     private static func marker(for status: ProgressCardStepStatus) -> String {

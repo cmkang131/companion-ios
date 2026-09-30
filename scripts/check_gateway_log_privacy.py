@@ -9,6 +9,7 @@ an OSLog capture; runtime assertions exercise the helper and outbox classifier.
 """
 
 import argparse
+import hashlib
 import os
 from pathlib import Path
 import re
@@ -19,6 +20,38 @@ ROOT = Path(__file__).resolve().parents[1]
 KIT = ROOT / "Vendor/OpenClawKit/Sources/OpenClawKit"
 CHAT = ROOT / "Vendor/OpenClawKit/Sources/OpenClawChatUI"
 PROTOCOL = ROOT / "Vendor/OpenClawKit/Sources/OpenClawProtocol"
+
+
+def snapshot_header(repository, source_commit):
+    """Attribute this exact tree, including this guard, before any PASS output.
+
+    The reference repository supplies Git objects only. Every tracked blob must
+    match the executed snapshot; the caller cannot claim a hash with a flag alone.
+    Untracked files are irrelevant to the narrow source scan and never imported.
+    """
+    repository = Path(repository).resolve()
+    full = subprocess.check_output(
+        ["git", "-C", str(repository), "rev-parse", "--verify", source_commit + "^{commit}"],
+        text=True).strip()
+    entries = subprocess.check_output(
+        ["git", "-C", str(repository), "ls-tree", "-rz", "--full-tree", full])
+    checked = 0
+    for entry in entries.split(b"\0"):
+        if not entry:
+            continue
+        metadata, name = entry.split(b"\t", 1)
+        mode, kind, expected = metadata.split()
+        if kind != b"blob":
+            raise SystemExit("Snapshot contains an unsupported non-file entry")
+        path = ROOT / os.fsdecode(name)
+        body = os.fsencode(os.readlink(path)) if mode == b"120000" else path.read_bytes()
+        actual = hashlib.sha1(b"blob " + str(len(body)).encode() + b"\0" + body).hexdigest()
+        if actual != expected.decode():
+            raise SystemExit(f"Snapshot differs from {full}: {os.fsdecode(name)}")
+        checked += 1
+    print(f"SOURCE_COMMIT={full}", flush=True)
+    print(f"CLEAN_SNAPSHOT=verified_all_{checked}_tracked_blobs_match_git_commit", flush=True)
+    print("SCOPE=lexical diagnostic guard + synthetic helper/outbox harness; not OSLog sink or live app", flush=True)
 
 
 def closing(text, start, left="(", right=")"):
@@ -171,7 +204,14 @@ def runtime_check():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-only", action="store_true", help="Skip the Swift interpreter harness")
+    parser.add_argument("--source-commit", help="Expected commit, verified against every tracked blob")
+    parser.add_argument("--reference-repository", type=Path, default=ROOT,
+                        help="Git object repository when running from an exported archive")
     options = parser.parse_args()
+    if options.source_commit:
+        snapshot_header(options.reference_repository, options.source_commit)
+    else:
+        print("SOURCE_COMMIT=unattributed; CLEAN_SNAPSHOT=not_verified", flush=True)
     policy_check()
     if not options.source_only:
         runtime_check()

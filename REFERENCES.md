@@ -95,3 +95,22 @@ shows metadata and an explicit unsupported explanation; it does not offer a down
 button that silently returns nothing. Inline widgets use the adapter's existing
 resolver only while connected and expose an honest disconnected state. Live gateway
 acceptance, file interpretation and remote artifact availability remain unverified.
+
+## Follow-up: current-conversation activity and control
+
+The public research emphasizes visible work and explicit control. The actual pinned
+transport already supports `chat.abort`, progress cards and `question.*`, while
+global audit, execution approvals and media download remain distinct integration
+gaps. See `Research/IMPLEMENTATION-MATRIX.md` for the scope/permission distinction.
+
+The activity sheet uses a native SwiftUI NavigationStack/List and reuses the MIT
+progress and question cards. Its stop action remains reachable from the header
+while a new draft or recovery notice is visible. The adapter's route lease, not
+the appearance of the button, binds the request. Reception of a cancellation
+request is separate from evidence that the target run ended. No added scope,
+remote browser, credentials or long-running iOS worker is implied.
+
+These choices follow the already inspected Muse/dot references and the pinned
+OpenClaw implementations; exact sheet layout and Korean state copy are original
+design decisions. Large text, interaction and live gateway limits are validated
+and documented independently rather than inferred from this source description.

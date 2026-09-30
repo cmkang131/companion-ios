@@ -21,6 +21,12 @@ MODES = {
     'artifact': ('large', ['--ui-preview', '--ui-artifact-preview']),
     'keyboard': ('large', ['--ui-settings', '--ui-keyboard']),
     'settings': ('large', ['--ui-preview', '--ui-settings', '--ui-model-settings']),
+    'activity': ('large', ['--ui-preview', '--ui-activity']),
+    'activity-ax5': ('accessibility-extra-extra-extra-large', ['--ui-preview', '--ui-activity']),
+    'stop-requested': ('large', ['--ui-preview', '--ui-activity', '--ui-stop']),
+    'stop-confirmed': ('large', ['--ui-preview', '--ui-activity', '--ui-stop', '--ui-stop-confirmed']),
+    'stop-failed': ('large', ['--ui-preview', '--ui-activity', '--ui-stop', '--ui-stop-failed']),
+    'questions': ('large', ['--ui-preview', '--ui-activity', '--ui-questions']),
 }
 
 def run(args, allowed=(0,)):

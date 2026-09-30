@@ -867,6 +867,7 @@ public protocol OpenClawChatTransport: Sendable {
     var outboxRequiresSessionRoutingContract: Bool { get }
 
     func abortRun(sessionKey: String, runId: String) async throws
+    func acquireRunControlRouteLease() async -> OpenClawChatRunControlRouteLease?
     func listSessions(
         limit: Int?,
         search: String?,
@@ -1218,6 +1219,21 @@ extension OpenClawChatTransport {
 
     public func abortRun(sessionKey _: String, runId _: String) async throws {
         throw Self.unsupportedOperation("chat.abort not supported by this transport")
+    }
+
+    public func acquireRunControlRouteLease() async -> OpenClawChatRunControlRouteLease? {
+        // Preserve immutable/legacy transports without inventing an ACK from
+        // their Void API. Mutable gateway adapters supply route-fenced leases.
+        OpenClawChatRunControlRouteLease(requestStop: { key, _, runID in
+            try await self.abortRun(sessionKey: key, runId: runID)
+            return .unconfirmed
+        }, observe: { runID in
+            switch await self.waitForRunCompletion(runId: runID, timeoutMs: 1000) {
+            case .terminal: .ended
+            case .checkAgain: .active
+            case .unavailable: .unavailable
+            }
+        })
     }
 
     public func listSessions(

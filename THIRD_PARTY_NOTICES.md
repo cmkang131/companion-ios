@@ -12,6 +12,13 @@ Local source adaptations are intentionally small compared with the vendored foun
 
 The current character and app icon are code drawings based on a user-supplied visual reference. The private reference image is not bundled or committed. Companion is an independent OpenClaw client and does not claim to be an official Muse or OpenAI dot application.
 
+The task-controls follow-up adds a route-bound current-conversation stop lease and
+state projection, reuses the existing progress/question cards in a native activity
+sheet, and adapts their Korean labels and large-text layout. Question lifecycle
+semantics remain upstream; added controlled-boundary tests do not establish live
+server compatibility. Global audit, execution approvals and managed media loading
+are not enabled by these changes.
+
 Cross-compilation compatibility patch: enable Swift cross-import overlays in the vendored Swift targets, so AVKit + SwiftUI exposes VideoPlayer under the open-source Linux compiler. No API replacement or feature stub is used. Generated Mermaid resources were built from the same pinned upstream source; their bundled NOTICE.txt is retained.
 
 Simulator packaging: the app Info.plist is corrected to iPhoneSimulator only after the binary load commands prove it is an iOS Simulator executable. UIUserInterfaceStyle is set to Light.

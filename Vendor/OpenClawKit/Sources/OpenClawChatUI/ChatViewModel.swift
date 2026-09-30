@@ -128,7 +128,11 @@ public final class OpenClawChatViewModel {
     @ObservationIgnored
     var isCreatingSession = false
     var attachmentStagingCount = 0
-    public private(set) var isAborting = false
+    public internal(set) var isAborting = false
+    var companionRunControl: ChatRunControlRequest?
+    var companionRunControlRefreshID: UUID?
+    @ObservationIgnored var companionRunControlTask: Task<Void, Never>?
+    @ObservationIgnored var companionRunControlRefreshTask: Task<Void, Never>?
     public var errorText: String?
     public var attachments: [OpenClawPendingAttachment] = []
     public internal(set) var healthOK: Bool = false
@@ -708,6 +712,7 @@ public final class OpenClawChatViewModel {
     /// Permanently retires a replaced presentation without aborting its gateway run.
     public func detachTransport() {
         guard !self.isTransportDetached else { return }
+        self.invalidateCompanionRunControl()
         self.suspendSendRecoveriesForDetach()
         self.cancelHistoryInvalidationRefresh()
         self.retireQuestionAuthority()
@@ -741,9 +746,9 @@ public final class OpenClawChatViewModel {
         Task { await self.refreshRunStateAfterForeground() }
     }
 
-    public func abort() {
-        guard !self.usesWebConversation else { return }
-        Task { await self.performAbort() }
+    @discardableResult
+    public func abort() -> Task<Void, Never>? {
+        self.requestStopCurrentRuns()
     }
 
     public func switchSession(to sessionKey: String, agentID: String? = nil) {
@@ -1118,20 +1123,6 @@ extension OpenClawChatViewModel {
         await pollHealthIfNeeded(force: true, sessionSnapshot: context.session)
     }
 
-    private func performAbort() async {
-        guard !self.pendingRuns.isEmpty else { return }
-        guard !self.isAborting else { return }
-        self.isAborting = true
-        defer { self.isAborting = false }
-
-        let runIds = Array(pendingRuns)
-        let sessionKey = self.sessionKey
-        let transport = self.transport
-        for runId in runIds {
-            try? await transport.abortRun(sessionKey: sessionKey, runId: runId)
-        }
-    }
-
     func fetchSessions(limit: Int?, sessionSnapshot: SessionSnapshot? = nil) async {
         self.nextSessionsFetchRequestID &+= 1
         let sessionsFetchRequestID = self.nextSessionsFetchRequestID
@@ -1359,6 +1350,7 @@ extension OpenClawChatViewModel {
 
     /// Clears state owned by the current session/agent before a new identity can consume events.
     func clearSessionOwnedState() {
+        self.invalidateCompanionRunControl()
         self.invalidateComposerCapabilities()
         self.modelSelectionID = Self.defaultModelSelectionID
         self.modelAvailabilityIsSessionScoped = false
