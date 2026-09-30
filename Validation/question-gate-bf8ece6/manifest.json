@@ -1,0 +1,104 @@
+{
+  "source_commit": "bf8ece67afce77f05bad2af4bec0acb05e9da288",
+  "production_implementation_commit": "2d129518a62d6873deabc36595fcc23c270485c8",
+  "created_utc": "2026-09-30T21:11:42.470647+00:00",
+  "tracked_blob_count": 566,
+  "validation_logs": [
+    {
+      "file": "logs/tests-bf8ece6.log",
+      "sha256": "f8d7b0cee2830fc9f1737ce1b5b0fb2ccd8ea638784bf1f7a956a8eeab3a18b8",
+      "source_commit": "bf8ece67afce77f05bad2af4bec0acb05e9da288",
+      "result": "PASS",
+      "scope": "114 macOS integration test functions in 11 suites plus 5 core; production callbacks with controlled boundaries"
+    },
+    {
+      "file": "logs/build-normal-bf8ece6.log",
+      "sha256": "f1e6b3fa1fdcbf633c434bed3e3a1e6431ffd9aa71954e5ce28370b5f39dbb20",
+      "source_commit": "bf8ece67afce77f05bad2af4bec0acb05e9da288",
+      "result": "PASS",
+      "scope": "Normal native iOS Simulator build; no install or launch"
+    },
+    {
+      "file": "logs/privacy-bf8ece6.log",
+      "sha256": "7f6998cccb6973a72dbaf42ff40bae0b6d147fcb5144c52ff972d98b4e79f7b5",
+      "source_commit": "bf8ece67afce77f05bad2af4bec0acb05e9da288",
+      "result": "PASS",
+      "scope": "Exact archive lexical guard:182 sources,8 helper cases/7 categories; not OSLog sink"
+    },
+    {
+      "file": "logs/wiring-bf8ece6.log",
+      "sha256": "ec8bd61d89c3b1403fa762a9929c25380f9f685d91ea6c7413f0ba4c0002819d",
+      "source_commit": "bf8ece67afce77f05bad2af4bec0acb05e9da288",
+      "result": "PASS",
+      "scope": "Transcript/activity shared scope and callback/model gate source guards with bypass mutations; not taps"
+    },
+    {
+      "file": "logs/bundle-bf8ece6.log",
+      "sha256": "19096682de93c5d4d2563304622e6eb5eb738abb75bbce5dd87dd43403241714",
+      "source_commit": "bf8ece67afce77f05bad2af4bec0acb05e9da288",
+      "result": "PASS",
+      "scope": "Built Simulator platform/metadata/resources/library paths"
+    },
+    {
+      "file": "logs/upstream-questions-4a3838a.log",
+      "sha256": "53b053f2243f7c48d89fd56b7c5dac612b319cb3c5c93353a8f1d666f71a43d8",
+      "source_commit": "4a3838ac032c460d13876228a1a1ea2b64858c52",
+      "result": "BLOCKED_COMPILE",
+      "scope": "Requested3 selected upstream question tests; full upstream test target fails first on unavailable RealtimeTalk/PCM types; no selected tests executed"
+    },
+    {
+      "file": "logs/prior-evidence-615294e.log",
+      "sha256": "08ba2ddb8d8d815367b22de2d6f676261bf8b77d0bec6ca7064bc74047bc1e88",
+      "source_commit": "615294ec061de80e55c8c1627ee136a77bd7e46c",
+      "result": "PASS",
+      "scope": "Exact Git blobs: artifact27 paths are docs/evidence only relative to source99ba308; all22 prior evidence references match committed manifest"
+    }
+  ],
+  "captures": [],
+  "normal_build": {
+    "app_path": "/Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-render-products/bf8ece6/Companion.app",
+    "built_only_executable_sha256": "f2ef67599f67c0229f02089704ce47aaa960fdda00d94aa99c66596d9fca87bf",
+    "installed": false,
+    "launched": false,
+    "settings": {
+      "Xcode": "27",
+      "sdk": "iphonesimulator27.0",
+      "action": "build",
+      "configuration": "Debug",
+      "ARCHS": "arm64",
+      "jobs": 2,
+      "CODE_SIGNING_ALLOWED": "NO",
+      "ENABLE_DEBUG_DYLIB": "NO"
+    }
+  },
+  "prior_checkpoint": {
+    "artifact_commit": "615294ec061de80e55c8c1627ee136a77bd7e46c",
+    "source_commit": "99ba308b5f02911072d76dc5ad76d3b08834b3dd",
+    "manifest": "../controls-99ba308/manifest.json",
+    "scope": "Existing renders precede the shared-question presentation fix. They are not new-source UI proof."
+  },
+  "tested_contracts": [
+    "Transcript and activity share scope groups, localized explanations and the same callback factory",
+    "UI callbacks AND direct submit/skip refuse host read-only or unhealthy transport before route acquisition",
+    "Actual ConnectionStore preview denies despite synthetic healthy state and connected phase; actual disconnect callback denies even before model health changes",
+    "Host/health permission is checked again after delayed lease acquisition; undispatched answer data retained",
+    "Foreign-session retained callback cannot start a new mutation; already admitted same-connection request keeps its original ownership",
+    "Policy loss during lease acquisition cannot override authoritative terminal or local expiry",
+    "Prior data retention, route/terminal/expiry/cancel and privacy regressions remain covered"
+  ],
+  "independent_review": {
+    "kind": "read-only source review",
+    "implementation_reviewed": "2d129518a62d6873deabc36595fcc23c270485c8",
+    "production_diff_to_current": "none",
+    "finding": "No production blocker found; three upstream mutation test fixtures needed explicit healthy state. Fixed in4a3838a; selected test execution blocked by existing wider test target compile issue. Suggested terminal/expiry intersection regression added and passed in final114."
+  },
+  "limits": [
+    "No new simulator/phone installation, launch or rendered UI capture in this follow-up",
+    "No real taps, keyboard/scroll interaction, repeated sheet dismissal or OS accessibility validation",
+    "macOS integration target excludes CompanionApp; native build compiles app entry UI but does not execute it",
+    "Static source guard verifies call-site wiring; callback tests invoke the actual shared action closures but do not establish SwiftUI event delivery",
+    "No live gateway, credentials, sign-in, server setup or model calls",
+    "Three updated upstream tests were not executed due wider upstream Talk test compile failure; no repeated retry or Talk enablement",
+    "Prior stable branches/checkpoints and rendered evidence remain preserved"
+  ]
+}

@@ -6,9 +6,10 @@
 
 Muse/dot 공개 설명은 제품이 지향하는 행동의 근거다. 이 앱의 기능·계정 권한·서버
 호환성의 증거는 아니다. 아래의 “구현”은 생산 코드 경로가 있다는 뜻이며 실서버
-검증을 뜻하지 않는다. 최신 `99ba308`의 105 integration / 5 core 테스트도 macOS의 controlled
-fake 경계 검증이다. `Validation/controls-99ba308/manifest.json`에 정상 빌드·실행·10개
-원본 렌더와 9개 원문 로그를 귀속했다. iOS 실기기·실서버·실제 탭 조작은 검증하지 못했다.
+검증을 뜻하지 않는다. 최신 `bf8ece6`의 114 integration / 5 core 테스트도 macOS의 controlled
+fake 경계 검증이다. 새 gate 검증은 `Validation/question-gate-bf8ece6/manifest.json`에
+귀속했다. `Validation/controls-99ba308/manifest.json`의 10개 원본 렌더와 9개 원문 로그는
+이전 화면 증거이며 새 질문 공통 표시의 실제 렌더를 증명하지 않는다. iOS 실기기·실서버·실제 탭 조작은 검증하지 못했다.
 
 ## 요구-구현 matrix
 
@@ -18,7 +19,7 @@ fake 경계 검증이다. `Validation/controls-99ba308/manifest.json`에 정상 
 | 캐릭터와 상태 capsule — 공식 홍보 화면 | 파란 원본 코드 캐릭터, 검정 눈·bump·glass name pill. 실제 owned response 상태와 연동. correlated nonempty final만 “응답 도착” | **검증**: live 상태 전환/실제 OS Reduce Motion 미검증. 응답 도착은 요청 성취·전달 완료가 아님 | capsule을 실제 현재 대화 활동 화면으로 연결 |
 | 진행·활동·동시 작업 — 공식 설명 | `sessions.list`, `chat.history`, `agent`/`chat` 및 session events. 서버 `progressCard.get`와 `progressCard.changed`, upstream legacy progress fallback. chat 안에 진행 카드 재사용 | **앱 통합**: global `audit.activity.list` 미연결. 대화별 run metadata는 전체 durable task 모델이 아님. 결과 검증·외부 delivery 필드 없는 응답을 완료 업무로 표시할 수 없음 | 현재 대화의 실행·진행·질문 접근을 한 곳에 모음. 임의 퍼센트/가짜 작업 행 없음 |
 | 중단·취소·복구 — 공식 설명 | 실제 `chat.abort(sessionKey, runId)` RPC 상속. 기존 pending cleanup은 terminal/history 처리에 의존 | **해결한 기존 앱 결함**: `try?` 실패 무시, 새 draft로 stop 진입 소실, mutable route의 late 요청. 새 activity와 per-run lease로 보완; live 취소 전파는 미검증 | 최우선: 독립 stop 진입, 정확 run/route 소유권, 요청/서버 접수/종료 확인/실패·불확실을 구분. 취소는 이미 수행한 외부 행동의 rollback이 아님 |
-| 질문·명시적 결정 — 공식 설명 | 실제 `question.list/get/resolve`, requested/resolved events 및 native question cards. skip은 `question.resolve(cancel:true)` | **검증**: 권한·만료·중복·late response 경합의 앱 경계 검증 부족. 질문을 결제/실행 승인으로 표현하면 안 됨 | 두 번째: 기존 질문 응답·건너뛰기·서버 확인 경계 검증, 발견한 lifecycle 결함 최소 수정 |
+| 질문·명시적 결정 — 공식 설명 | 실제 `question.list/get/resolve`, requested/resolved events 및 native question cards. skip은 `question.resolve(cancel:true)` | **검증**: 권한·만료·중복·late response의 controlled 경계 회귀 통과; 실서버·실제 조작은 미검증. 질문은 결제/실행 승인이 아님 | 본문·활동 시트 공통 scope 설명과 생산 mutation gate; preview/health/연결 해제/경로 대기 중 권한 상실 및 terminal 우선순위 검증 |
 | 실행·구매·접근 승인 — 공식 설명 | 현재 연결은 `operator.read/write`. 생성된 approval 데이터 타입은 있지만 `exec/plugin/openclaw.approval.*` adapter/event/UI 통합 없음 | **추가 권한 + 앱 통합 + 실서버**: `operator.approvals` 및 action/scope/expiry 검증 필요. 정책 변경은 admin 영역 | 권한을 늘리거나 허수 승인 버튼을 추가하지 않음 |
 | browser preview·takeover·return control — 공식 설명/홍보 화면 | connected inline widget resolver만 구현. 이것은 원격 browser 소유권 제어가 아님 | **별도 backend 계약 + 권한 + 앱 통합**: viewing/control ownership/credential handoff의 안전한 계약 미연결 | 지원한다고 표시하지 않음 |
 | 첨부와 결과물 — 공식 설명/홍보 화면 | 기존 attachment picker/staging/encoding, 연결된 상태에서 입력 가능. ready bytes와 reply snapshot 복구. managed output metadata 표시. connected widget resolver | **앱 통합**: `artifacts.download` encoder/type은 있으나 실제 managed media loader는 false/nil. **실서버**: file 수용/생성/다운로드 검증 없음 | 사용불가 이유 표시 유지. 로컬 경로나 fixture를 다운로드 성공으로 표시하지 않음 |
@@ -82,3 +83,11 @@ privacy snapshot 검사와 native fixture renders를 완료했다. nil/빈 문�
 제품 연구: [Muse 공식 설명](https://introducing.muse.ai/),
 [dot 공식 문서](https://learn.chatgpt.com/docs/dots/),
 `Research/MUSE-DOT-EVIDENCE.md`에 전달된 관찰·공식 주장·제안 설계 구분을 따른다.
+
+최종 질문 gate 후속(`bf8ece6`): 본문과 활동의 실제 공통 callback 및 직접 model 호출을
+모두 검사한다. `ConnectionStore`의 실제 preview/연결 해제 정책과 합성 health의 조합도
+포함한다. iOS 정상 빌드만 실행했고 최신 지시에 따라 설치·새 렌더는 하지 않았다.
+upstream 질문 test fixture 세 개의 연결 전제도 수정했지만, 선택 실행은 더 넓은
+upstream Talk 테스트 타깃의 제외된 타입 참조 때문에 컴파일 단계에서 차단됐다.
+이를 통과로 계산하지 않는다. 이전615294e의22개 증거 hash 및 코드 무변경은
+작업 트리가 아닌 Git 커밋 내부 blob에서 재확인했다.

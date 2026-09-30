@@ -1,0 +1,130 @@
+RUNNER_STARTED_UTC=2026-09-30T21:09:23Z
+SOURCE_COMMIT=bf8ece67afce77f05bad2af4bec0acb05e9da288
+CLEAN_SNAPSHOT=verified_all_566_tracked_blobs_match_git_commit
+SCOPE=source attribution for the following validation command
+VALIDATION_COMMAND_SCOPE=see command output below; snapshot header is source attribution only
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project Companion.xcodeproj -scheme Companion -configuration Debug -sdk iphonesimulator -destination "generic/platform=iOS Simulator" -derivedDataPath .build-xcode -clonedSourcePackagesDirPath .build-xcode/SourcePackages -disableAutomaticPackageResolution -jobs 2 ARCHS=arm64 ONLY_ACTIVE_ARCH=YES ENABLE_DEBUG_DYLIB=NO CODE_SIGNING_ALLOWED=NO build
+
+Build settings from command line:
+    ARCHS = arm64
+    CODE_SIGNING_ALLOWED = NO
+    ENABLE_DEBUG_DYLIB = NO
+    ONLY_ACTIVE_ARCH = YES
+    SDKROOT = iphonesimulator27.0
+
+Resolve Package Graph
+
+
+Resolved source packages:
+  SwiftMath: https://github.com/mgriebling/SwiftMath @ 1.7.3
+  GRDB: https://github.com/groue/GRDB.swift.git @ 7.11.1
+  cmark-gfm: https://github.com/swiftlang/swift-cmark.git @ 0.9.0
+  OpenClawKit: /Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/Vendor/OpenClawKit
+  swift-markdown: https://github.com/swiftlang/swift-markdown @ 0.8.0
+
+Build Preparation
+Build task concurrency set to 2 via user default IDEBuildOperationMaxNumberOfConcurrentCompileTasks
+
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (25 targets)
+    Target 'Companion' in project 'Companion'
+        ➜ Explicit dependency on target 'CompanionCore' in project 'Companion'
+        ➜ Explicit dependency on target 'OpenClawChatUI-product' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawKit-product' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawProtocol-product' in project 'OpenClawKit'
+    Target 'OpenClawProtocol-product' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawProtocol' in project 'OpenClawKit'
+    Target 'OpenClawKit-product' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawKit' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawKit_OpenClawKit' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawNativeState' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawProtocol' in project 'OpenClawKit'
+    Target 'OpenClawChatUI-product' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawChatUI' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawKit_OpenClawChatUI' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawNativeState' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawProtocol' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawKit' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'GRDB-product' in project 'GRDB'
+        ➜ Explicit dependency on target 'Markdown-product' in project 'swift-markdown'
+        ➜ Explicit dependency on target 'SwiftMath-product' in project 'SwiftMath'
+    Target 'OpenClawChatUI' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawKit_OpenClawChatUI' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawNativeState' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawProtocol' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawKit' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'GRDB-product' in project 'GRDB'
+        ➜ Explicit dependency on target 'Markdown-product' in project 'swift-markdown'
+        ➜ Explicit dependency on target 'SwiftMath-product' in project 'SwiftMath'
+    Target 'SwiftMath-product' in project 'SwiftMath'
+        ➜ Explicit dependency on target 'SwiftMath' in project 'SwiftMath'
+        ➜ Explicit dependency on target 'SwiftMath_SwiftMath' in project 'SwiftMath'
+    Target 'SwiftMath' in project 'SwiftMath'
+        ➜ Explicit dependency on target 'SwiftMath_SwiftMath' in project 'SwiftMath'
+    Target 'SwiftMath_SwiftMath' in project 'SwiftMath' (no dependencies)
+    Target 'Markdown-product' in project 'swift-markdown'
+        ➜ Explicit dependency on target 'Markdown' in project 'swift-markdown'
+        ➜ Explicit dependency on target 'CAtomic' in project 'swift-markdown'
+        ➜ Explicit dependency on target 'cmark-gfm-product' in project 'cmark-gfm'
+        ➜ Explicit dependency on target 'cmark-gfm-extensions-product' in project 'cmark-gfm'
+    Target 'Markdown' in project 'swift-markdown'
+        ➜ Explicit dependency on target 'CAtomic' in project 'swift-markdown'
+        ➜ Explicit dependency on target 'cmark-gfm-product' in project 'cmark-gfm'
+        ➜ Explicit dependency on target 'cmark-gfm-extensions-product' in project 'cmark-gfm'
+    Target 'cmark-gfm-extensions-product' in project 'cmark-gfm'
+        ➜ Explicit dependency on target 'cmark-gfm-extensions' in project 'cmark-gfm'
+        ➜ Explicit dependency on target 'cmark-gfm' in project 'cmark-gfm'
+    Target 'cmark-gfm-extensions' in project 'cmark-gfm'
+        ➜ Explicit dependency on target 'cmark-gfm' in project 'cmark-gfm'
+    Target 'cmark-gfm-product' in project 'cmark-gfm'
+        ➜ Explicit dependency on target 'cmark-gfm' in project 'cmark-gfm'
+    Target 'cmark-gfm' in project 'cmark-gfm' (no dependencies)
+    Target 'CAtomic' in project 'swift-markdown' (no dependencies)
+    Target 'GRDB-product' in project 'GRDB'
+        ➜ Explicit dependency on target 'GRDB' in project 'GRDB'
+        ➜ Explicit dependency on target 'GRDB_GRDB' in project 'GRDB'
+    Target 'GRDB' in project 'GRDB'
+        ➜ Explicit dependency on target 'GRDB_GRDB' in project 'GRDB'
+        ➜ Explicit dependency on target 'GRDBSQLite' in project 'GRDB'
+    Target 'GRDBSQLite' in project 'GRDB' (no dependencies)
+    Target 'GRDB_GRDB' in project 'GRDB' (no dependencies)
+    Target 'OpenClawKit' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawKit_OpenClawKit' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawNativeState' in project 'OpenClawKit'
+        ➜ Explicit dependency on target 'OpenClawProtocol' in project 'OpenClawKit'
+    Target 'OpenClawKit_OpenClawKit' in project 'OpenClawKit' (no dependencies)
+    Target 'OpenClawProtocol' in project 'OpenClawKit' (no dependencies)
+    Target 'OpenClawNativeState' in project 'OpenClawKit' (no dependencies)
+    Target 'OpenClawKit_OpenClawChatUI' in project 'OpenClawKit' (no dependencies)
+    Target 'CompanionCore' in project 'Companion' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk /Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-xcode/SDKStatCaches.noindex/iphonesimulator27.0-24A430-8dc58220667be655e1bcc261a7455254.sdkstatcache
+    cd /Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/Companion.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -o /Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-xcode/SDKStatCaches.noindex/iphonesimulator27.0-24A430-8dc58220667be655e1bcc261a7455254.sdkstatcache
+
+PruneExplicitPrecompiledModules /Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-xcode/SDKExplicitPrecompiledModules
+
+PruneExplicitPrecompiledModules /Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-xcode/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+PruneExplicitPrecompiledModules /Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-xcode/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+** BUILD SUCCEEDED **
+
+
+RUNNER_EXIT=0; ELAPSED_SECONDS=5.6

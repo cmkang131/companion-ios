@@ -1,0 +1,6 @@
+ARTIFACT_COMMIT=615294ec061de80e55c8c1627ee136a77bd7e46c
+APPLICATION_SOURCE_COMMIT=99ba308b5f02911072d76dc5ad76d3b08834b3dd
+SNAPSHOT=all evidence read directly from Git blobs at artifact commit; no working-tree attribution
+PASS: 27 changed paths are documentation/evidence only; no application, tests, project or script changes
+PASS: 22 evidence references match manifest SHA-256 inside commit; 10 original PNGs and 9 raw logs
+LIMIT: prior recorded build/runtime outcomes are verified as committed evidence, not rerun at the newer source

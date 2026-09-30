@@ -1,0 +1,5 @@
+SOURCE_COMMIT=bf8ece67afce77f05bad2af4bec0acb05e9da288
+CLEAN_SNAPSHOT=verified_all_566_tracked_blobs_match_git_commit
+SCOPE=lexical diagnostic guard + synthetic helper/outbox harness; not OSLog sink or live app
+PASS: synthetic remote marker excluded in 8 helper cases across 7 categories; auth, wire, scope and legacy outbox classifier checks passed
+PASS: public error/diagnostic policy in 182 source files; synthetic leak mutations rejected

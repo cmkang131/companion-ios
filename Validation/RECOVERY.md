@@ -1,6 +1,25 @@
 # Recovery evidence — 2026-10-01 KST
 
-## Current activity/question checkpoint — 99ba308
+## Latest question entry-point fix — bf8ece6
+
+Authoritative source: **`bf8ece67afce77f05bad2af4bec0acb05e9da288`**. Implementation is in `2d12951`; subsequent source commits adjust tests and notices only. [The manifest](question-gate-bf8ece6/manifest.json) ties seven raw logs to their exact source commits. Current successful logs verify all 566 tracked blobs against source bf8ece6. The prior rendered checkpoint is preserved separately below.
+
+The transcript previously rendered raw question cards with implicit all-scope and no host connection gate. Closing the activity sheet could expose unspecified questions without their scope explanation, and preview could still reach question actions. Transcript and activity now use the same scoped presentation and actual action callbacks. The production model admits submit/skip only for a current visible card, healthy transport and the connection owner's live policy. It checks host/health access again after awaiting route acquisition. The host hook checks preview, phase and connection generation; a SwiftUI disabled modifier is supplementary. Already admitted same-connection requests retain original question ownership, and terminal/expiry/route priorities are preserved.
+
+| Validation | Result and exact limit |
+|---|---|
+| App production-model integration at bf8ece6 | PASS: 114 test functions in 11 suites + core 5, 76.6 s including rebuild. Both presentation factories' actual callbacks, direct model bypass attempts, real ConnectionStore preview/disconnect hook, synthetic healthy preview, unhealthy transport, held lease/policy loss, foreign scope, terminal/expiry combinations and prior regressions. Controlled boundaries, not UI events or live RPCs. |
+| Normal iOS build at bf8ece6 | PASS, 5.6 s: app entry UI included; arm64 Simulator, jobs 2, Debug dylib disabled, signing disabled. No installation or launch. |
+| Privacy at bf8ece6 | PASS: exact archive, 182 Swift sources, 8 helper cases / 7 categories. Narrow source/harness scope, not an OSLog sink or general security proof. |
+| Shared question wiring / built bundle | PASS: mutation-tested source guards for both call sites, common callbacks and model gate; bundle platform/resources metadata. Not tap interaction. |
+| Selected upstream question tests at 4a3838a | BLOCKED during wider test-target compilation, exit 1 after 79.1 s. Missing excluded RealtimeTalk/PCM types prevented selected tests from running. Three fixtures' new healthy-state preconditions are source-corrected; no execution pass claimed. No retry or Talk enablement. |
+| Prior artifact 615294e | PASS from exact Git blobs: 27 changed paths contain docs/evidence only relative to 99ba308, and all 22 manifest references (10 original PNGs / 9 logs plus records/contact) match their committed hashes. This preserves prior evidence, not new-source runtime proof. |
+
+A separate read-only source review found no production blocker in 2d12951 and identified the three upstream fixture preconditions; those were corrected. Its suggested policy-loss plus terminal/expiry intersection is now an executed integration regression. Production files and wiring scripts are unchanged between 2d12951 and bf8ece6.
+
+The normal built app is preserved at `.build-render-products/bf8ece6/Companion.app`; **built-only** executable SHA-256 is `f2ef67599f67c0229f02089704ce47aaa960fdda00d94aa99c66596d9fca87bf`. It was not installed. Existing 99ba308 screenshots cannot establish the changed common question presentation, touch events, scrolling, VoiceOver or OS accessibility behavior. No account, server setting, credentials, physical-device work or live model call occurred. The earlier interaction runner remains blocked as documented below. **The P2 has source/model/build evidence; new-render and real-interaction validation remain open.**
+
+## Earlier rendered activity/question checkpoint — 99ba308
 
 Authoritative application/test/script source: **`99ba308b5f02911072d76dc5ad76d3b08834b3dd`** on `recovery/task-controls`. The earlier reviewed stable branch `recovery/safe-follow-up` remains at `e8afca70b87ae945c870a31a41a903c6a078b7af`. The follow-up adds current-conversation control to the stable composer/data-recovery work; it does not establish full Muse/dot parity.
 

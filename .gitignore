@@ -41,3 +41,7 @@ Research/Upstream/
 # Exact-source activity/question evidence, original renders and raw logs.
 !/Validation/controls-99ba308/
 !/Validation/controls-99ba308/logs/*.log
+
+# Shared question gate follow-up; raw success and blocked logs, no new captures.
+!/Validation/question-gate-bf8ece6/
+!/Validation/question-gate-bf8ece6/logs/*.log
