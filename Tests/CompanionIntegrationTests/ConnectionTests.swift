@@ -9,6 +9,18 @@ struct ConnectionTests {
     private static let sessionA = "agent:main:session-a"
     private static let sessionB = "agent:main:session-b"
 
+    @Test func previewHistoryIsReadableWithoutDispatchCapability() async {
+        let store = ConnectionStore(enablesLaunchFixtures: false)
+        store.usePreview()
+        await store.loadHistory()
+        #expect(store.sessions.count == 1)
+        #expect(store.sessions.first?.key == "preview")
+        #expect(store.isPreview)
+        #expect(store.phase == .disconnected)
+        #expect(!store.canSend)
+        await store.disconnect()
+    }
+
     @Test(arguments: [
         ("PAIRING_REQUIRED", "승인"),
         ("AUTH_TOKEN_MISMATCH", "토큰"),

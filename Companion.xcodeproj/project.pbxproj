@@ -11,6 +11,7 @@
 		2990995130C9DC09248DB3B9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3F715F310F5D6884E61EAC3 /* Assets.xcassets */; };
 		29E160BDED0D81C130E8AAFC /* ConnectionEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8088A7DD8A3B3037E4B0F39E /* ConnectionEndpointTests.swift */; };
 		46D404B33BBD097A323CCD24 /* CompanionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A8232740751FE75411952E /* CompanionUITests.swift */; };
+		504FBDAB816C9AA12A4A4CE5 /* CompanionVisualFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600DF0CBBE5E38BB79C87034 /* CompanionVisualFixtures.swift */; };
 		584614ADD57EBB4CAAD57DEE /* OpenClawKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3F9C3D1DFD47C9250E349A73 /* OpenClawKit */; };
 		5E11BF2D08EAA0FEDE2EF295 /* PreviewTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69CD3789B2662C40FE9D87C0 /* PreviewTransport.swift */; };
 		6B79CA161176AF5A252C8859 /* IOSGatewayChatTransport+ComposerCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C6910CC61922C3A142DB5D /* IOSGatewayChatTransport+ComposerCapabilities.swift */; };
@@ -93,6 +94,7 @@
 		14C6910CC61922C3A142DB5D /* IOSGatewayChatTransport+ComposerCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IOSGatewayChatTransport+ComposerCapabilities.swift"; sourceTree = "<group>"; };
 		1FA0A75241B4F6DDEA06B88C /* ConnectionEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionEndpoint.swift; sourceTree = "<group>"; };
 		28AD6698932D88CAE1BF505A /* OpenClawKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = OpenClawKit; path = Vendor/OpenClawKit; sourceTree = SOURCE_ROOT; };
+		600DF0CBBE5E38BB79C87034 /* CompanionVisualFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionVisualFixtures.swift; sourceTree = "<group>"; };
 		69CD3789B2662C40FE9D87C0 /* PreviewTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewTransport.swift; sourceTree = "<group>"; };
 		6DE5BB0067E0564C0CD72FA9 /* LicensesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensesView.swift; sourceTree = "<group>"; };
 		8088A7DD8A3B3037E4B0F39E /* ConnectionEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionEndpointTests.swift; sourceTree = "<group>"; };
@@ -197,6 +199,7 @@
 			children = (
 				C7BF1521C40F90DAD5B4A6E0 /* CompanionApp.swift */,
 				ED84233BC51F35F5A4ECD6A1 /* CompanionNamePill.swift */,
+				600DF0CBBE5E38BB79C87034 /* CompanionVisualFixtures.swift */,
 				F08A378775C88FAEA6735B8D /* ConnectionStore.swift */,
 				6DE5BB0067E0564C0CD72FA9 /* LicensesView.swift */,
 				69CD3789B2662C40FE9D87C0 /* PreviewTransport.swift */,
@@ -426,6 +429,7 @@
 			files = (
 				EEEE6BA1CBA97EC7A99AFCB6 /* CompanionApp.swift in Sources */,
 				BF47BEEBD97FB83E23F58B42 /* CompanionNamePill.swift in Sources */,
+				504FBDAB816C9AA12A4A4CE5 /* CompanionVisualFixtures.swift in Sources */,
 				7E5DDB772A369B790ABCC600 /* ConnectionStore.swift in Sources */,
 				6B79CA161176AF5A252C8859 /* IOSGatewayChatTransport+ComposerCapabilities.swift in Sources */,
 				8D7D709F0E667733599A2444 /* IOSGatewayChatTransport.swift in Sources */,

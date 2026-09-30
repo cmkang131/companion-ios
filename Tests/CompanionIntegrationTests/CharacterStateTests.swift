@@ -40,9 +40,34 @@ struct CharacterStateTests {
         #expect(!model.companionHasActiveResponse)
     }
 
-    private func event(state: String, runID: String, text: String) throws -> OpenClawChatEventPayload {
-        let value: [String: Any] = ["state": state, "runId": runID, "sessionKey": "preview",
+    @Test(arguments: [(true, false), (false, true), (true, true)])
+    func missingCorrelationNeverAcknowledges(missingRun: Bool, missingSession: Bool) throws {
+        let model = OpenClawChatViewModel(sessionKey: "preview", transport: PreviewTransport())
+        model.pendingRuns.insert("owned-run")
+        model.handleTransportEvent(.chat(try event(state: "final", runID: missingRun ? nil : "owned-run",
+            text: "unattributed output", session: missingSession ? nil : "preview")))
+        #expect(model.companionRunCompletionRevision == 0)
+        model.detachTransport()
+    }
+
+    @Test func foreignSessionOrLateFinalNeverAcknowledges() throws {
+        let model = OpenClawChatViewModel(sessionKey: "preview", transport: PreviewTransport())
+        model.pendingRuns.insert("owned-run")
+        model.handleTransportEvent(.chat(try event(state: "final", runID: "owned-run",
+            text: "foreign session", session: "agent:main:other")))
+        #expect(model.companionRunCompletionRevision == 0)
+        model.pendingRuns.insert("old-run")
+        model.switchSession(to: "agent:main:new")
+        model.handleTransportEvent(.chat(try event(state: "final", runID: "old-run", text: "late output")))
+        #expect(model.companionRunCompletionRevision == 0)
+        model.detachTransport()
+    }
+
+    private func event(state: String, runID: String?, text: String, session: String? = "preview") throws -> OpenClawChatEventPayload {
+        var value: [String: Any] = ["state": state,
             "message": ["role": "assistant", "content": [["type": "text", "text": text]]]]
+        value["runId"] = runID
+        value["sessionKey"] = session
         return try JSONDecoder().decode(OpenClawChatEventPayload.self,
             from: JSONSerialization.data(withJSONObject: value))
     }

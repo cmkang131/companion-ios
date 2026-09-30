@@ -4,7 +4,17 @@ import OpenClawChatUI
 @main
 struct CompanionApp: App {
     var body: some Scene {
-        WindowGroup { CompanionHome().preferredColorScheme(.light) }
+        WindowGroup {
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--ui-motion-gallery") {
+                CompanionMotionGallery().preferredColorScheme(.light)
+            } else {
+                CompanionHome().modifier(CompanionAccessibilityFixture()).preferredColorScheme(.light)
+            }
+            #else
+            CompanionHome().preferredColorScheme(.light)
+            #endif
+        }
     }
 }
 
@@ -149,6 +159,7 @@ struct ConnectionSettings: View {
     @FocusState private var focus: Field?
     @AccessibilityFocusState private var errorFocused: Bool
     @State private var validationAttempt = 0
+    @State private var confirmsDisconnect = false
     private enum Field { case endpoint, token }
 
     var body: some View {
@@ -190,7 +201,7 @@ struct ConnectionSettings: View {
                 }
                 Section {
                     if connection.phase == .connected {
-                        Button("연결 해제", role: .destructive) { Task { await connection.disconnect() } }
+                        Button("연결 해제", role: .destructive) { confirmsDisconnect = true }
                     } else if connection.phase == .connecting {
                         HStack { ProgressView(); Text("서버에 연결하는 중이에요") }
                         Button("연결 취소", role: .cancel) { Task { await connection.cancelConnection() } }
@@ -227,6 +238,12 @@ struct ConnectionSettings: View {
             .scrollDismissesKeyboard(.interactively)
             .navigationTitle("연결 설정").navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("완료") { dismiss() } } }
+            .confirmationDialog("연결을 해제할까요?", isPresented: $confirmsDisconnect, titleVisibility: .visible) {
+                Button("초안을 지우고 연결 해제", role: .destructive) { Task { await connection.disconnect() } }
+                Button("취소", role: .cancel) {}
+            } message: {
+                Text("이 기기의 모든 대화 초안과 입력한 토큰이 지워져요. 키체인에 따로 저장한 토큰과 서버 대화는 유지돼요.")
+            }
             .task {
                 #if DEBUG
                 let arguments = ProcessInfo.processInfo.arguments

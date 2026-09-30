@@ -14,7 +14,7 @@ if !coreOnly {
         "CompanionCore", .product(name: "OpenClawChatUI", package: "OpenClawKit"),
         .product(name: "OpenClawKit", package: "OpenClawKit"),
         .product(name: "OpenClawProtocol", package: "OpenClawKit")
-    ], exclude: connectionTests ? ["CompanionApp.swift", "CompanionNamePill.swift", "LicensesView.swift", "Resources"] : [],
+    ], exclude: connectionTests ? ["CompanionApp.swift", "CompanionNamePill.swift", "CompanionVisualFixtures.swift", "LicensesView.swift", "Resources"] : [],
        resources: connectionTests ? [] : [.process("Resources")]))
     if connectionTests {
         targets.append(.testTarget(name: "CompanionIntegrationTests", dependencies: ["Companion",

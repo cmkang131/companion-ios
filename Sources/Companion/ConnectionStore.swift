@@ -103,14 +103,21 @@ final class ConnectionStore {
         self.dependencies = dependencies
         #if DEBUG
         if enablesLaunchFixtures && ProcessInfo.processInfo.arguments.contains("--ui-preview") {
-            isPreview = true
-            let preview = PreviewTransport()
-            transport = preview
-            model = OpenClawChatViewModel(sessionKey: "preview", transport: preview)
+            usePreview()
         }
         if enablesLaunchFixtures && ProcessInfo.processInfo.arguments.contains("--ui-testing") { endpoint = "" }
         #endif
     }
+
+    #if DEBUG
+    /// Read-only local fixture. Never grants production dispatch capability.
+    func usePreview() {
+        isPreview = true
+        let preview = PreviewTransport()
+        transport = preview
+        model = OpenClawChatViewModel(sessionKey: "preview", transport: preview)
+    }
+    #endif
 
     @discardableResult
     func connect() -> Task<Void, Never>? {
@@ -276,7 +283,7 @@ final class ConnectionStore {
     }
 
     func loadHistory() async {
-        guard canSend, !Task.isCancelled, let transport else { return }
+        guard (canSend || isPreview), !Task.isCancelled, let transport else { return }
         let current = generation
         let request = UUID()
         historyRequest = request
@@ -285,10 +292,10 @@ final class ConnectionStore {
         defer { if generation == current && historyRequest == request { isLoadingHistory = false } }
         do {
             let result = try await transport.listSessions(limit: 100, search: nil, archived: false)
-            guard !Task.isCancelled, canSend, generation == current && historyRequest == request else { return }
+            guard !Task.isCancelled, (canSend || isPreview), generation == current && historyRequest == request else { return }
             sessions = result.sessions
         } catch {
-            guard !Task.isCancelled, canSend, generation == current && historyRequest == request else { return }
+            guard !Task.isCancelled, (canSend || isPreview), generation == current && historyRequest == request else { return }
             historyError = "대화 목록을 불러오지 못했어요. 다시 시도해 주세요."
         }
     }
