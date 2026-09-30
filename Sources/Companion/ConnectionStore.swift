@@ -4,6 +4,66 @@ import CompanionCore
 import OpenClawKit
 import OpenClawChatUI
 
+/// A route retains the captured physical socket identity across the main-key await.
+@MainActor
+struct ConnectionRoute {
+    let transport: any OpenClawChatTransport
+    let mainSessionKey: () async -> String?
+    let isCurrent: () async -> Bool
+}
+
+/// Thin boundary around the reused gateway, allowing deterministic lifecycle tests.
+@MainActor
+struct ConnectionSession {
+    typealias Callback = @MainActor @Sendable () async -> Void
+    let connect: (URL, String, @escaping Callback, @escaping Callback) async throws -> Void
+    let disconnect: () async -> Void
+    let acquireRoute: () async -> ConnectionRoute?
+
+    static func live() -> Self {
+        let gateway = GatewayNodeSession()
+        return Self(connect: { address, credential, connected, disconnected in
+            let options = GatewayConnectOptions(
+                role: "operator", scopes: ["operator.read", "operator.write"], scopesAreExplicit: true,
+                caps: [OpenClawGatewayClientCapability.agentKind], commands: [], permissions: [:],
+                clientId: "openclaw-ios", clientMode: "ui", clientDisplayName: "Companion",
+                includeDeviceIdentity: true, allowStoredDeviceAuth: false, deviceAuthGatewayID: nil)
+            try await gateway.connect(url: address, token: credential, connectOptions: options, sessionBox: nil,
+                onConnected: { await connected() }, onDisconnected: { _ in await disconnected() },
+                onInvoke: { request in
+                    BridgeInvokeResponse(id: request.id, ok: false,
+                        error: OpenClawNodeError(code: .unavailable,
+                            message: "This client does not expose device commands."))
+                })
+        }, disconnect: { await gateway.disconnect() }, acquireRoute: {
+            guard let route = await gateway.currentRoute() else { return nil }
+            return ConnectionRoute(transport: IOSGatewayChatTransport(gateway: gateway),
+                mainSessionKey: { await gateway.waitForCurrentMainSessionKey(ifCurrentRoute: route) },
+                isCurrent: { await gateway.currentRoute() == route })
+        })
+    }
+}
+
+@MainActor
+struct ConnectionDependencies {
+    var makeSession: () -> ConnectionSession
+    var saveToken: (_ token: String, _ endpoint: String) throws -> Void
+    var loadToken: (_ endpoint: String) -> String?
+    var deleteToken: (_ endpoint: String) throws -> Void
+    var saveEndpoint: (_ endpoint: String) -> Void
+
+    static var live: Self {
+        let service = "com.cmkang131.companion.gateway"
+        return Self(makeSession: { .live() }, saveToken: { token, endpoint in
+            try GenericPasswordKeychainStore.saveStringResult(token, service: service, account: endpoint).get()
+        }, loadToken: { endpoint in
+            GenericPasswordKeychainStore.loadString(service: service, account: endpoint)
+        }, deleteToken: { endpoint in
+            try GenericPasswordKeychainStore.deleteResult(service: service, account: endpoint).get()
+        }, saveEndpoint: { UserDefaults.standard.set($0, forKey: "companion.endpoint") })
+    }
+}
+
 @MainActor @Observable
 final class ConnectionStore {
     enum Phase: Equatable { case disconnected, connecting, connected, failed }
@@ -17,15 +77,15 @@ final class ConnectionStore {
     var historyError: String?
     var isLoadingHistory = false
     private(set) var isPreview = false
-    @ObservationIgnored private var gateway: GatewayNodeSession?
+    @ObservationIgnored private let dependencies: ConnectionDependencies
+    @ObservationIgnored private var gateway: ConnectionSession?
     @ObservationIgnored private var transport: (any OpenClawChatTransport)?
     @ObservationIgnored private var attempt: Task<Void, Never>?
     @ObservationIgnored private var generation = UUID()
     @ObservationIgnored private var credentialRevision = UUID()
     @ObservationIgnored private var historyRequest = UUID()
     @ObservationIgnored private var activeEndpoint: URL?
-    @ObservationIgnored private var retryDraft: (endpoint: URL, session: String, text: String)?
-    private static let keychainService = "com.cmkang131.companion.gateway"
+    @ObservationIgnored private var retryDrafts: (endpoint: URL, snapshot: OpenClawChatDraftSnapshot)?
 
     var status: String {
         if isPreview { return "미리보기 · 서버 미연결" }
@@ -39,79 +99,66 @@ final class ConnectionStore {
 
     var canSend: Bool { phase == .connected && !isPreview }
 
-    init() {
+    init(dependencies: ConnectionDependencies = .live, enablesLaunchFixtures: Bool = true) {
+        self.dependencies = dependencies
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("--ui-preview") {
+        if enablesLaunchFixtures && ProcessInfo.processInfo.arguments.contains("--ui-preview") {
             isPreview = true
             let preview = PreviewTransport()
             transport = preview
             model = OpenClawChatViewModel(sessionKey: "preview", transport: preview)
         }
-        if ProcessInfo.processInfo.arguments.contains("--ui-testing") { endpoint = "" }
+        if enablesLaunchFixtures && ProcessInfo.processInfo.arguments.contains("--ui-testing") { endpoint = "" }
         #endif
     }
 
-    func connect() {
-        guard phase != .connecting && phase != .connected else { return }
+    @discardableResult
+    func connect() -> Task<Void, Never>? {
+        guard phase != .connecting && phase != .connected else { return nil }
         let address: URL
         do { address = try ConnectionEndpoint(endpoint).url }
         catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? "서버 주소를 확인해 주세요."
-            return
+            return nil
         }
         let credential = token.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !credential.isEmpty else {
             errorMessage = "서버에서 발급한 연결 토큰을 입력해 주세요."
-            return
+            return nil
         }
         attempt?.cancel()
         generation = UUID()
         let current = generation
         let previous = gateway
-        let next = GatewayNodeSession()
+        let next = dependencies.makeSession()
         gateway = next
-        if address != activeEndpoint { retryDraft = nil }
-        else if let model, !isPreview {
-            retryDraft = (address, model.currentSessionTarget.sessionKey, model.input)
-        }
+        if address != activeEndpoint { retryDrafts = nil }
+        else { captureRetryDrafts() }
         activeEndpoint = address
         phase = .connecting
         errorMessage = nil
         model?.detachTransport()
         model = nil
         transport = nil
-        sessions = []
-        historyRequest = UUID()
-        historyError = nil
-        isLoadingHistory = false
+        resetHistory()
         isPreview = false
         let shouldRemember = rememberToken
         let savingRevision = credentialRevision
         attempt = Task { [weak self] in
             await previous?.disconnect()
             guard let self, !Task.isCancelled, self.generation == current else { return }
-            let options = GatewayConnectOptions(
-                role: "operator", scopes: ["operator.read", "operator.write"], scopesAreExplicit: true,
-                caps: [OpenClawGatewayClientCapability.agentKind], commands: [], permissions: [:],
-                clientId: "openclaw-ios", clientMode: "ui", clientDisplayName: "Companion",
-                includeDeviceIdentity: true, allowStoredDeviceAuth: false, deviceAuthGatewayID: nil)
             do {
-                try await next.connect(url: address, token: credential, connectOptions: options, sessionBox: nil,
-                    onConnected: { [weak self] in
-                        await self?.didConnect(gateway: next, generation: current)
-                    }, onDisconnected: { [weak self] _ in
-                        await self?.didDisconnect(generation: current)
-                    }, onInvoke: { request in
-                        BridgeInvokeResponse(id: request.id, ok: false,
-                            error: OpenClawNodeError(code: .unavailable, message: "This client does not expose device commands."))
-                    })
-                guard !Task.isCancelled, self.generation == current else { return }
+                try await next.connect(address, credential, { [weak self] in
+                    await self?.didConnect(gateway: next, generation: current)
+                }, { [weak self] in
+                    self?.didDisconnect(generation: current)
+                })
+                guard !Task.isCancelled, self.generation == current, self.phase == .connected else { return }
                 self.endpoint = address.absoluteString
-                UserDefaults.standard.set(self.endpoint, forKey: "companion.endpoint")
+                self.dependencies.saveEndpoint(self.endpoint)
                 if shouldRemember && self.rememberToken && self.credentialRevision == savingRevision {
                     do {
-                        try GenericPasswordKeychainStore.saveStringResult(credential,
-                            service: Self.keychainService, account: self.endpoint).get()
+                        try self.dependencies.saveToken(credential, self.endpoint)
                     } catch {
                         self.errorMessage = "연결했지만 토큰을 안전하게 저장하지 못했어요. 다음 실행 때 다시 입력해 주세요."
                     }
@@ -123,22 +170,22 @@ final class ConnectionStore {
                 await next.disconnect()
             }
         }
+        return attempt
     }
 
-    private func didConnect(gateway: GatewayNodeSession, generation: UUID) async {
-        guard self.generation == generation else { return }
+    private func didConnect(gateway: ConnectionSession, generation: UUID) async {
+        guard !Task.isCancelled, self.generation == generation,
+              let route = await gateway.acquireRoute() else { return }
+        let mainKey = await route.mainSessionKey()
+        // Generation alone does not detect automatic reconnects within one gateway.
+        // A retired socket must not publish a model using a guessed default key.
+        guard await route.isCurrent(), !Task.isCancelled, self.generation == generation else { return }
         if model == nil {
-            let transport = IOSGatewayChatTransport(gateway: gateway)
-            self.transport = transport
-            let route = await gateway.currentRoute()
-            let key: String
-            if let route { key = await gateway.waitForCurrentMainSessionKey(ifCurrentRoute: route) ?? "agent:main:main" }
-            else { return }
-            guard self.generation == generation else { return }
-            let savedDraft = retryDraft.flatMap { $0.endpoint == activeEndpoint ? $0 : nil }
-            model = OpenClawChatViewModel(sessionKey: savedDraft?.session ?? key, transport: transport)
-            if let savedDraft { model?.input = savedDraft.text }
-            retryDraft = nil
+            let savedDrafts = retryDrafts.flatMap { $0.endpoint == activeEndpoint ? $0.snapshot : nil }
+            self.transport = route.transport
+            model = OpenClawChatViewModel(sessionKey: mainKey ?? "agent:main:main",
+                transport: route.transport, draftSnapshot: savedDrafts)
+            retryDrafts = nil
         } else { model?.resumeFromForeground() }
         phase = .connected
         errorMessage = nil
@@ -147,10 +194,25 @@ final class ConnectionStore {
     private func didDisconnect(generation: UUID) {
         guard self.generation == generation else { return }
         phase = .failed
+        resetHistory()
         errorMessage = "서버와 연결이 끊어졌어요. 네트워크와 서버 상태를 확인한 뒤 다시 연결해 주세요."
     }
 
+    /// Cancels only a pending attempt. The token and all text drafts remain in
+    /// memory for retrying this endpoint; selecting a different endpoint discards them.
+    func cancelConnection() async {
+        guard phase == .connecting else { return }
+        await retireConnection(preservingRetry: true)
+    }
+
+    /// Explicit disconnect erases the in-memory token and all session text drafts.
+    /// A token separately saved in Keychain remains until the user deletes it.
     func disconnect() async {
+        await retireConnection(preservingRetry: false)
+    }
+
+    private func retireConnection(preservingRetry: Bool) async {
+        if preservingRetry { captureRetryDrafts() }
         generation = UUID()
         attempt?.cancel()
         attempt = nil
@@ -159,22 +221,33 @@ final class ConnectionStore {
         model?.detachTransport()
         model = nil
         transport = nil
-        activeEndpoint = nil
-        retryDraft = nil
-        sessions = []
-        historyRequest = UUID()
-        historyError = nil
-        isLoadingHistory = false
+        if !preservingRetry {
+            activeEndpoint = nil
+            retryDrafts = nil
+            token = ""
+        }
+        resetHistory()
         phase = .disconnected
         errorMessage = nil
         isPreview = false
-        token = ""
         await previous?.disconnect()
     }
 
+    private func captureRetryDrafts() {
+        guard let model, let activeEndpoint, !isPreview else { return }
+        retryDrafts = (activeEndpoint, model.captureDraftSnapshot())
+    }
+
+    private func resetHistory() {
+        historyRequest = UUID()
+        sessions = []
+        historyError = nil
+        isLoadingHistory = false
+    }
+
     func useSavedToken() {
-        guard let normalized = try? ConnectionEndpoint(endpoint).url.absoluteString else { return }
-        if let saved = GenericPasswordKeychainStore.loadString(service: Self.keychainService, account: normalized) {
+        guard let normalized = validatedCredentialEndpoint() else { return }
+        if let saved = dependencies.loadToken(normalized) {
             token = saved
             rememberToken = true
             errorMessage = nil
@@ -185,17 +258,25 @@ final class ConnectionStore {
         // Revocation wins even if an in-flight connection captured an earlier consent.
         credentialRevision = UUID()
         rememberToken = false
-        guard let normalized = try? ConnectionEndpoint(endpoint).url.absoluteString else { return }
+        guard let normalized = validatedCredentialEndpoint() else { return }
         do {
-            try GenericPasswordKeychainStore.deleteResult(service: Self.keychainService, account: normalized).get()
+            try dependencies.deleteToken(normalized)
             token = ""
             rememberToken = false
             errorMessage = nil
         } catch { errorMessage = "저장된 토큰을 삭제하지 못했어요. 다시 시도해 주세요." }
     }
 
+    private func validatedCredentialEndpoint() -> String? {
+        do { return try ConnectionEndpoint(endpoint).url.absoluteString }
+        catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? "서버 주소를 확인해 주세요."
+            return nil
+        }
+    }
+
     func loadHistory() async {
-        guard let transport else { return }
+        guard canSend, !Task.isCancelled, let transport else { return }
         let current = generation
         let request = UUID()
         historyRequest = request
@@ -204,15 +285,18 @@ final class ConnectionStore {
         defer { if generation == current && historyRequest == request { isLoadingHistory = false } }
         do {
             let result = try await transport.listSessions(limit: 100, search: nil, archived: false)
-            guard generation == current && historyRequest == request else { return }
+            guard !Task.isCancelled, canSend, generation == current && historyRequest == request else { return }
             sessions = result.sessions
         } catch {
-            guard generation == current && historyRequest == request else { return }
+            guard !Task.isCancelled, canSend, generation == current && historyRequest == request else { return }
             historyError = "대화 목록을 불러오지 못했어요. 다시 시도해 주세요."
         }
     }
 
-    func openSession(_ session: OpenClawChatSessionEntry) { model?.switchSession(to: session.key) }
+    func openSession(_ session: OpenClawChatSessionEntry) {
+        guard canSend else { return }
+        model?.switchSession(to: session.key)
+    }
 
     func newConversation() {
         guard let model, canSend else { return }

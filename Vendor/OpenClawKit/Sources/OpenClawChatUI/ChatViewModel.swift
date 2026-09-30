@@ -7,6 +7,17 @@ import OSLog
 // Module-internal: ChatViewModel extension files share this logger.
 let chatUILogger = Logger(subsystem: "ai.openclaw", category: "OpenClawChatUI")
 
+/// Process-local text drafts for replacing a chat presentation on the same gateway.
+/// The caller must enforce endpoint isolation. This does not persist attachments,
+/// sent-input history, credentials, or pending-run ownership.
+public struct OpenClawChatDraftSnapshot: Sendable {
+    public let sessionKey: String
+    fileprivate let activeAgentID: String?
+    fileprivate let explicitSessionAgentID: String?
+    fileprivate let sessionRoutingContract: String?
+    fileprivate let draftsBySession: [String: String]
+}
+
 @MainActor
 @Observable
 public final class OpenClawChatViewModel {
@@ -109,6 +120,7 @@ public final class OpenClawChatViewModel {
     var nextSessionBranchSwitchGeneration: UInt64 = 0
 
     public private(set) var pendingRunCount: Int = 0
+    public internal(set) var companionRunCompletionRevision: UInt64 = 0
     public internal(set) var questionCards: [OpenClawQuestionCardModel] = []
     var questionAttentionOwnerID = UUID()
     public internal(set) var isQuestionAuthorityRetired = false
@@ -524,6 +536,7 @@ public final class OpenClawChatViewModel {
     public init(
         sessionKey: String,
         transport: any OpenClawChatTransport,
+        draftSnapshot: OpenClawChatDraftSnapshot? = nil,
         webConversation: OpenClawWebConversation? = nil,
         activeAgentId: String? = nil,
         sessionRoutingContract: String? = nil,
@@ -542,7 +555,7 @@ public final class OpenClawChatViewModel {
         onVerbosePreferenceChanged: (@MainActor @Sendable (String?) -> Void)? = nil,
         diagnosticsLog: (@MainActor @Sendable (String) -> Void)? = nil)
     {
-        self.sessionKey = sessionKey
+        self.sessionKey = draftSnapshot?.sessionKey ?? sessionKey
         self.webConversation = webConversation
         self.defaultTransport = transport
         self.haptics = haptics
@@ -551,9 +564,10 @@ public final class OpenClawChatViewModel {
         self.modelPickerFavorites = modelPickerStore.favorites
         self.modelPickerRecents = modelPickerStore.recents
         self.outbox = outbox
-        let normalizedAgentId = activeAgentId?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let normalizedAgentId = (draftSnapshot?.activeAgentID ?? activeAgentId)?
+            .trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         self.activeAgentId = normalizedAgentId?.isEmpty == false ? normalizedAgentId : nil
-        let normalizedRoutingContract = sessionRoutingContract?
+        let normalizedRoutingContract = (draftSnapshot?.sessionRoutingContract ?? sessionRoutingContract)?
             .trimmingCharacters(in: .whitespacesAndNewlines)
         self.sessionRoutingContract = normalizedRoutingContract?.isEmpty == false ? normalizedRoutingContract : nil
         let normalizedThinkingLevel = Self.normalizedThinkingLevel(initialThinkingLevel)
@@ -585,6 +599,18 @@ public final class OpenClawChatViewModel {
         self.diagnosticsLog = diagnosticsLog
         self.attachmentOwnerIsActive = attachmentOwnerIsActive
 
+        if let draftSnapshot {
+            self.explicitSessionAgentID = draftSnapshot.explicitSessionAgentID
+            self.scopedSessionTransport = draftSnapshot.explicitSessionAgentID.flatMap {
+                transport.scoped(toAgentID: $0)
+            }
+            self.draftsBySession = draftSnapshot.draftsBySession
+            // The replacement has no inherited send callbacks or revision owners.
+            self.composerRevisionsBySession = draftSnapshot.draftsBySession.mapValues { _ in 0 }
+            self.savedDraftRevisionsBySession = self.composerRevisionsBySession
+            self.restoreComposerAfterSessionSwitch()
+        }
+
         let transport = self.transport
         self.eventTask = Task { [weak self, transport] in
             let stream = transport.events()
@@ -610,6 +636,22 @@ public final class OpenClawChatViewModel {
 
     isolated deinit {
         self.detachTransport()
+    }
+
+    /// Includes drafts in background sessions and the current unsaved composer.
+    /// Empty current input removes an older saved draft instead of resurrecting it.
+    public func captureDraftSnapshot() -> OpenClawChatDraftSnapshot {
+        var drafts = self.draftsBySession
+        let key = self.composerSessionKey(for: self.sessionKey)
+        let history = self.inputHistoriesBySession[key] ?? ChatInputHistory()
+        let draft = history.draftForSessionSwitch(currentDraft: self.input)
+        drafts[key] = draft.isEmpty ? nil : draft
+        return OpenClawChatDraftSnapshot(
+            sessionKey: self.sessionKey,
+            activeAgentID: self.activeAgentId ?? self.agentCatalog?.defaultId,
+            explicitSessionAgentID: self.explicitSessionAgentID,
+            sessionRoutingContract: self.agentCatalog?.sessionRoutingContract ?? self.sessionRoutingContract,
+            draftsBySession: drafts)
     }
 
     /// Permanently retires a replaced presentation without aborting its gateway run.
@@ -984,7 +1026,7 @@ extension OpenClawChatViewModel {
         } catch {
             guard self.isCurrentBootstrap(context) else { return }
             self.errorText = error.localizedDescription
-            chatUILogger.error("bootstrap failed \(error.localizedDescription, privacy: .public)")
+            chatUILogger.error("bootstrap failed")
         }
     }
 
@@ -1303,7 +1345,7 @@ extension OpenClawChatViewModel {
             guard self.isCurrentSession(session) else { return }
             self.isLoading = false
             self.errorText = error.localizedDescription
-            chatUILogger.error("session reset failed \(error.localizedDescription, privacy: .public)")
+            chatUILogger.error("session reset failed")
             return
         }
 
@@ -1342,10 +1384,7 @@ extension OpenClawChatViewModel {
             guard self.isCurrentSession(session) else { return }
             self.isLoading = false
             self.errorText = "Unable to compact the thread. Please try again."
-            let nsError = error as NSError
-            chatUILogger.error(
-                "compact failed domain=\(nsError.domain, privacy: .public) code=\(nsError.code, privacy: .public)")
-            chatUILogger.error("compact details=\(String(describing: error), privacy: .private)")
+            chatUILogger.error("compact failed")
             return
         }
 
@@ -1430,7 +1469,7 @@ extension OpenClawChatViewModel {
             self.modelSelectionID = rollbackSelectionID
             syncThinkingLevelOptions()
             self.errorText = error.localizedDescription
-            chatUILogger.error("sessions.patch(model) failed \(error.localizedDescription, privacy: .public)")
+            chatUILogger.error("sessions.patch(model) failed")
         }
     }
 
