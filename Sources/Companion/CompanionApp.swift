@@ -256,7 +256,8 @@ struct ConversationActivitySheet: View {
                 let arguments = ProcessInfo.processInfo.arguments
                 if connection.isPreview && (arguments.contains("--ui-questions") || arguments.contains("--ui-unscoped-questions")) {
                     do { try await Task.sleep(for: .milliseconds(300)) } catch { return }
-                    proxy.scrollTo(arguments.contains("--ui-unscoped-questions") ? "unscopedQuestions" : "scopedQuestions", anchor: .top)
+                    proxy.scrollTo(arguments.contains("--ui-unscoped-questions") ? "unscopedQuestions" : "scopedQuestions",
+                                   anchor: arguments.contains("--ui-questions-end") ? .bottom : .top)
                 }
                 #endif
             }
