@@ -1,52 +1,62 @@
-# Native Companion — first integration build
+# Companion — native OpenClaw client
 
-Private, single-user native iOS companion for an eventual OpenClaw gateway.
-This is a **disconnected integration prototype**, not a finished Muse clone.
+Private, single-user SwiftUI iOS 26+ client built around the official MIT OpenClawKit and OpenClawChatUI sources. The current build runs in an iOS 27 Simulator. **A live OpenClaw gateway has not been connected or validated.** Companion is independent of Muse and OpenAI dot.
 
-## Current implementation
-- SwiftUI, iOS 26+, light mode only
-- Official OpenClawKit/OpenClawChatUI source reused at a pinned revision
-- Thin native navigation, history and connection sheets
-- Native chat composer is disabled until an actual gateway is configured
-- No model calls, server connection, credentials, signing identity or personal messages
-- Neutral circle placeholder, not the final dot-like character
-- No emoji in the app-owned UI
+## Implemented
 
-Read `AGENTS.md` before making changes. Prioritize existing compatible code; the user's intended custom-code share is minimal glue/styling, not a measured percentage guarantee.
+- Light-only native chat, history and connection sheets; restrained system Liquid Glass and native typography.
+- Code-drawn blue four-lobed character with dark oval eyes, a small blue bump and glass name pill, based on the latest user reference. The private reference image is excluded from the repository.
+- Existing upstream mascot animator reused for idle and response states. Response acknowledgement requires a nonempty terminal event with explicit current session and owned run correlation; it does not claim external task success.
+- Per-session text drafts survive same-endpoint reconnect failure and cancellation. Explicit disconnect has a separate destructive confirmation. Attachments and history are not promised as persistent drafts.
+- Revision/generation guards for token deletion, delayed connection callbacks and out-of-order history requests.
+- Raw server error text removed from public diagnostics or made private, with narrow synthetic regression checks.
+- Read-only, explicitly disconnected preview fixtures. Sending, attachments and model sign-in remain unavailable in preview.
+- Dynamic Type, a visible connection action at AX5, semantic labels, and reduced-motion/transparency drawing paths.
 
-## Verified on 2026-09-30
-- Swift 6.4 Linux portable core tests: 3 passed
-- xtool 1.20.1 + official Xcode 27 SDK: full native simulator compilation/link passed
-- Binary load commands: ARM64 iOS Simulator, minimum iOS 26
-- Corrected xtool's simulator bundle platform metadata from iPhoneOS to iPhoneSimulator
-- Light-only bundle metadata and complete bundled diagram renderer resources checked
+Read [AGENTS.md](AGENTS.md) before changes. Reuse is an architectural preference; no measured custom-code percentage is claimed.
 
-## Not yet verified or implemented
-- No iOS simulator/device execution, screenshots, animation/fidelity or interaction QA
-- No live OpenClaw gateway test
-- No final character or Muse-level motion polish
-- No signing, iPhone installation, TestFlight or App Store upload
+## Evidence and limits
 
-The first build is a framework-integration milestone, not a usable assistant.
+See [Validation/RECOVERY.md](Validation/RECOVERY.md) for exact source hashes, actual screenshots/video, commands and limitations.
 
-## Build
-Use Swift 6.4 and xtool with the official Darwin SDK installed. From this folder:
+- Native iOS Simulator build, installation, launch and real screenshot capture succeeded on a dedicated recovery simulator.
+- macOS SwiftPM tests exercised the production connection store/model with controlled fake boundaries: 25 integration tests and 5 portable core tests passed.
+- Exact-commit privacy guard and synthetic production helper checks passed. These are not OSLog sink or live-server security tests.
+- Actual renders cover disconnected welcome, synthetic chat/history, local address validation, keyboard, AX5 and a labelled static drawing fixture.
+- A bounded XCUITest attempt stalled during automation-session setup and timed out. Repeated interactive sheet/navigation QA is not passed; screenshots alone do not prove it.
 
-    xtool dev build --triple arm64-apple-ios-simulator
+Still unverified: live pairing/authentication, real sending/streaming/reconnect, server approvals/artifacts/browser control, VoiceOver interaction, real OS Reduce Motion/Transparency settings, phone installation/signing and release distribution. The app does not implement fake activity, purchase approval, browser takeover or voice success surfaces.
 
-The output is `xtool/Companion.app`. Validate and correct simulator metadata using the supplied script and an available LLVM objdump:
+## Build on macOS
 
-    python3 scripts/validate_bundle.py xtool/Companion.app --objdump /path/to/llvm-objdump --fix-metadata
+Use Xcode 27 with the iOS 27 Simulator runtime. Run only one build at a time:
 
-This produces a simulator app, not a phone-installable IPA. Never relabel a device binary as a simulator binary; the validation checks its load commands first.
+```sh
+xcodebuild -project Companion.xcodeproj -scheme Companion \
+  -configuration Debug -sdk iphonesimulator \
+  -destination 'generic/platform=iOS Simulator' \
+  -derivedDataPath .build-xcode -jobs 2 \
+  ARCHS=arm64 ONLY_ACTIVE_ARCH=YES ENABLE_DEBUG_DYLIB=NO \
+  CODE_SIGNING_ALLOWED=NO build
+```
 
-Portable tests:
+This produces `.build-xcode/Build/Products/Debug-iphonesimulator/Companion.app`, not a phone-installable IPA. The recovery machine's earlier `build-for-testing` product stalled in the dynamic loader; the normal build above rendered successfully. The exact cause was not isolated.
 
-    COMPANION_CORE_ONLY=1 swift test --scratch-path .build-core
+```sh
+COMPANION_CONNECTION_TESTS=1 swift test --scratch-path .build-connection --jobs 2 --disable-sandbox
+COMPANION_CORE_ONLY=1 swift test --scratch-path .build-core --jobs 2
+python3 scripts/check_gateway_log_privacy.py
+python3 scripts/check_app_contract.py
+```
 
-Run core tests separately from dependency resolution/build. Core tests cover only the small portable module; they do not validate the upstream chat UI or gateway integration.
+The macOS test target omits app entry views and replaces gateway/credential boundaries. It does not stand in for iOS runtime integration or a real Keychain/server test. `scripts/bounded_command.py` adds an outer timeout and terminates only the command group it owns.
 
-## Dependencies and notices
-`Vendor/OpenClawKit` is source-vendored, with a preserved MIT license and recorded cross-compilation patches in `THIRD_PARTY_NOTICES.md`. The generated Mermaid resources and notices are included. `Package.resolved` pins the resolved Swift dependencies. The default cloud Talk trait is disabled.
+## Debug rendering fixtures
 
-`Research/REUSE-REVIEW.md` records the source-level comparison and remaining questions. Research assets and downloaded SDKs are not part of the application target and must not be bundled or redistributed with the source deliverable.
+Launch arguments: `--ui-testing` (paused mascot/empty endpoint), `--ui-preview`, `--ui-history`, `--ui-settings`, `--ui-keyboard`, `--ui-invalid-address`, and `--ui-motion-gallery`. Preview content is synthetic and visually labelled. `--ui-accessibility-static` exercises static/opaque drawing branches with an on-screen label; it does not alter system accessibility preferences. Fixtures are Debug-only.
+
+## Sources and licenses
+
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) records the pinned vendored foundation, local adaptations and license scope. Complete MIT and resolved dependency notices are retained in the app. Generated Mermaid resources retain their upstream notice. Default cloud Talk support is disabled.
+
+[Research/MUSE-DOT-EVIDENCE.md](Research/MUSE-DOT-EVIDENCE.md) and [REFERENCES.md](REFERENCES.md) distinguish public illustrations, official claims, original implementation decisions and untested behavior. Private screenshots, SDKs, build caches, credentials and other projects are excluded from source delivery.

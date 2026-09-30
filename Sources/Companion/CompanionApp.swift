@@ -319,6 +319,12 @@ struct ConversationHistory: View {
                 }
             }
             .navigationTitle("대화").navigationBarTitleDisplayMode(.inline)
+            .safeAreaInset(edge: .top, spacing: 0) {
+                if connection.isPreview {
+                    Text("미리보기 · 서버 미연결").font(.footnote).foregroundStyle(.secondary)
+                        .padding(10).frame(maxWidth: .infinity).background(Color(white: 0.965))
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) { Button("완료") { dismiss() } }
                 if connection.canSend {
