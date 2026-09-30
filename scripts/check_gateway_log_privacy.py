@@ -3,7 +3,9 @@
 
 Runs a small Swift interpreter harness, never an app or package build. Only local
 source and temporary files are used; there are no server, keychain, or UI calls.
-This targeted source guard is not a general Swift taint analyser or an OSLog capture.
+The lexical guard covers interpolations, direct arguments, simple concatenations,
+and preceding declaration aliases. It is not general Swift dataflow analysis or
+an OSLog capture; runtime assertions exercise the helper and outbox classifier.
 """
 
 import argparse
@@ -49,6 +51,34 @@ def unsafe(expression, preceding, seen=frozenset()):
         r"\b(?:error|wrapped|failure|reason|nsError)\b|SYNTHETIC_SERVER_ECHO", expression))
 
 
+def callback_unsafe(expression, preceding, seen=frozenset()):
+    """Check common callback forms without treating literal labels as error data."""
+    expression = expression.strip()
+    if re.fullmatch(r"\w+", expression) and expression not in seen:
+        assignments = list(re.finditer(
+            rf"\b(?:let|var)\s+{re.escape(expression)}(?:\s*:\s*String)?\s*=\s*([^\n]+)", preceding))
+        if assignments:
+            assignment = assignments[-1]
+            return callback_unsafe(assignment[1], preceding[:assignment.start()], seen | {expression})
+    for interpolation in re.finditer(r"\\\(", expression):
+        end = closing(expression, interpolation.start() + 1)
+        if callback_unsafe(expression[interpolation.end():end], preceding, seen):
+            return True
+    # Interpolations were checked above. Ignore literal text such as "error="
+    # and inspect the code around it, including each operand of a simple +.
+    code = re.sub(r'"(?:\\.|[^"\\])*"', " ", expression)
+    for operand in code.split("+"):
+        operand = operand.strip()
+        if not operand:
+            continue
+        if operand != expression and re.fullmatch(r"\w+", operand):
+            if callback_unsafe(operand, preceding, seen):
+                return True
+        elif unsafe(operand, preceding, seen):
+            return True
+    return False
+
+
 def violations(source):
     found = []
     for match in re.finditer(r"\\\(", source):
@@ -60,11 +90,8 @@ def violations(source):
     for match in re.finditer(r"\blogDiagnostic\s*\(", source):
         end = closing(source, match.end() - 1)
         argument = source[match.end():end]
-        for interpolation in re.finditer(r"\\\(", argument):
-            stop = closing(argument, interpolation.start() + 1)
-            expression = argument[interpolation.end():stop]
-            if unsafe(expression, source[:match.start()]):
-                found.append((source.count("\n", 0, match.start()) + 1, "raw diagnostic callback"))
+        if callback_unsafe(argument, source[:match.start()]):
+            found.append((source.count("\n", 0, match.start()) + 1, "raw diagnostic callback"))
     return found
 
 
@@ -78,12 +105,23 @@ def policy_check():
         'let failure = "SYNTHETIC_SERVER_ECHO_3BC4"\n'
         + r'logger.error("failed \(failure, privacy: .public)")',
         r'logDiagnostic("failed " + "error=\(error.localizedDescription)")',
+        'logDiagnostic(error.localizedDescription)',
+        'logDiagnostic("failed " + error.localizedDescription)',
+        'let message = error.localizedDescription\nlogDiagnostic(message)',
+        'let message = error.localizedDescription\nlogDiagnostic("failed " + message)',
+        'let message: String = error.localizedDescription\n'
+        + 'let diagnostic = message\nlogDiagnostic(diagnostic)',
+        'let message = "failed " + error.localizedDescription\nlogDiagnostic(message)',
     ]
     good = [
         r'logger.error("failed \(error.localizedDescription, privacy: .private)")',
         'let failure = GatewayErrorDiagnostics.category(for: error)\n'
         + r'logger.error("failed \(failure, privacy: .public)")',
         r'logDiagnostic("failed error=\(GatewayErrorDiagnostics.category(for: error))")',
+        'logDiagnostic("failed " + GatewayErrorDiagnostics.category(for: error))',
+        'let message = GatewayErrorDiagnostics.category(for: error)\nlogDiagnostic(message)',
+        'let message = GatewayErrorDiagnostics.category(for: error)\nlogDiagnostic("failed " + message)',
+        'let diagnostic = "chat.ui run observation error=reported_error"\nlogDiagnostic(diagnostic)',
     ]
     assert all(violations(sample) for sample in bad), "Source guard missed a synthetic leak"
     assert not any(violations(sample) for sample in good), "Source guard rejects safe diagnostics"
