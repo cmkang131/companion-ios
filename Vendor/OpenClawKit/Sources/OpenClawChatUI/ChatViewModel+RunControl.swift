@@ -5,10 +5,10 @@ struct ChatRunControlRequest {
     enum Outcome: Equatable { case requested, stopped, ended, failed, unconfirmed }
     var id = UUID()
     let session: OpenClawChatViewModel.SessionSnapshot
-    let runIDs: Set<String>
-    let sequenceFloors: [String: Int]
+    var runIDs: Set<String>
+    var sequenceFloors: [String: Int]
     var outcomes: [String: Outcome] = [:]
-    var lease: OpenClawChatRunControlRouteLease?
+    var leasesByRunID: [String: OpenClawChatRunControlRouteLease] = [:]
 }
 
 extension OpenClawChatViewModel {
@@ -26,6 +26,14 @@ extension OpenClawChatViewModel {
             .subtracting(confirmedStoppedOrEndedRunIDs)
     }
 
+    private var newStopRequestRunIDs: Set<String> {
+        guard let request = companionRunControl, isCurrentSession(request.session) else { return stoppableRunIDs }
+        // Acknowledged requests keep awaiting their own terminal evidence, but
+        // must neither repeat nor prevent stopping a newly advertised response.
+        let alreadyRequested = Set(request.outcomes.compactMap { $0.value == .requested ? $0.key : nil })
+        return stoppableRunIDs.subtracting(alreadyRequested)
+    }
+
     public var companionRunActivity: OpenClawChatRunActivity {
         let request = companionRunControl.flatMap { isCurrentSession($0.session) ? $0 : nil }
         let priorState = companionStopState(for: request)
@@ -34,14 +42,16 @@ extension OpenClawChatViewModel {
             ? .idle : priorState
         let available = !isTransportDetached && !usesWebConversation
         let knownCount = available ? stoppableRunIDs.count : 0
+        let stoppableCount = available ? newStopRequestRunIDs.count : 0
         let isRefreshing = companionRunControlRefreshID != nil
         return OpenClawChatRunActivity(
             hasActiveRun: available && (hasActiveSessionRunWithoutChatSnapshot ||
                 !liveLocalRunIDs.union(liveAdvertisedRunIDs).subtracting(confirmedStoppedOrEndedRunIDs).isEmpty),
             knownRunCount: knownCount,
+            stoppableRunCount: stoppableCount,
             requestedRunCount: state == .idle ? 0 : request?.runIDs.count ?? 0,
             stopState: state,
-            canStop: available && healthOK && knownCount > 0 && !isAborting && !isRefreshing && state != .requested,
+            canStop: available && healthOK && stoppableCount > 0 && !isAborting && !isRefreshing,
             canRefresh: available && !isAborting && !isRefreshing,
             isRefreshing: isRefreshing)
     }
@@ -66,15 +76,35 @@ extension OpenClawChatViewModel {
     @discardableResult
     public func requestStopCurrentRuns() -> Task<Void, Never>? {
         guard companionRunActivity.canStop else { return nil }
-        let runIDs = stoppableRunIDs
-        let request = ChatRunControlRequest(session: currentSessionSnapshot(), runIDs: runIDs,
-            sequenceFloors: Dictionary(uniqueKeysWithValues: runIDs.map { ($0, liveRunStateByRunID[$0]?.sequence ?? 0) }))
+        let batchRunIDs = newStopRequestRunIDs
+        var request = companionRunControl.flatMap { isCurrentSession($0.session) ? $0 : nil }
+            ?? ChatRunControlRequest(session: currentSessionSnapshot(), runIDs: [], sequenceFloors: [:])
+        // Only unresolved prior requests need continued evidence. A new batch
+        // gets its own callback identity while retaining each prior run's lease.
+        // Keep terminal outcome tombstones until the presentation changes: the
+        // upstream pending set may still contain a run confirmed by agent.wait.
+        let finished = Set(request.outcomes.compactMap {
+            $0.value == .stopped || $0.value == .ended ? $0.key : nil
+        })
+        request.runIDs.subtract(finished)
+        for runID in finished {
+            request.sequenceFloors[runID] = nil
+            request.leasesByRunID[runID] = nil
+        }
+        request.id = UUID()
+        request.runIDs.formUnion(batchRunIDs)
+        for runID in batchRunIDs {
+            request.outcomes[runID] = nil
+            request.sequenceFloors[runID] = liveRunStateByRunID[runID]?.sequence ?? 0
+            request.leasesByRunID[runID] = nil
+        }
         companionRunControl = request
         isAborting = true
         let transport = self.transport
+        let reservedRequest = request
         let task = Task { [weak self] in
             guard let self else { return }
-            await self.performStopRequest(request, transport: transport)
+            await self.performStopRequest(reservedRequest, batchRunIDs: batchRunIDs, transport: transport)
         }
         companionRunControlTask = task
         return task
@@ -84,7 +114,8 @@ extension OpenClawChatViewModel {
         isCurrentSession(request.session) && companionRunControl?.id == request.id
     }
 
-    private func performStopRequest(_ request: ChatRunControlRequest, transport: any OpenClawChatTransport) async {
+    private func performStopRequest(_ request: ChatRunControlRequest, batchRunIDs: Set<String>,
+                                    transport: any OpenClawChatTransport) async {
         defer {
             if ownsStopRequest(request) {
                 isAborting = false
@@ -93,12 +124,12 @@ extension OpenClawChatViewModel {
         }
         guard ownsStopRequest(request) else { return }
         guard !Task.isCancelled, let lease = await transport.acquireRunControlRouteLease() else {
-            for runID in request.runIDs { recordStopOutcome(.failed, runID: runID, request: request) }
+            for runID in batchRunIDs { recordStopOutcome(.failed, runID: runID, request: request) }
             return
         }
         guard ownsStopRequest(request) else { return }
-        companionRunControl?.lease = lease
-        for runID in request.runIDs.sorted() {
+        for runID in batchRunIDs { companionRunControl?.leasesByRunID[runID] = lease }
+        for runID in batchRunIDs.sorted() {
             guard ownsStopRequest(request) else { return }
             if companionRunControl?.outcomes[runID] == .stopped || companionRunControl?.outcomes[runID] == .ended {
                 continue
@@ -150,9 +181,9 @@ extension OpenClawChatViewModel {
             if let request, self.ownsStopRequest(request) {
                 // Confirmation keeps the original mutation route. A new socket
                 // may refresh history, but cannot attest an old route's Stop.
-                let lease = request.lease
                 for runID in request.runIDs.sorted() {
-                    let observation = await lease?.observe(runID) ?? .unavailable
+                    if request.outcomes[runID] == .stopped || request.outcomes[runID] == .ended { continue }
+                    let observation = await request.leasesByRunID[runID]?.observe(runID) ?? .unavailable
                     guard !Task.isCancelled, self.ownsStopRequest(request),
                           self.companionRunControlRefreshID == refreshID else { return }
                     switch observation {

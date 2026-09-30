@@ -89,6 +89,17 @@ struct IOSGatewayChatTransport: OpenClawChatGatewayTransport {
             supportsSessionSettingsCAS: supportsSettingsCAS))
     }
 
+    func acquireQuestionMutationRouteLease() async -> OpenClawChatQuestionMutationRouteLease? {
+        guard let route = await currentSessionMutationRoute() else { return nil }
+        let transport = self
+        return OpenClawChatQuestionMutationRouteLease(
+            request: { request in
+                try await transport.gateway.request(request, ifCurrentRoute: route,
+                    distinguishPreDispatchRouteChange: true)
+            },
+            isCurrent: { await transport.gateway.currentRoute() == route })
+    }
+
     func acquireSwarmRouteLease() async -> OpenClawChatSwarmRouteLease? {
         guard let route = await currentSessionMutationRoute() else { return nil }
         let transport = self

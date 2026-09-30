@@ -19,7 +19,9 @@ def activity_is_wired(source):
             and 'model.requestStopCurrentRuns()' in source
             and 'model.refreshCurrentRunActivity()' in source
             and '.disabled(!connection.canSend || !activity.canStop)' in source
-            and 'OpenClawConversationQuestionsView(viewModel: model)' in source
+            and 'OpenClawConversationQuestionsView(viewModel: model, scope: .currentConversation)' in source
+            and 'OpenClawConversationQuestionsView(viewModel: model, scope: .unscoped)' in source
+            and '대화가 지정되지 않은 질문' in source
             and '.accessibilityIdentifier("activityHeaderButton")' in source
             and 'Button { sheet = .activity } label: { HStack' in source)
 

@@ -2,6 +2,59 @@ import Foundation
 import OpenClawKit
 import OpenClawProtocol
 
+public enum OpenClawChatQuestionMutationError: Error, LocalizedError, Sendable, Equatable {
+    case cancellationUnconfirmed
+    case routeChanged
+
+    public var errorDescription: String? {
+        switch self {
+        case .cancellationUnconfirmed:
+            "건너뛰기 완료를 확인하지 못했어요. 질문 상태를 다시 확인해 주세요."
+        case .routeChanged:
+            "연결이 바뀌어 답변 결과를 확인하지 못했어요. 질문 상태를 다시 확인해 주세요."
+        }
+    }
+}
+
+extension OpenClawChatGatewayPayloadCodec {
+    public static func decodeQuestionCancellation(_ data: Data) throws {
+        do {
+            // Pinned generated schema requires exactly status: "cancelled".
+            // An RPC response alone, including {}, does not confirm a skip.
+            _ = try JSONDecoder().decode(QuestionResolveResultCancelled.self, from: data)
+        } catch {
+            throw OpenClawChatQuestionMutationError.cancellationUnconfirmed
+        }
+    }
+}
+
+extension OpenClawChatQuestionMutationRouteLease {
+    public init(
+        request: @escaping @Sendable (OpenClawChatGatewayRequest) async throws -> Data,
+        isCurrent: @escaping @Sendable () async -> Bool)
+    {
+        let boundRequest: @Sendable (OpenClawChatGatewayRequest) async throws -> Data = { outgoing in
+            try Task.checkCancellation()
+            guard await isCurrent() else {
+                throw OpenClawChatQuestionMutationError.routeChanged
+            }
+            let result: Result<Data, any Error>
+            do { result = .success(try await request(outgoing)) }
+            catch { result = .failure(error) }
+            guard await isCurrent() else { throw OpenClawChatQuestionMutationError.routeChanged }
+            return try result.get()
+        }
+        self.init(resolve: { id, answers, hosts in
+            let data = try await boundRequest(OpenClawChatGatewayRequests.resolveQuestion(
+                id: id, answers: answers, secretStoreAllowedHosts: hosts))
+            return try OpenClawChatGatewayPayloadCodec.decodeQuestionAnswer(data)
+        }, cancel: { id in
+            let data = try await boundRequest(OpenClawChatGatewayRequests.cancelQuestion(id: id))
+            try OpenClawChatGatewayPayloadCodec.decodeQuestionCancellation(data)
+        })
+    }
+}
+
 /// Shared RPC application layer. Platform adapters retain route acquisition,
 /// dispatch fencing, event subscriptions, and their session-target policy.
 public protocol OpenClawChatGatewayTransport: OpenClawChatTransport {
@@ -81,8 +134,9 @@ extension OpenClawChatGatewayTransport {
     }
 
     public func cancelQuestion(id: String) async throws {
-        _ = try await self.requestChatGateway(
+        let data = try await self.requestChatGateway(
             OpenClawChatGatewayRequests.cancelQuestion(id: id))
+        try OpenClawChatGatewayPayloadCodec.decodeQuestionCancellation(data)
     }
 
     public func setSessionThinking(sessionKey: String, thinkingLevel: String) async throws {

@@ -93,10 +93,11 @@ actor ActivityPreviewTransport: OpenClawChatTransport {
         return .requested
     }
     func listQuestions() async throws -> [QuestionRecord] {
-        guard ProcessInfo.processInfo.arguments.contains("--ui-questions") else { return [] }
+        let unscoped = ProcessInfo.processInfo.arguments.contains("--ui-unscoped-questions")
+        guard ProcessInfo.processInfo.arguments.contains("--ui-questions") || unscoped else { return [] }
         return [QuestionRecord(id: "fixture-question", questions: [Question(questionid: "priority", header: "우선순위",
             question: "어떤 일부터 정리할까요?", options: [.init(label: "꼭 해야 할 일"), .init(label: "시간이 남으면 할 일")],
-            multiselect: false, isother: true)], agentid: "main", sessionkey: Self.sessionKey, runid: Self.runID,
+            multiselect: false, isother: true)], agentid: "main", sessionkey: unscoped ? nil : Self.sessionKey, runid: Self.runID,
             createdatms: Int(Date().timeIntervalSince1970 * 1000),
             expiresatms: Int(Date().addingTimeInterval(3600).timeIntervalSince1970 * 1000), status: .pending)]
     }

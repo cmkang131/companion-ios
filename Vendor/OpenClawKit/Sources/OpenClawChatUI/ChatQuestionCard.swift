@@ -166,6 +166,7 @@ public final class OpenClawQuestionCardModel: Identifiable {
         self.otherText.removeAll()
         self.selectedOptions.removeAll()
         self.allowedHostsDraft = nil
+        self.errorText = nil
     }
 
     public var canSubmit: Bool {
@@ -189,11 +190,15 @@ public final class OpenClawQuestionCardModel: Identifiable {
     }
 
     public func markAnsweredLocally(answers: QuestionAnswers) {
+        // A terminal event/get result may arrive while this RPC is in flight.
+        // Keep that server outcome; local expiry/unavailability remain overridable.
+        guard self.record.status == .pending else { return }
         self.wasAnsweredLocally = true
         self.apply(resolved: .init(id: self.id, status: .answered, answers: answers))
     }
 
     public func markSkippedLocally() {
+        guard self.record.status == .pending else { return }
         self.apply(resolved: .init(id: self.id, status: .cancelled))
     }
 
@@ -232,6 +237,7 @@ public final class OpenClawQuestionCardModel: Identifiable {
     }
 
     public func failSubmission(_ message: String, preserveSecretDraft: Bool = false) {
+        guard self.record.status == .pending, !self.isLocallyExpired, !self.isRecoveryUnavailable else { return }
         if !preserveSecretDraft {
             for question in self.record.questions where question.issecret == true {
                 self.otherText.removeValue(forKey: question.questionid)
@@ -601,22 +607,29 @@ struct OpenClawQuestionCard: View {
 @MainActor
 public struct OpenClawConversationQuestionsView: View {
     private let viewModel: OpenClawChatViewModel
+    private let scope: OpenClawConversationQuestionScope
 
-    public init(viewModel: OpenClawChatViewModel) {
+    public init(viewModel: OpenClawChatViewModel, scope: OpenClawConversationQuestionScope = .currentConversation) {
         self.viewModel = viewModel
+        self.scope = scope
     }
 
     public var body: some View {
-        OpenClawQuestionCards(viewModel: self.viewModel)
+        OpenClawQuestionCards(viewModel: self.viewModel, scope: self.scope)
     }
+}
+
+public enum OpenClawConversationQuestionScope: Sendable {
+    case all, currentConversation, unscoped
 }
 
 @MainActor
 struct OpenClawQuestionCards: View {
     let viewModel: OpenClawChatViewModel
+    var scope: OpenClawConversationQuestionScope = .all
 
     var body: some View {
-        ForEach(self.viewModel.visibleQuestionCards) { card in
+        ForEach(self.viewModel.visibleQuestionCards(scope: self.scope)) { card in
             OpenClawQuestionCard(model: card) { [weak viewModel = self.viewModel] model in
                 await viewModel?.submitQuestion(model)
             } onSkip: { [weak viewModel = self.viewModel] model in
@@ -666,6 +679,19 @@ extension OpenClawChatViewModel {
                 incoming: key,
                 agentId: card.record.agentid,
                 current: self.sessionKey)
+        }
+    }
+
+    /// Missing session attribution is not evidence of current-conversation
+    /// ownership. Callers can label those authorized questions separately.
+    public func visibleQuestionCards(scope: OpenClawConversationQuestionScope) -> [OpenClawQuestionCardModel] {
+        self.visibleQuestionCards.filter { card in
+            let scoped = !(card.record.sessionkey?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+            switch scope {
+            case .all: return true
+            case .currentConversation: return scoped
+            case .unscoped: return !scoped
+            }
         }
     }
 
@@ -871,25 +897,47 @@ extension OpenClawChatViewModel {
         Task { [weak self] in await self?.refreshQuestions() }
     }
 
+    /// Reconnection invalidates pending mutations without retiring all questions
+    /// from this account. A subsequent list/get recovers their server outcomes.
+    func invalidateQuestionMutationRoute() {
+        self.questionAttentionOwnerID = UUID()
+        for model in self.questionCards where model.isSubmitting {
+            model.failSubmission(OpenClawChatQuestionMutationError.routeChanged.localizedDescription)
+        }
+        self.questionStateRevision &+= 1
+        self.markTimelineChanged()
+    }
+
     func submitQuestion(_ model: OpenClawQuestionCardModel) async {
         guard !self.isQuestionAuthorityRetired,
               self.questionCards.contains(where: { $0 === model }),
               let answers = model.beginSubmission()
         else { return }
+        let ownerID = self.questionAttentionOwnerID
+        let hosts = model.secretStoreAllowedHosts
         self.questionStateRevision &+= 1
         do {
-            let resolvedAnswers = try await self.transport.resolveQuestion(
-                id: model.id,
-                answers: answers,
-                secretStoreAllowedHosts: model.secretStoreAllowedHosts)
-            guard !self.isQuestionAuthorityRetired else { return }
+            try Task.checkCancellation()
+            guard let lease = await self.transport.acquireQuestionMutationRouteLease() else {
+                throw OpenClawChatQuestionMutationError.routeChanged
+            }
+            try Task.checkCancellation()
+            guard !self.isQuestionAuthorityRetired, ownerID == self.questionAttentionOwnerID,
+                  self.questionCards.contains(where: { $0 === model })
+            else { return }
+            guard model.status() == .submitting else {
+                self.expireQuestionIfNeeded(model)
+                return
+            }
+            let resolvedAnswers = try await lease.resolve(model.id, answers, hosts)
+            guard !self.isQuestionAuthorityRetired, ownerID == self.questionAttentionOwnerID else { return }
             // Only Gateway-normalized answers may outlive the request, including stored-secret markers.
             model.markAnsweredLocally(answers: resolvedAnswers)
             self.questionStateRevision &+= 1
             self.syncQuestionExpirations()
             self.markTimelineChanged()
         } catch {
-            guard !self.isQuestionAuthorityRetired else { return }
+            guard !self.isQuestionAuthorityRetired, ownerID == self.questionAttentionOwnerID else { return }
             let responseError = error as? GatewayResponseError
             model.failSubmission(
                 error.localizedDescription,
@@ -904,18 +952,34 @@ extension OpenClawChatViewModel {
               self.questionCards.contains(where: { $0 === model }),
               model.beginSkip()
         else { return }
+        let ownerID = self.questionAttentionOwnerID
         self.questionStateRevision &+= 1
         do {
-            try await self.transport.cancelQuestion(id: model.id)
-            guard !self.isQuestionAuthorityRetired else { return }
+            try Task.checkCancellation()
+            guard let lease = await self.transport.acquireQuestionMutationRouteLease() else {
+                throw OpenClawChatQuestionMutationError.routeChanged
+            }
+            try Task.checkCancellation()
+            guard !self.isQuestionAuthorityRetired, ownerID == self.questionAttentionOwnerID,
+                  self.questionCards.contains(where: { $0 === model })
+            else { return }
+            guard model.status() == .submitting else {
+                self.expireQuestionIfNeeded(model)
+                return
+            }
+            try await lease.cancel(model.id)
+            guard !self.isQuestionAuthorityRetired, ownerID == self.questionAttentionOwnerID else { return }
             model.markSkippedLocally()
             self.questionStateRevision &+= 1
             self.syncQuestionExpirations()
             self.markTimelineChanged()
         } catch {
-            guard !self.isQuestionAuthorityRetired else { return }
+            guard !self.isQuestionAuthorityRetired, ownerID == self.questionAttentionOwnerID else { return }
             model.failSubmission(error.localizedDescription)
             self.questionStateRevision &+= 1
+            if error as? OpenClawChatQuestionMutationError == .cancellationUnconfirmed {
+                await self.refreshQuestions()
+            }
         }
     }
 

@@ -14,8 +14,9 @@ The current character and app icon are code drawings based on a user-supplied vi
 
 The task-controls follow-up adds a route-bound current-conversation stop lease and
 state projection, reuses the existing progress/question cards in a native activity
-sheet, and adapts their Korean labels and large-text layout. Question lifecycle
-semantics remain upstream; added controlled-boundary tests do not establish live
+sheet, and adapts their Korean labels and large-text layout. Question cancellation
+now validates the pinned result contract; mutations use a captured route and retain
+authoritative terminal outcomes. Added controlled-boundary tests do not establish live
 server compatibility. Global audit, execution approvals and managed media loading
 are not enabled by these changes.
 

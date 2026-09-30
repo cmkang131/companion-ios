@@ -90,7 +90,7 @@ extension OpenClawChatViewModel {
             self.invalidateAgentCatalog(clear: true)
             self.refreshAgentsIfRequested()
             if case .routeChanged = evt {
-                self.questionAttentionOwnerID = UUID()
+                self.invalidateQuestionMutationRoute()
                 self.applyProgressCard(nil)
             }
             // Apple transports publish replacement sockets through either event.

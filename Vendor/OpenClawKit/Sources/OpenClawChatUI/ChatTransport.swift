@@ -803,6 +803,21 @@ public struct OpenClawChatSwarmRouteLease: Sendable {
     }
 }
 
+/// Binds one question mutation to its originating connection. Question IDs are
+/// connection-owned; changing the visible conversation does not retarget them.
+public struct OpenClawChatQuestionMutationRouteLease: Sendable {
+    public let resolve: @Sendable (String, [String: [String]], [String]?) async throws -> QuestionAnswers
+    public let cancel: @Sendable (String) async throws -> Void
+
+    public init(
+        resolve: @escaping @Sendable (String, [String: [String]], [String]?) async throws -> QuestionAnswers,
+        cancel: @escaping @Sendable (String) async throws -> Void)
+    {
+        self.resolve = resolve
+        self.cancel = cancel
+    }
+}
+
 public protocol OpenClawChatTransport: Sendable {
     /// A fixed agent fallback sharing the same Gateway connection and route guards.
     func scoped(toAgentID agentID: String) -> (any OpenClawChatTransport)?
@@ -925,6 +940,7 @@ public protocol OpenClawChatTransport: Sendable {
     func acquireSessionSettingsRouteLease() async -> OpenClawChatSessionSettingsRouteLease?
 
     func requestHealth(timeoutMs: Int) async throws -> Bool
+    func acquireQuestionMutationRouteLease() async -> OpenClawChatQuestionMutationRouteLease?
     func listQuestions() async throws -> [QuestionRecord]
     func getQuestion(id: String) async throws -> QuestionRecord
     func resolveQuestion(
@@ -1023,6 +1039,15 @@ extension OpenClawChatTransport {
         return OpenClawChatSwarmRouteLease(
             isEnabled: { try await transport.isSwarmEnabled(sessionKey: $0) },
             listChildSessions: { try await transport.listChildSessions(parentKey: $0) })
+    }
+
+    public func acquireQuestionMutationRouteLease() async -> OpenClawChatQuestionMutationRouteLease? {
+        // Immutable transports can delegate. Mutable socket adapters override
+        // this boundary to capture and fence their physical route.
+        let transport = self
+        return OpenClawChatQuestionMutationRouteLease(
+            resolve: { try await transport.resolveQuestion(id: $0, answers: $1, secretStoreAllowedHosts: $2) },
+            cancel: { try await transport.cancelQuestion(id: $0) })
     }
 
     public func listQuestions() async throws -> [QuestionRecord] {

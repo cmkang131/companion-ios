@@ -227,6 +227,110 @@ struct RunControlTests {
         await transport.finishStop(1, result: .success(.requested))
         await second.value
         #expect(await transport.calls.map(\.runID) == ["run-a", "run-b"])
+        #expect(!model.companionRunActivity.canStop)
+        model.detachTransport()
+    }
+
+    @Test(arguments: [false, true])
+    func acceptedStopDoesNotBlockNewRunOrLoseEitherTerminal(firstEndsBeforeSecondAck: Bool) async throws {
+        let transport = RunControlTestTransport()
+        let model = OpenClawChatViewModel(sessionKey: Self.sessionA, transport: transport)
+        announceRun("run-a", model: model)
+        let first = try #require(model.requestStopCurrentRuns())
+        await transport.waitForStopCount(1)
+        await transport.finishStop(0, result: .success(.requested))
+        await first.value
+        let attachment = OpenClawPendingAttachment(url: nil, data: Data([4, 2]),
+            fileName: "next.txt", mimeType: "text/plain", preview: nil)
+        let reply = OpenClawChatReplyTarget(messageID: UUID(), text: "draft reply", senderLabel: "Fixture")
+        model.input = "next draft"
+        model.attachments = [attachment]
+        model.replyTarget = reply
+        advertiseRuns(["run-a", "run-b"], model: model)
+        #expect(model.companionRunActivity.stopState == .requested)
+        #expect(model.companionRunActivity.knownRunCount == 2)
+        #expect(model.companionRunActivity.stoppableRunCount == 1)
+        #expect(model.companionRunActivity.canStop)
+        let second = try #require(model.requestStopCurrentRuns())
+        await transport.waitForStopCount(2)
+        #expect(model.requestStopCurrentRuns() == nil)
+        if firstEndsBeforeSecondAck {
+            terminal("run-a", session: Self.sessionA, model: model)
+            #expect(model.companionRunActivity.stopState == .requesting)
+        }
+        await transport.finishStop(1, result: .success(.requested))
+        await second.value
+        #expect(model.companionRunActivity.stopState == .requested)
+        #expect(model.companionRunActivity.requestedRunCount == 2)
+        #expect(model.companionRunActivity.stoppableRunCount == 0)
+        #expect(!model.companionRunActivity.canStop)
+        terminal("run-b", session: Self.sessionA, model: model)
+        if !firstEndsBeforeSecondAck {
+            // B ending cannot hide A, whose request was already acknowledged.
+            #expect(model.companionRunActivity.stopState == .requested)
+            terminal("run-a", session: Self.sessionA, model: model)
+        }
+        #expect(model.companionRunActivity.stopState == .stopped)
+        #expect(await transport.calls.map(\.runID) == ["run-a", "run-b"])
+        #expect(model.input == "next draft")
+        #expect(model.attachments.first?.id == attachment.id)
+        #expect(model.attachments.first?.data == Data([4, 2]))
+        #expect(model.replyTarget == reply)
+        #expect(model.companionRunCompletionRevision == 0)
+        model.detachTransport()
+    }
+
+    @Test func overlappingStopTrackingPreservesEachOriginalObservationLease() async throws {
+        let transport = RunControlTestTransport()
+        let model = OpenClawChatViewModel(sessionKey: Self.sessionA, transport: transport)
+        announceRun("run-a", model: model)
+        let first = try #require(model.requestStopCurrentRuns())
+        await transport.waitForStopCount(1)
+        await transport.finishStop(0, result: .success(.requested))
+        await first.value
+        advertiseRuns(["run-a", "run-b"], model: model)
+        let second = try #require(model.requestStopCurrentRuns())
+        await transport.waitForStopCount(2)
+        await transport.finishStop(1, result: .success(.requested))
+        await second.value
+        await transport.setObservation(.stopped, runID: "run-a", lease: 0)
+        await transport.setObservation(.active, runID: "run-b", lease: 1)
+        await model.refreshCurrentRunActivity()?.value
+        #expect(model.companionRunActivity.stopState == .requested)
+        #expect(await transport.observationCalls.map(\.lease) == [0, 1])
+        #expect(await transport.observationCalls.map(\.runID) == ["run-a", "run-b"])
+        await transport.setObservation(.stopped, runID: "run-b", lease: 1)
+        await model.refreshCurrentRunActivity()?.value
+        #expect(model.companionRunActivity.stopState == .stopped)
+        #expect(await transport.observationCalls.map(\.lease) == [0, 1, 1])
+        #expect(await transport.stopCount == 2)
+        model.detachTransport()
+    }
+
+    @Test func retryingNewRunDoesNotRepeatAlreadyAcknowledgedStop() async throws {
+        let transport = RunControlTestTransport()
+        let model = OpenClawChatViewModel(sessionKey: Self.sessionA, transport: transport)
+        announceRun("run-a", model: model)
+        let first = try #require(model.requestStopCurrentRuns())
+        await transport.waitForStopCount(1)
+        await transport.finishStop(0, result: .success(.requested))
+        await first.value
+        advertiseRuns(["run-a", "run-b"], model: model)
+        let second = try #require(model.requestStopCurrentRuns())
+        await transport.waitForStopCount(2)
+        await transport.finishStop(1, result: .failure(URLError(.timedOut)))
+        await second.value
+        #expect(model.companionRunActivity.stopState == .unconfirmed)
+        #expect(model.companionRunActivity.stoppableRunCount == 1)
+        let retry = try #require(model.requestStopCurrentRuns())
+        await transport.waitForStopCount(3)
+        await transport.finishStop(2, result: .success(.requested))
+        await retry.value
+        #expect(await transport.calls.map(\.runID) == ["run-a", "run-b", "run-b"])
+        terminal("run-b", session: Self.sessionA, model: model)
+        #expect(model.companionRunActivity.stopState == .requested)
+        terminal("run-a", session: Self.sessionA, model: model)
+        #expect(model.companionRunActivity.stopState == .stopped)
         model.detachTransport()
     }
 
@@ -363,6 +467,12 @@ struct RunControlTests {
             sessionKey: model.sessionKey, state: "delta", message: nil, errorMessage: nil)))
     }
 
+    private func advertiseRuns(_ ids: [String], model: OpenClawChatViewModel) {
+        model.handleTransportEvent(.sessionMessage(OpenClawSessionMessageEventPayload(
+            sessionKey: model.sessionKey, message: nil, messageId: nil, messageSeq: nil,
+            hasActiveRun: true, activeRunIds: ids)))
+    }
+
     private func terminal(_ id: String?, session: String?, state: String = "aborted", model: OpenClawChatViewModel) {
         model.handleTransportEvent(.chat(OpenClawChatEventPayload(runId: id,
             sessionKey: session, state: state, message: nil, errorMessage: nil)))
@@ -377,11 +487,15 @@ struct RunControlTests {
 
 private actor RunControlTestTransport: OpenClawChatTransport {
     struct Call: Sendable { let session: String; let agent: String?; let runID: String }
+    struct ObservationCall: Sendable { let lease: Int; let runID: String }
     private(set) var calls: [Call] = []
+    private(set) var observationCalls: [ObservationCall] = []
     var stopCount: Int { calls.count }
     private var stops: [Int: CheckedContinuation<OpenClawChatAbortReceipt, any Error>] = [:]
     private var waiters: [Int: [CheckedContinuation<Void, Never>]] = [:]
     private var observation: OpenClawChatStopObservation = .unavailable
+    private var observationsByLease: [Int: [String: OpenClawChatStopObservation]] = [:]
+    private var nextLease = 0
     private var sendContinuation: CheckedContinuation<OpenClawChatSendResponse, any Error>?
     private var sendRunID: String?
     private var sendWaiter: CheckedContinuation<Void, Never>?
@@ -397,10 +511,21 @@ private actor RunControlTestTransport: OpenClawChatTransport {
 
     func setObservation(_ observation: OpenClawChatStopObservation) { self.observation = observation }
 
+    func setObservation(_ observation: OpenClawChatStopObservation, runID: String, lease: Int) {
+        observationsByLease[lease, default: [:]][runID] = observation
+    }
+
+    private func observe(_ runID: String, lease: Int) -> OpenClawChatStopObservation {
+        observationCalls.append(ObservationCall(lease: lease, runID: runID))
+        return observationsByLease[lease]?[runID] ?? observation
+    }
+
     func acquireRunControlRouteLease() async -> OpenClawChatRunControlRouteLease? {
-        OpenClawChatRunControlRouteLease(requestStop: { key, agent, runID in
+        let lease = nextLease
+        nextLease += 1
+        return OpenClawChatRunControlRouteLease(requestStop: { key, agent, runID in
             try await self.requestStop(key, agent: agent, runID: runID)
-        }, observe: { _ in await self.observation })
+        }, observe: { runID in await self.observe(runID, lease: lease) })
     }
 
     private func requestStop(_ key: String, agent: String?, runID: String) async throws -> OpenClawChatAbortReceipt {

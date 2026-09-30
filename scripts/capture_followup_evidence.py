@@ -27,6 +27,8 @@ MODES = {
     'stop-confirmed': ('large', ['--ui-preview', '--ui-activity', '--ui-stop', '--ui-stop-confirmed']),
     'stop-failed': ('large', ['--ui-preview', '--ui-activity', '--ui-stop', '--ui-stop-failed']),
     'questions': ('large', ['--ui-preview', '--ui-activity', '--ui-questions']),
+    'questions-unscoped': ('large', ['--ui-preview', '--ui-activity', '--ui-unscoped-questions']),
+    'questions-ax5': ('accessibility-extra-extra-extra-large', ['--ui-preview', '--ui-activity', '--ui-questions']),
 }
 
 def run(args, allowed=(0,)):

@@ -213,10 +213,8 @@ struct ConversationActivitySheet: View {
 
     var body: some View {
         NavigationStack {
+            ScrollViewReader { proxy in
             List {
-                if connection.isPreview {
-                    Section { Text("미리보기 · 서버 미연결").foregroundStyle(.secondary) }
-                }
                 if let model = connection.model {
                     activity(model)
                     if model.progressCard != nil {
@@ -226,24 +224,48 @@ struct ConversationActivitySheet: View {
                             Text("서버가 보고한 진행 상황이에요. 단계 완료가 외부 작업의 성공을 보장하지는 않아요.")
                         }
                     }
-                    if !model.visibleQuestionCards.isEmpty {
+                    if !model.visibleQuestionCards(scope: .currentConversation).isEmpty {
                         Section {
-                            OpenClawConversationQuestionsView(viewModel: model)
+                            OpenClawConversationQuestionsView(viewModel: model, scope: .currentConversation)
                                 .disabled(!connection.canSend)
-                        } header: { Text("질문") } footer: {
+                        } header: { Text("이 대화의 질문") } footer: {
                             Text("질문에 대한 답변이에요. 실행 권한 승인과는 달라요.")
-                        }
+                        }.id("scopedQuestions")
+                    }
+                    if !model.visibleQuestionCards(scope: .unscoped).isEmpty {
+                        Section {
+                            Text("서버가 대화를 지정하지 않았어요. 질문의 대상을 확인한 뒤 답변해 주세요.")
+                                .font(.subheadline).foregroundStyle(.secondary)
+                            OpenClawConversationQuestionsView(viewModel: model, scope: .unscoped)
+                                .disabled(!connection.canSend)
+                        } header: { Text("대화가 지정되지 않은 질문") }.id("unscopedQuestions")
                     }
                 } else {
                     Text("서버 연결 후 현재 대화의 활동을 확인할 수 있어요.")
                         .foregroundStyle(.secondary)
                 }
             }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                if connection.isPreview {
+                    Text("미리보기 · 서버 미연결").font(.caption).foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity).padding(.vertical, 7).background(Color(white: 0.98))
+                }
+            }
+            .task(id: connection.model?.visibleQuestionCards.count ?? 0) {
+                #if DEBUG
+                let arguments = ProcessInfo.processInfo.arguments
+                if connection.isPreview && (arguments.contains("--ui-questions") || arguments.contains("--ui-unscoped-questions")) {
+                    do { try await Task.sleep(for: .milliseconds(300)) } catch { return }
+                    proxy.scrollTo(arguments.contains("--ui-unscoped-questions") ? "unscopedQuestions" : "scopedQuestions", anchor: .top)
+                }
+                #endif
+            }
             .navigationTitle("현재 대화 활동").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("닫기") { dismiss() }.accessibilityIdentifier("closeActivityButton")
                 }
+            }
             }
         }
         .environment(\.locale, Locale(identifier: "ko_KR"))
@@ -258,11 +280,12 @@ struct ConversationActivitySheet: View {
                 Text(statusDetail(model)).font(.subheadline).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }.padding(.vertical, 4)
-            if activity.canStop || activity.stopState == .requesting || activity.stopState == .requested {
+            if activity.canStop || activity.stopState == .requesting {
                 Button {
                     model.requestStopCurrentRuns()
                 } label: {
-                    Label(activity.stopState == .requesting ? "중단 요청 중" : "현재 응답 중단",
+                    Label(activity.stopState == .requesting ? "중단 요청 중"
+                          : "응답 \(activity.stoppableRunCount)개 중단",
                           systemImage: "stop.circle")
                 }
                 .disabled(!connection.canSend || !activity.canStop)

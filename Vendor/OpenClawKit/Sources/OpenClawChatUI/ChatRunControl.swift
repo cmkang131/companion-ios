@@ -8,6 +8,8 @@ public enum OpenClawChatStopState: Equatable, Sendable {
 public struct OpenClawChatRunActivity: Equatable, Sendable {
     public let hasActiveRun: Bool
     public let knownRunCount: Int
+    /// Runs eligible for a new explicit request; excludes accepted Stop requests.
+    public let stoppableRunCount: Int
     public let requestedRunCount: Int
     public let stopState: OpenClawChatStopState
     public let canStop: Bool

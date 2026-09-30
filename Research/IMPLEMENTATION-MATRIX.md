@@ -58,6 +58,19 @@ terminal을 생산 model/adapter에 통과시켜 검증한다. 접수 ACK만으�
 새 draft/첨부/reply는 중단 요청으로 지우지 않는다. 질문도 production card/model을 사용하고
 이미 해결된 질문에 늦은 응답이 UI 상태를 되돌리지 않는지 확인한다.
 
+독립 소스 리뷰 후 보완한 구체적 계약:
+
+- A의 중단 접수를 기다리는 동안 새 B가 나타나면 A를 재요청하지 않고 B만 중단한다.
+  A/B의 원래 route lease와 종료 증거는 별도로 유지한다.
+- 질문 건너뛰기는 RPC 완료만으로 확정하지 않는다. 고정 schema의 `status: cancelled`
+  응답을 검증하고, 빈/다른 상태 응답은 미확인으로 처리한 뒤 질문 상태를 다시 조회한다.
+- 먼저 도착한 서버 terminal 기록과 로컬 시간 만료를 구분한다. 실제 서버 terminal을 늦은
+  mutation 응답으로 바꾸지 않되, 로컬 만료만 있던 질문은 확정 서버 응답으로 복구할 수 있다.
+- 질문 mutation도 물리 route와 question authority를 고정한다. 같은 연결의 대화 전환은
+  원래 질문에 대한 정상 답변 완료를 허용하고, route 교체·detach 뒤 늦은 응답은 차단한다.
+- 세션을 지정하지 않은 질문은 “대화가 지정되지 않은 질문”으로 분리한다. 질문 객체와
+  작성 중인 답변은 보존하며, 현재 대화의 요청이라고 추정하지 않는다.
+
 새 exact source commit에서 macOS tests, iOS build, privacy snapshot 검사, 필요한 native
 fixture renders를 직렬 수행한다. 각 raw log에 commit과 snapshot 귀속을 남기고 manifest에
 파일 hash·실행 모드·제약을 연결한다. fixture는 서버 미연결 표시를 유지하며 live 성공으로

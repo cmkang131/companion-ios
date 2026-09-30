@@ -39,6 +39,7 @@
 		4B0201A78E837CAC6DB66652 /* ModelSignInPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBC55F12AF39149ACEE30BC9 /* ModelSignInPresentationTests.swift */; };
 		B0AD671A347178B4E4FC530D /* RunControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85CEAF5C7562474518BEE2C /* RunControlTests.swift */; };
 		5EC39BDA1CBFE0BB3B62A0EF /* QuestionLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660646DDD08E80C8AC2E843D /* QuestionLifecycleTests.swift */; };
+		0FE82B96B122ABB13CE2443C /* QuestionScopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1DD7DC729DE2195457FD55 /* QuestionScopeTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,6 +128,7 @@
 		FBC55F12AF39149ACEE30BC9 /* ModelSignInPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelSignInPresentationTests.swift; sourceTree = "<group>"; };
 		B85CEAF5C7562474518BEE2C /* RunControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunControlTests.swift; sourceTree = "<group>"; };
 		660646DDD08E80C8AC2E843D /* QuestionLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionLifecycleTests.swift; sourceTree = "<group>"; };
+		7B1DD7DC729DE2195457FD55 /* QuestionScopeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionScopeTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -183,6 +185,7 @@
 			children = (
 				C2E6731290937B1E1F37DCA1 /* CharacterStateTests.swift */,
 				F73858C7CEC3436D21867897 /* ConnectionTests.swift */,
+				7B1DD7DC729DE2195457FD55 /* QuestionScopeTests.swift */,
 				660646DDD08E80C8AC2E843D /* QuestionLifecycleTests.swift */,
 				B85CEAF5C7562474518BEE2C /* RunControlTests.swift */,
 				FBC55F12AF39149ACEE30BC9 /* ModelSignInPresentationTests.swift */,
@@ -492,6 +495,7 @@
 			files = (
 				9306C9AE0D742617E48D2D6E /* CharacterStateTests.swift in Sources */,
 				6FB992E41E111A101B97CFB1 /* ConnectionTests.swift in Sources */,
+				0FE82B96B122ABB13CE2443C /* QuestionScopeTests.swift in Sources */,
 				5EC39BDA1CBFE0BB3B62A0EF /* QuestionLifecycleTests.swift in Sources */,
 				B0AD671A347178B4E4FC530D /* RunControlTests.swift in Sources */,
 				4B0201A78E837CAC6DB66652 /* ModelSignInPresentationTests.swift in Sources */,

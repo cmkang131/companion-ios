@@ -230,6 +230,227 @@ struct QuestionLifecycleTests {
         #expect(fixture.boundary.mutations.count == 1)
     }
 
+    @Test(arguments: ["{}", #"{"status":"answered","answers":{"answers":{}}}"#,
+        #"{"status":"rejected"}"#, "not-json"])
+    func gatewayCancellationRequiresTheCancelledContract(payload: String) async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let transport = QuestionRPCTransport(boundary: fixture.boundary)
+        let request = Task { () -> OpenClawChatQuestionMutationError? in
+            do {
+                try await transport.cancelQuestion(id: "question-a")
+                Issue.record("An unconfirmed cancellation payload must not succeed")
+                return nil
+            } catch { return error as? OpenClawChatQuestionMutationError }
+        }
+        defer { request.cancel() }
+        try await self.waitUntil { fixture.boundary.mutations.count == 1 }
+        fixture.boundary.finishMutation(0, response: Data(payload.utf8))
+        let error = await request.value
+        #expect(error == .cancellationUnconfirmed)
+    }
+
+    @Test(arguments: ["{}", #"{"status":"answered","answers":{"answers":{}}}"#,
+        #"{"status":"rejected"}"#])
+    func unconfirmedSkipRemainsActionableAndRecoversInsteadOfClaimingSkipped(payload: String) async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion()
+        let request = Task { await fixture.model.skipQuestion(card) }
+        defer { request.cancel() }
+        try await self.waitUntil { fixture.boundary.mutations.count == 1 }
+        fixture.boundary.finishMutation(0, response: Data(payload.utf8))
+        await request.value
+
+        #expect(card.status() == .pending)
+        #expect(card.record.status == .pending)
+        #expect(!card.isSubmitting)
+        #expect(!card.isSkipping)
+        #expect(card.errorText == OpenClawChatQuestionMutationError.cancellationUnconfirmed.localizedDescription)
+        #expect(fixture.boundary.requests.contains { $0.method == "question.list" })
+        #expect(fixture.boundary.mutations.count == 1)
+    }
+
+    @Test func unconfirmedSkipRecoversAnAuthoritativeAnswerWithoutClaimingSkipped() async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion()
+        let request = Task { await fixture.model.skipQuestion(card) }
+        defer { request.cancel() }
+        try await self.waitUntil { fixture.boundary.mutations.count == 1 }
+        fixture.boundary.listRecords = []
+        fixture.boundary.getRecord = QuestionFixture.record(status: .answered,
+            answers: QuestionAnswers(answers: ["answer": AnyCodable(["Recovered server answer"])]))
+        fixture.boundary.finishMutation(0, response: Data("{}".utf8))
+        await request.value
+        #expect(card.status() == .answeredElsewhere)
+        #expect(card.terminalSummaryText(for: card.record.questions[0]) == "Recovered server answer")
+        #expect(card.errorText == nil)
+        #expect(!card.isSubmitting)
+    }
+
+    @Test(arguments: ["expiry", "route"])
+    func invalidatedQuestionCannotDispatchAfterDelayedLeaseAcquisition(reason: String) async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion()
+        fixture.boundary.holdLeaseAcquisition = true
+        let request = Task { await fixture.model.skipQuestion(card) }
+        defer { request.cancel() }
+        try await self.waitUntil { fixture.boundary.leaseRequestCount == 1 }
+        #expect(card.isSubmitting)
+        if reason == "expiry" {
+            fixture.model.expireQuestionIfNeeded(card, at: Date(
+                timeIntervalSince1970: Double(card.record.expiresatms) / 1000 + 1))
+        } else {
+            fixture.boundary.routeID = UUID()
+            fixture.model.handleTransportEvent(.routeChanged)
+        }
+        fixture.boundary.releaseLeaseAcquisition()
+        await request.value
+        #expect(fixture.boundary.mutations.isEmpty)
+        #expect(card.status() == (reason == "expiry" ? .expired : .pending))
+        #expect(!card.isSubmitting)
+        #expect(!card.isSkipping)
+    }
+
+    @Test(arguments: [false, true], [false, true])
+    func localExpiryDuringMutationAllowsOnlyConfirmedServerOutcome(skip: Bool, succeeds: Bool) async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion(secret: true)
+        card.setOtherText(questionID: "answer", value: "synthetic-expiring-answer")
+        let request = Task { await fixture.perform(on: card, skip: skip) }
+        defer { request.cancel() }
+        try await self.waitUntil { fixture.boundary.mutations.count == 1 }
+        fixture.model.expireQuestionIfNeeded(card, at: Date(
+            timeIntervalSince1970: Double(card.record.expiresatms) / 1000 + 1))
+        #expect(card.status() == .expired)
+        #expect(card.otherText.isEmpty)
+        #expect(!card.isSubmitting)
+        #expect(fixture.model.questionExpiryTasks.isEmpty)
+
+        if succeeds {
+            fixture.boundary.finishMutation(0, response: QuestionFixture.confirmedResponse(skip: skip))
+        } else {
+            fixture.boundary.failMutation(0, error: QuestionFixture.permissionDenied(method: "question.resolve"))
+        }
+        await request.value
+        #expect(card.status() == (succeeds ? (skip ? .cancelled : .answered) : .expired))
+        #expect(card.errorText == nil)
+        #expect(card.otherText.isEmpty)
+        await fixture.model.submitQuestion(card)
+        await fixture.model.skipQuestion(card)
+        #expect(fixture.boundary.mutations.count == 1)
+    }
+
+    @Test(arguments: [QuestionStatus.answered, .cancelled, .expired], [false, true])
+    func terminalEventCannotBeOverwrittenByLateMutation(status: QuestionStatus, skip: Bool) async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion()
+        card.setOtherText(questionID: "answer", value: "Synthetic answer")
+        let request = Task { await fixture.perform(on: card, skip: skip) }
+        defer { request.cancel() }
+        try await self.waitUntil { fixture.boundary.mutations.count == 1 }
+        fixture.model.handleTransportEvent(.questionResolved(.init(id: card.id, status: status,
+            answers: status == .answered ? QuestionAnswers(
+                answers: ["answer": AnyCodable(["Authoritative event answer"])]) : nil)))
+        fixture.boundary.finishMutation(0, response: QuestionFixture.confirmedResponse(skip: skip))
+        await request.value
+
+        #expect(card.record.status == status)
+        #expect(!card.wasAnsweredLocally)
+        #expect(card.otherText.isEmpty)
+        #expect(card.errorText == nil)
+        #expect(!card.isSubmitting)
+        if status == .answered {
+            #expect(card.terminalSummaryText(for: card.record.questions[0]) == "Authoritative event answer")
+        }
+        await fixture.model.submitQuestion(card)
+        await fixture.model.skipQuestion(card)
+        #expect(fixture.boundary.mutations.count == 1)
+    }
+
+    @Test(arguments: [false, true])
+    func terminalEventIgnoresLateMutationFailure(skip: Bool) async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion()
+        card.setOtherText(questionID: "answer", value: "Synthetic answer")
+        let request = Task { await fixture.perform(on: card, skip: skip) }
+        defer { request.cancel() }
+        try await self.waitUntil { fixture.boundary.mutations.count == 1 }
+        fixture.model.handleTransportEvent(.questionResolved(.init(id: card.id, status: .expired)))
+        fixture.boundary.failMutation(0, error: QuestionFixture.permissionDenied(method: "question.resolve"))
+        await request.value
+        #expect(card.status() == .expired)
+        #expect(card.errorText == nil)
+        #expect(!card.isSubmitting)
+        #expect(!card.isSkipping)
+    }
+
+    @Test func replacedLeaseCannotDispatchOnTheNewConnection() async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let transport = QuestionRPCTransport(boundary: fixture.boundary)
+        let acquired = await transport.acquireQuestionMutationRouteLease()
+        let lease = try #require(acquired)
+        fixture.boundary.routeID = UUID()
+        do {
+            try await lease.cancel("question-a")
+            Issue.record("A retired question lease must not dispatch")
+        } catch {
+            #expect(error is OpenClawChatQuestionMutationError)
+        }
+        #expect(fixture.boundary.mutations.isEmpty)
+    }
+
+    @Test(arguments: [false, true])
+    func replacementRouteDiscardsResponseEvenBeforeRouteEvent(skip: Bool) async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion()
+        card.setOtherText(questionID: "answer", value: "Synthetic answer")
+        let request = Task { await fixture.perform(on: card, skip: skip) }
+        defer { request.cancel() }
+        try await self.waitUntil { fixture.boundary.mutations.count == 1 }
+        fixture.boundary.routeID = UUID()
+        fixture.boundary.finishMutation(0, response: QuestionFixture.confirmedResponse(skip: skip))
+        await request.value
+        #expect(card.status() == .pending)
+        #expect(card.errorText == OpenClawChatQuestionMutationError.routeChanged.localizedDescription)
+        #expect(!card.isSubmitting)
+    }
+
+    @Test(arguments: [false, true])
+    func lateOldRouteCannotClearTheNewRoutesQuestionSubmission(skip: Bool) async throws {
+        let fixture = try QuestionFixture()
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion()
+        card.setOtherText(questionID: "answer", value: "Old connection answer")
+        let oldRequest = Task { await fixture.perform(on: card, skip: skip) }
+        defer { oldRequest.cancel() }
+        try await self.waitUntil { fixture.boundary.mutations.count == 1 }
+        fixture.boundary.routeID = UUID()
+        fixture.model.handleTransportEvent(.routeChanged)
+        #expect(!card.isSubmitting)
+        card.setOtherText(questionID: "answer", value: "New connection answer")
+        let newRequest = Task { await fixture.perform(on: card, skip: skip) }
+        defer { newRequest.cancel() }
+        try await self.waitUntil { fixture.boundary.mutations.count == 2 }
+
+        fixture.boundary.finishMutation(0, response: QuestionFixture.confirmedResponse(skip: skip))
+        await oldRequest.value
+        #expect(card.status() == .submitting)
+        #expect(card.isSkipping == skip)
+        #expect(card.errorText == nil)
+        #expect(card.otherText["answer"] == "New connection answer")
+        fixture.boundary.finishMutation(1, response: QuestionFixture.confirmedResponse(skip: skip))
+        await newRequest.value
+        #expect(card.status() == (skip ? .cancelled : .answered))
+    }
+
     private func waitUntil(_ condition: @MainActor () -> Bool) async throws {
         let deadline = ContinuousClock.now.advanced(by: .seconds(5))
         while !condition() {
@@ -304,6 +525,10 @@ private final class QuestionFixture {
 
 @MainActor
 private final class QuestionRPCBoundary {
+    var routeID = UUID()
+    var holdLeaseAcquisition = false
+    private(set) var leaseRequestCount = 0
+    private var leaseContinuation: CheckedContinuation<UUID, Never>?
     var advertisesQuestions = true
     var listRecords: [QuestionRecord] = []
     var listError: GatewayResponseError?
@@ -312,6 +537,17 @@ private final class QuestionRPCBoundary {
     private(set) var requests: [OpenClawChatGatewayRequest] = []
     private(set) var mutations: [OpenClawChatGatewayRequest] = []
     private var pending: [Int: CheckedContinuation<Data, any Error>] = [:]
+
+    func acquireRoute() async -> UUID {
+        self.leaseRequestCount += 1
+        guard self.holdLeaseAcquisition else { return self.routeID }
+        return await withCheckedContinuation { self.leaseContinuation = $0 }
+    }
+
+    func releaseLeaseAcquisition() {
+        self.leaseContinuation?.resume(returning: self.routeID)
+        self.leaseContinuation = nil
+    }
 
     func request(_ request: OpenClawChatGatewayRequest) async throws -> Data {
         self.requests.append(request)
@@ -343,6 +579,7 @@ private final class QuestionRPCBoundary {
     }
 
     func finishAll() {
+        self.releaseLeaseAcquisition()
         for index in Array(self.pending.keys) { self.failMutation(index, error: CancellationError()) }
     }
 }
@@ -357,6 +594,16 @@ private struct QuestionRPCTransport: OpenClawChatGatewayTransport {
 
     func requestChatGateway(_ request: OpenClawChatGatewayRequest) async throws -> Data {
         try await self.boundary.request(request)
+    }
+
+    func acquireQuestionMutationRouteLease() async -> OpenClawChatQuestionMutationRouteLease? {
+        let route = await self.boundary.acquireRoute()
+        let boundary = self.boundary
+        // Same production lease initializer as the iOS adapter; the actual
+        // Gateway socket has its own final pre-dispatch fence in addition.
+        return OpenClawChatQuestionMutationRouteLease(
+            request: { try await boundary.request($0) },
+            isCurrent: { await boundary.routeID == route })
     }
 
     func gatewayAdvertisesMethod(_ method: String) async -> Bool? {

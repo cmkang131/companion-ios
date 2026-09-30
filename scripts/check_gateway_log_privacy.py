@@ -22,7 +22,7 @@ CHAT = ROOT / "Vendor/OpenClawKit/Sources/OpenClawChatUI"
 PROTOCOL = ROOT / "Vendor/OpenClawKit/Sources/OpenClawProtocol"
 
 
-def snapshot_header(repository, source_commit):
+def snapshot_header(repository, source_commit, scope="lexical diagnostic guard + synthetic helper/outbox harness; not OSLog sink or live app"):
     """Attribute this exact tree, including this guard, before any PASS output.
 
     The reference repository supplies Git objects only. Every tracked blob must
@@ -51,7 +51,7 @@ def snapshot_header(repository, source_commit):
         checked += 1
     print(f"SOURCE_COMMIT={full}", flush=True)
     print(f"CLEAN_SNAPSHOT=verified_all_{checked}_tracked_blobs_match_git_commit", flush=True)
-    print("SCOPE=lexical diagnostic guard + synthetic helper/outbox harness; not OSLog sink or live app", flush=True)
+    print(f"SCOPE={scope}", flush=True)
 
 
 def closing(text, start, left="(", right=")"):
