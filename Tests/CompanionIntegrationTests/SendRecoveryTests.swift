@@ -40,6 +40,98 @@ struct SendRecoveryTests {
         await store.disconnect()
     }
 
+    @Test func recoveryOpensUnlistedNewSessionAndRestoresAttachmentWithOriginalKey() async throws {
+        let fixture = SendConnectionFixture()
+        let store = fixture.store()
+        await store.connect()?.value
+        let model = try #require(store.model)
+        store.newConversation()
+        let originalSession = model.sessionKey
+        let attachment = OpenClawPendingAttachment(url: nil, data: Data([2, 4, 6]),
+            fileName: "unsent.txt", mimeType: "text/plain", preview: nil)
+        let reply = OpenClawChatReplyTarget(messageID: UUID(), text: "original reply", senderLabel: "Fixture")
+        model.input = "  never listed by server\n"
+        model.attachments = [attachment]
+        model.replyTarget = reply
+        let send = try #require(model.send())
+        await fixture.transports[0].waitForSendCount(1)
+        let runID = await fixture.transports[0].sentKey(0)
+        await fixture.transports[0].finishSend(0, with: .failure(OpenClawChatTransportSendError.notDispatched))
+        await send.value
+        store.newConversation()
+        let newerSession = model.sessionKey
+        #expect(newerSession != originalSession)
+        model.input = "newer conversation draft"
+        await store.loadHistory()
+        #expect(store.sessions.isEmpty)
+        #expect(store.retainedSendRecoveries.first?.sessionKey == originalSession)
+        #expect(store.openSendRecovery(id: runID))
+        #expect(model.sessionKey == originalSession)
+        #expect(model.currentSendRecoveries.first?.id == runID)
+        #expect(model.input.isEmpty)
+        #expect(model.canRestoreSendRecovery(id: runID))
+        #expect(model.restoreSendRecovery(id: runID))
+        #expect(model.input == "  never listed by server\n")
+        #expect(model.attachments.first?.id == attachment.id)
+        #expect(model.attachments.first?.data == Data([2, 4, 6]))
+        #expect(model.replyTarget == reply)
+        #expect(await fixture.transports[0].sendCount == 1)
+
+        let explicitRetry = try #require(model.send())
+        await fixture.transports[0].waitForSendCount(2)
+        #expect(await fixture.transports[0].sentKey(1) == runID)
+        await fixture.transports[0].finishSend(1, with: .success(try sendResponse(id: runID, status: "ok")))
+        await explicitRetry.value
+        #expect(store.retainedSendRecoveries.isEmpty)
+        #expect(!store.openSendRecovery(id: runID))
+        store.openSession(try sessionEntry(newerSession))
+        #expect(model.input == "newer conversation draft")
+        await store.disconnect()
+    }
+
+    @Test func recoveryNavigationHonorsEndpointConnectionAndAttachmentGuards() async throws {
+        let fixture = SendConnectionFixture()
+        let store = fixture.store()
+        await store.connect()?.value
+        let model = try #require(store.model)
+        model.input = "retained in A"
+        let send = try #require(model.send())
+        await fixture.transports[0].waitForSendCount(1)
+        let runID = await fixture.transports[0].sentKey(0)
+        await fixture.transports[0].finishSend(0, with: .failure(OpenClawChatTransportSendError.notDispatched))
+        await send.value
+        store.openSession(try sessionEntry(Self.sessionB))
+        model.input = "B draft"
+        #expect(!store.openSendRecovery(id: "unknown-recovery"))
+        for endpoint in ["https://other.example", "not an endpoint"] {
+            store.endpoint = endpoint
+            #expect(!store.openSendRecovery(id: runID))
+            #expect(model.sessionKey == Self.sessionB)
+            #expect(model.input == "B draft")
+        }
+        store.endpoint = "https://first.example"
+        let newerAttachment = OpenClawPendingAttachment(url: nil, data: Data([9]),
+            fileName: "B.txt", mimeType: "text/plain", preview: nil)
+        model.attachments = [newerAttachment]
+        #expect(!store.openSendRecovery(id: runID))
+        #expect(model.sessionKey == Self.sessionB)
+        #expect(model.attachments.first?.id == newerAttachment.id)
+        model.removeAttachment(newerAttachment.id)
+        model.beginAttachmentStaging()
+        #expect(!store.openSendRecovery(id: runID))
+        #expect(model.sessionKey == Self.sessionB)
+        model.endAttachmentStaging()
+        await fixture.dropConnection(0)
+        #expect(!store.openSendRecovery(id: runID))
+        #expect(model.sessionKey == Self.sessionB)
+        #expect(model.input == "B draft")
+        await store.connect()?.value
+        #expect(store.openSendRecovery(id: runID))
+        #expect(store.model?.sessionKey == Self.sessionA)
+        await store.disconnect()
+        #expect(!store.openSendRecovery(id: runID))
+    }
+
     @Test func failureNeverOverwritesNewerComposerDraft() async throws {
         let transport = RecoveryTestTransport()
         let model = OpenClawChatViewModel(sessionKey: Self.sessionA, transport: transport)
@@ -226,13 +318,44 @@ struct SendRecoveryTests {
         await transport.finishSend(0, with: .failure(OpenClawChatTransportSendError.notDispatched))
         await send.value
         let recovery = try #require(model.currentSendRecoveries.first)
+        #expect(!model.canRestoreSendRecovery(id: recovery.id))
         #expect(!model.restoreSendRecovery(id: recovery.id))
         #expect(model.input.isEmpty)
         #expect(model.replyTarget == newerReply)
         model.replyTarget = nil
+        #expect(model.canRestoreSendRecovery(id: recovery.id))
         #expect(model.restoreSendRecovery(id: recovery.id))
         #expect(model.replyTarget == originalReply)
         #expect(model.input == "original text")
+        model.detachTransport()
+    }
+
+    @Test func recoveryEligibilityAllowsOriginalReplyAndRechecksNewerDraft() async throws {
+        let transport = RecoveryTestTransport()
+        let model = OpenClawChatViewModel(sessionKey: Self.sessionA, transport: transport)
+        let originalReply = OpenClawChatReplyTarget(messageID: UUID(), text: "original reply", senderLabel: "Fixture")
+        model.input = "original text"
+        model.replyTarget = originalReply
+        let send = try #require(model.send())
+        await transport.waitForSendCount(1)
+        await transport.finishSend(0, with: .failure(OpenClawChatTransportSendError.notDispatched))
+        await send.value
+        let recovery = try #require(model.currentSendRecoveries.first)
+        #expect(model.replyTarget == originalReply)
+        #expect(model.canRestoreSendRecovery(id: recovery.id))
+        // Eligibility may change between drawing the button and tapping it.
+        model.input = "newer draft"
+        #expect(!model.restoreSendRecovery(id: recovery.id))
+        #expect(!model.canRestoreSendRecovery(id: recovery.id))
+        #expect(model.input == "newer draft")
+        #expect(model.replyTarget == originalReply)
+        model.input = ""
+        #expect(model.canRestoreSendRecovery(id: recovery.id))
+        #expect(model.restoreSendRecovery(id: recovery.id))
+        #expect(model.input == "original text")
+        #expect(model.replyTarget == originalReply)
+        #expect(!model.canRestoreSendRecovery(id: recovery.id))
+        #expect(!model.restoreSendRecovery(id: recovery.id))
         model.detachTransport()
     }
 

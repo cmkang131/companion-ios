@@ -326,6 +326,18 @@ final class ConnectionStore {
         model?.switchSession(to: session.key)
     }
 
+    /// A failed first send may never appear in the server's session list.
+    /// Navigate only through this endpoint's retained ledger, preserving the
+    /// model's attachment/session guards and reporting whether it really opened.
+    @discardableResult
+    func openSendRecovery(id: String) -> Bool {
+        guard canSend, let model,
+              let address = try? ConnectionEndpoint(endpoint).url, address == activeEndpoint,
+              let recovery = retainedSendRecoveries.first(where: { $0.id == id }) else { return false }
+        model.switchSession(to: recovery.sessionKey)
+        return model.currentSendRecoveries.contains(where: { $0.id == id })
+    }
+
     func newConversation() {
         guard let model, canSend else { return }
         let agent = OpenClawChatSessionKey.agentID(from: model.currentSessionTarget.sessionKey) ?? "main"

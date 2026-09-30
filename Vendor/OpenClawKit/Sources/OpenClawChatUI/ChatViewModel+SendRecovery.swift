@@ -99,18 +99,30 @@ extension OpenClawChatViewModel {
         return true
     }
 
+    /// Read-only UI eligibility. Restoration rechecks these same conditions.
+    /// The original reply selection is safe to retain; a newer selection is not.
+    public func canRestoreSendRecovery(id: String) -> Bool {
+        restorableSendRecoveryIndex(id: id) != nil
+    }
+
+    private func restorableSendRecoveryIndex(id: String) -> Int? {
+        guard !isTransportDetached, !isSubmittingDraft, !isSending, !isAttachmentOwnerPinned,
+              input.isEmpty, attachments.isEmpty,
+              let recovery = currentSendRecoveries.first(where: { $0.id == id }), recovery.canRestore,
+              let index = sendRecoveryLedger.entries.firstIndex(where: { $0.id == id })
+        else { return nil }
+        let entry = sendRecoveryLedger.entries[index]
+        guard replyTarget == nil || replyTarget == entry.replyTarget else { return nil }
+        return index
+    }
+
     /// Called only after an explicit user choice. For uncertain delivery, the UI
     /// must explain that the server may already have accepted the message.
     /// Never replaces newer composer text, attachments, or a reply selection.
     @discardableResult
     public func restoreSendRecovery(id: String) -> Bool {
-        guard !isTransportDetached, !isSubmittingDraft, !isSending, !isAttachmentOwnerPinned,
-              input.isEmpty, attachments.isEmpty,
-              let recovery = currentSendRecoveries.first(where: { $0.id == id }), recovery.canRestore,
-              let index = sendRecoveryLedger.entries.firstIndex(where: { $0.id == id })
-        else { return false }
+        guard let index = restorableSendRecoveryIndex(id: id) else { return false }
         let entry = sendRecoveryLedger.entries[index]
-        guard replyTarget == nil || replyTarget == entry.replyTarget else { return false }
         sendRecoveryLedger.entries.remove(at: index)
         sendRecoveryLedger.restoredBySession[entry.composerSessionKey] = entry
         input = entry.text
