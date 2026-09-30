@@ -4,7 +4,20 @@
 
 생산 질문 권한/범위 로직은 검토된 `bf8ece6` 그대로다. 추가 코드는 DEBUG 본문 진입과 촬영 위치 지정뿐이며, 일반 normal build(`ENABLE_DEBUG_DYLIB=NO`)를 설치했다. 처음에는 소스 변경 없이 보존된 bf8ece6 앱의 두 화면을 촬영했고 `baseline-bf8ece6/`에 별도로 보존했다.
 
-## 보고용 개별 PNG 6장
+## 아침 보고 추가 자료 · 같은 f869cbc 설치본
+
+앱 소스 변경·재빌드·재설치 없이 일반 welcome PNG와 모션 갤러리를 한 번 추가 촬영했다. 설치 main SHA는 이전 자료와 동일하다. 촬영 후 전용 Simulator는 welcome 화면으로 복귀했고 해당 프로세스와 SHA를 확인했다.
+
+| 자료 | 파일 | Library ID |
+|---|---|---|
+| 일반 welcome · 캐릭터와 glass pill | [Companion-f869cbc-welcome.png](welcome-motion/Companion-f869cbc-welcome.png) | `libfile_7c4881d842a481919ca51d557dfdc696` |
+| 12.01초 상태 갤러리 · 서버 미연결 | [Companion-f869cbc-state-gallery-12s.mp4](welcome-motion/Companion-f869cbc-state-gallery-12s.mp4) | `libfile_0e82b1008ee481918b9d051c78b568df` |
+
+welcome은 `--ui-testing`으로 캐릭터를 정지한 일반 미연결 첫 화면이다. 영상은 `--ui-motion-gallery`만 지정하고 `--ui-testing`을 제외했다. 화면 자체에 서버 미연결·시각 검증용 표시가 있다. 대기/응답 작성/응답 도착이라는 **고정된 세 시각 상태를 동시에 보여주는 갤러리**이며, 실서버 작업이나 이벤트에 따른 상태 전환·FPS·OS 접근성 검증이 아니다. H.2641170×2532,2,151,808바이트이며0.5/3.5/6.5/10.5초 프레임을 직접 확인했다.
+
+[촬영 기록](welcome-motion/capture.json)과 기존 [manifest](manifest.json)의 `welcome_motion_followup`에 앱 소스 f869cbc, 촬영 당시 문서 snapshot5f82a48, 소스 파일 hash, 설치 실행파일 SHA, 전체 flags, 영상 metadata와 Library ID를 구분해 기록했다. 기존6장 PNG·비교 이미지 및 검증된 체크포인트는 그대로 보존했다.
+
+## 기존 보고용 개별 PNG 6장
 
 각 원본은1170×2532이며 축소된 이미지 모음 대신 개별 파일로 Library에 저장했다. 모두 합성 대화이며 `미리보기 · 서버 미연결` 표시가 있다.
 
@@ -29,6 +42,6 @@
 - [manifest.json](manifest.json)에11개 최신 원문 로그, 각 캡처의 UTC·flags·content size·SHA, 소스/실행파일과 Library 대응을 연결했다. 모든 성공 로그에 full source hash와574개 tracked blob 일치 헤더가 있다.
 - AX5 본문에서는 긴 설명/질문 전체를 한 번에 볼 수 없다. 진행 표시와 입력 초안이 화면을 차지하며 스크롤이 필요하다. 실제 스크롤 조작은 검증하지 않았다. 활동 하단은 프로그램으로 위치를 지정했다.
 - 실제 탭·닫기·재열기·키보드 조작·VoiceOver·OS Reduce Motion/Transparency·live server·실기기 설치는 미검증이다. 같은 자동화 timeout을 다시 실행하지 않았다.
-- `--ui-testing`에서 캐릭터는 정지한다. 이전11초 영상은 별도 idle gallery 자료이며 이번 화면의 live 전환이나 FPS 근거가 아니다.
+- `--ui-testing`의 정지 캡처와 위 새12초 무정지 갤러리를 구분한다. 기존11초 갤러리도 별도 자료이며 어느 영상도 live 전환이나 FPS 근거가 아니다.
 
 실행/결제 승인, 브라우저 제어, 음성, 기억, 지속 작업 및 결과물 다운로드의 남은 통합 범위는 [구현 matrix](../../Research/IMPLEMENTATION-MATRIX.md)에 있다. 질문은 실행 승인과 다르다. 이번 자료는 수정된 질문 표시의 렌더 검증이며 전체 앱 완성 판정이 아니다.

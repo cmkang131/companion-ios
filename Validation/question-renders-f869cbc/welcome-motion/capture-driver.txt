@@ -1,0 +1,101 @@
+import datetime, hashlib, json, selectors, signal, subprocess, time
+from pathlib import Path
+
+DEVICE = '022EC407-377F-4563-A350-CD12D1BA7795'
+BUNDLE = 'com.cmkang131.companion'
+SOURCE = 'f869cbc116c9bb553ddd54bb9d0d8e44bdc963da'
+EXPECTED = '619421965f0c2716403c84dc47a040eb708dbfc52d5eee597c79c1bd0ec35570'
+ROOT = Path('Validation/question-renders-f869cbc')
+OUTPUT = ROOT / 'welcome-motion'
+OUTPUT.mkdir(exist_ok=True)
+def run(command, allowed=(0,)):
+    result = subprocess.run(command, capture_output=True, text=True, timeout=20)
+    if result.returncode not in allowed:
+        raise RuntimeError(f'{command[:4]}: {result.returncode}: {result.stderr}')
+    return result.stdout.strip()
+def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+def now(): return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def launch(flags):
+    run(['xcrun','simctl','terminate',DEVICE,BUNDLE],allowed=(0,3))
+    result = run(['xcrun','simctl','launch',DEVICE,BUNDLE]+flags)
+    print('LAUNCH=' + result, flush=True)
+    return result
+snapshot = run(['git','rev-parse','HEAD'])
+assert not run(['git','status','--porcelain'])
+assert not run(['git','diff','--name-only',SOURCE,snapshot,'--','Sources','Tests','Vendor','scripts','Companion.xcodeproj','Package.swift','Package.resolved'])
+print('APPLICATION_BUILD_SOURCE=' + SOURCE, flush=True)
+print('CAPTURE_HARNESS_SNAPSHOT=' + snapshot, flush=True)
+print('APPLICATION_INPUT_DIFF=empty', flush=True)
+devices = json.loads(run(['xcrun','simctl','list','devices','-j']))
+device = next(d for group in devices['devices'].values() for d in group if d['udid'] == DEVICE)
+assert device['name']=='Companion Recovery Task5' and device['state']=='Booted'
+built = Path('.build-render-products/f869cbc/Companion.app').resolve()
+installed = Path(run(['xcrun','simctl','get_app_container',DEVICE,BUNDLE,'app']))
+hashes = {}
+for rel in ['Companion','Frameworks/CompanionCore.framework/CompanionCore']:
+    assert sha(built/rel)==sha(installed/rel)
+    hashes[rel]=sha(installed/rel)
+assert hashes['Companion']==EXPECTED
+locale=['-AppleLanguages','(ko)','-AppleLocale','ko_KR']
+welcome_flags=['--ui-testing']+locale
+gallery_flags=['--ui-motion-gallery']+locale
+assert '--ui-testing' not in gallery_flags
+data={'application_build_source_commit':SOURCE,'capture_harness_snapshot_commit':snapshot,
+      'source_equivalence':'No app/test/vendor/script/project/package diff from f869cbc',
+      'simulator_id':DEVICE,'simulator_name':device['name'], 'normal_build_app_path':str(built),
+      'installed_app_path':str(installed),'matching_executable_sha256':hashes,'captures':[],
+      'limits':['Welcome is the standard disconnected landing screen with --ui-testing to pause mascot and empty endpoint.',
+                'Motion is a DEBUG labelled simultaneous state gallery, not live server work or state transitions.',
+                'No FPS/frame-time performance claim, real taps, VoiceOver or OS accessibility verification.',
+                'No source changes, build, installation, account/server setup or model calls in this follow-up.']}
+run(['xcrun','simctl','ui',DEVICE,'content_size','large'])
+try:
+    launch(welcome_flags)
+    time.sleep(8)
+    png=OUTPUT/'Companion-f869cbc-welcome.png'
+    run(['xcrun','simctl','io',DEVICE,'screenshot',str(png)])
+    data['captures'].append({'kind':'welcome','file':png.name,'flags':welcome_flags,'content_size':'large',
+                             'captured_utc':now(),'sha256':sha(png),'size_bytes':png.stat().st_size})
+    (OUTPUT/'capture.json').write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
+    print('WELCOME_CAPTURED='+sha(png),flush=True)
+    launch(gallery_flags)
+    time.sleep(4)
+    video=OUTPUT/'Companion-f869cbc-state-gallery-12s.mp4'
+    assert not video.exists(), 'One recording attempt only; do not overwrite an earlier recording'
+    command=['xcrun','simctl','io',DEVICE,'recordVideo','--codec=h264',str(video)]
+    recorder=subprocess.Popen(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+    try:
+        selector=selectors.DefaultSelector();selector.register(recorder.stderr,selectors.EVENT_READ)
+        deadline=time.monotonic()+12;started=False
+        while time.monotonic()<deadline and recorder.poll() is None:
+            if selector.select(timeout=0.5):
+                line=recorder.stderr.readline()
+                print(line.rstrip(),flush=True)
+                if 'Recording started' in line: started=True;break
+        selector.close()
+        assert started, 'No recording-start acknowledgement within 12 seconds'
+        start=now()
+        time.sleep(12)
+        recorder.send_signal(signal.SIGINT)
+        out,err=recorder.communicate(timeout=15)
+        print(out+err,flush=True)
+        assert recorder.returncode==0, recorder.returncode
+        data['captures'].append({'kind':'state-gallery','file':video.name,'flags':gallery_flags,'content_size':'large',
+                                 'recording_started_utc':start,'finalized_utc':now(),'requested_recording_seconds':12,
+                                 'record_command':command,'sha256':sha(video),'size_bytes':video.stat().st_size})
+        services=run(['xcrun','simctl','spawn',DEVICE,'launchctl','list']).splitlines()
+        service=next(line for line in services if 'UIKitApplication:'+BUNDLE+'[' in line)
+        pid=int(service.split()[0]); process=run(['ps','-p',str(pid),'-o','pid=,etime=,stat=,comm='])
+        assert str(installed/'Companion') in process
+        data['gallery_runtime']={'own_launch_service':service,'own_process':process,'observed_utc':now()}
+        print('GALLERY_FINALIZED='+sha(video),flush=True)
+    finally:
+        if recorder.poll() is None:
+            recorder.send_signal(signal.SIGINT)
+            try: recorder.communicate(timeout=5)
+            except subprocess.TimeoutExpired: recorder.kill();recorder.communicate()
+finally:
+    data['restored_welcome_launch']=launch(welcome_flags)
+    data['restored_utc']=now()
+    (OUTPUT/'capture.json').write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
+print('PASS: welcome and one labelled state-gallery recording; no live/FPS claim',flush=True)

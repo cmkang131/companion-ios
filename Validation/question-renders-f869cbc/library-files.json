@@ -68,5 +68,25 @@
     "original_file": "Companion-f869cbc-question-comparison.png",
     "sha256": "2d96afa574f2541f2a2ee4f007d481653ad3be2e7e450c1f98fea000777f3061",
     "local_identity_saved": true
+  },
+  {
+    "file_name": "Companion-f869cbc-welcome.png",
+    "library_file_id": "libfile_7c4881d842a481919ca51d557dfdc696",
+    "file_id": "file_00000000e4608209aa838ccb0dd60711",
+    "current_version_number": 0,
+    "path": "/Companion-f869cbc-welcome.png",
+    "original_file": "welcome-motion/Companion-f869cbc-welcome.png",
+    "sha256": "7c2f76d76cb0264c4720d28d3aa58a806f336423fe73258da173cf025faec122",
+    "local_identity_saved": true
+  },
+  {
+    "file_name": "Companion-f869cbc-state-gallery-12s.mp4",
+    "library_file_id": "libfile_0e82b1008ee481918b9d051c78b568df",
+    "file_id": "file_000000009ecc8209ad3e379ac1d8bd9c",
+    "current_version_number": 0,
+    "path": "/Companion-f869cbc-state-gallery-12s.mp4",
+    "original_file": "welcome-motion/Companion-f869cbc-state-gallery-12s.mp4",
+    "sha256": "76e60c2de36ef146e1b2b28e1e271d47cb2a18bda4cb99a7e2749faf777271c7",
+    "local_identity_saved": true
   }
 ]

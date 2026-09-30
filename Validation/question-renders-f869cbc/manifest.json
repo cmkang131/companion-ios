@@ -92,6 +92,15 @@
       "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
       "result": "PASS",
       "scope": "Uncropped two-panel assembly of real source screenshots;2.0s"
+    },
+    {
+      "file": "logs/welcome-motion-f869cbc.log",
+      "sha256": "9aa0c5f3fd5a5bd77a91d69f3156f7dc3dc81ebccdc5803c5f2cb91c377ceabb",
+      "size_bytes": 1207,
+      "source_commit": "5f82a488adb9ba2657b7cadb0396ac2e5b7d492f",
+      "application_build_source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "result": "PASS",
+      "scope": "Source-free capture on existing f869cbc install: one welcome PNG and one12.01s state-gallery video. No live/FPS/tap claim;30.5s bounded command."
     }
   ],
   "captures": [
@@ -257,8 +266,8 @@
     },
     {
       "file": "library-files.json",
-      "sha256": "94888bc6e13a000e7df782f9bf13c69bd827693e71f925c08e44d2296a1faeb2",
-      "size_bytes": 3116
+      "sha256": "684de4d07983cd7e80b4087d3ecae3e9db73383dd3f938ded55b2c726c813e25",
+      "size_bytes": 4036
     },
     {
       "file": "Companion-f869cbc-question-comparison.png",
@@ -267,8 +276,8 @@
     },
     {
       "file": "README.md",
-      "sha256": "66e03281fb7967fb7e4687ac61e7b3e2f545057722a1789c831adc3902fd67a9",
-      "size_bytes": 4276
+      "sha256": "3c71b9eb488a14b669db61ff13946567c689940362d050b24e7d3a9649ba7e55",
+      "size_bytes": 5991
     }
   ],
   "baseline_before_source_changes": {
@@ -373,6 +382,26 @@
       "original_file": "Companion-f869cbc-question-comparison.png",
       "sha256": "2d96afa574f2541f2a2ee4f007d481653ad3be2e7e450c1f98fea000777f3061",
       "local_identity_saved": true
+    },
+    {
+      "file_name": "Companion-f869cbc-welcome.png",
+      "library_file_id": "libfile_7c4881d842a481919ca51d557dfdc696",
+      "file_id": "file_00000000e4608209aa838ccb0dd60711",
+      "current_version_number": 0,
+      "path": "/Companion-f869cbc-welcome.png",
+      "original_file": "welcome-motion/Companion-f869cbc-welcome.png",
+      "sha256": "7c2f76d76cb0264c4720d28d3aa58a806f336423fe73258da173cf025faec122",
+      "local_identity_saved": true
+    },
+    {
+      "file_name": "Companion-f869cbc-state-gallery-12s.mp4",
+      "library_file_id": "libfile_0e82b1008ee481918b9d051c78b568df",
+      "file_id": "file_000000009ecc8209ad3e379ac1d8bd9c",
+      "current_version_number": 0,
+      "path": "/Companion-f869cbc-state-gallery-12s.mp4",
+      "original_file": "welcome-motion/Companion-f869cbc-state-gallery-12s.mp4",
+      "sha256": "76e60c2de36ef146e1b2b28e1e271d47cb2a18bda4cb99a7e2749faf777271c7",
+      "local_identity_saved": true
     }
   ],
   "pixel_observations": [
@@ -391,10 +420,169 @@
     "Programmatic launch/sheet selection/scroll positioning are not real taps, scrolling, dismissal or repeated sheet re-entry.",
     "No unchanged XCUITest retry; prior automation initialization timeout remains unresolved.",
     "Simulator AX5 content-size rendering is not VoiceOver or OS Reduce Motion/Transparency validation.",
-    "All new launches use --ui-testing (paused mascot). Earlier motion gallery video is separate; no live motion/FPS claim.",
+    "Question/compact screenshots and added welcome use --ui-testing (paused mascot); only the separately labelled welcome-motion gallery video omits it. Neither gallery video proves live transitions or FPS.",
     "No phone installation/signing/distribution. Activity is current-conversation response control, not a durable global task dashboard.",
     "Questions are not execution/purchase approvals; real approvals, browser takeover, voice, memory and output downloads remain incomplete.",
     "Prior selected upstream tests remain compile-blocked by excluded Talk test types; not rerun or counted as passed.",
     "No complete-app/release certification; stable checkpoint e8afca7 and earlier evidence are preserved."
-  ]
+  ],
+  "updated_utc": "2026-09-30T21:47:13.688555+00:00",
+  "welcome_motion_followup": {
+    "application_build_source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+    "capture_harness_snapshot_commit": "5f82a488adb9ba2657b7cadb0396ac2e5b7d492f",
+    "capture_snapshot_tracked_blob_count": 603,
+    "change_scope": "Capture and documentation only. App/test/vendor/build inputs unchanged from f869cbc; no rebuild or reinstall.",
+    "capture_record": {
+      "file": "welcome-motion/capture.json",
+      "sha256": "e4a4f4dd334c76f1cf4b2349a518c45e2c8a5eed9df8e805b5dee46b81b92817",
+      "size_bytes": 3584
+    },
+    "capture_driver": {
+      "file": "welcome-motion/capture-driver.txt",
+      "sha256": "7a9497a1b9865c17e2f6bcf83281178355f9633a2609b06447e51defd446dc86",
+      "size_bytes": 6167,
+      "scope": "Exact command driver retained as evidence; not an application source change or part of the build"
+    },
+    "media": [
+      {
+        "file": "welcome-motion/Companion-f869cbc-welcome.png",
+        "sha256": "7c2f76d76cb0264c4720d28d3aa58a806f336423fe73258da173cf025faec122",
+        "size_bytes": 290482,
+        "kind": "welcome",
+        "flags": [
+          "--ui-testing",
+          "-AppleLanguages",
+          "(ko)",
+          "-AppleLocale",
+          "ko_KR"
+        ],
+        "content_size": "large",
+        "captured_utc": "2026-09-30T21:44:01.971477+00:00"
+      },
+      {
+        "file": "welcome-motion/Companion-f869cbc-state-gallery-12s.mp4",
+        "sha256": "76e60c2de36ef146e1b2b28e1e271d47cb2a18bda4cb99a7e2749faf777271c7",
+        "size_bytes": 2151808,
+        "kind": "state-gallery",
+        "flags": [
+          "--ui-motion-gallery",
+          "-AppleLanguages",
+          "(ko)",
+          "-AppleLocale",
+          "ko_KR"
+        ],
+        "content_size": "large",
+        "recording_started_utc": "2026-09-30T21:44:06.497905+00:00",
+        "finalized_utc": "2026-09-30T21:44:18.708629+00:00",
+        "requested_recording_seconds": 12,
+        "record_command": [
+          "xcrun",
+          "simctl",
+          "io",
+          "022EC407-377F-4563-A350-CD12D1BA7795",
+          "recordVideo",
+          "--codec=h264",
+          "Validation/question-renders-f869cbc/welcome-motion/Companion-f869cbc-state-gallery-12s.mp4"
+        ]
+      }
+    ],
+    "inspection_record": {
+      "file": "welcome-motion/video-inspection.json",
+      "sha256": "34b3719dfc6d48700ff5c20de29a38353b34303cb1b35506d9db3f3186361637",
+      "size_bytes": 1155
+    },
+    "sampled_frames": [
+      {
+        "file": "welcome-motion/gallery-frame-0.5s.png",
+        "sha256": "b1c5c29b741bb09739f6e0eac6c1141a5608fe2e4f2207c57df4693f32fe6adb",
+        "size_bytes": 212912,
+        "sample_seconds": 0.5
+      },
+      {
+        "file": "welcome-motion/gallery-frame-3.5s.png",
+        "sha256": "1e07b259ff3da381f4f788a37efe1fbe7b391d4f849aa8c13ce6c2a0f6ed7b44",
+        "size_bytes": 225931,
+        "sample_seconds": 3.5
+      },
+      {
+        "file": "welcome-motion/gallery-frame-6.5s.png",
+        "sha256": "e2b6dd12d83e299de1fbfb36820ac48c530e6549e1babe88a8ec9e88df2a75cb",
+        "size_bytes": 241951,
+        "sample_seconds": 6.5
+      },
+      {
+        "file": "welcome-motion/gallery-frame-10.5s.png",
+        "sha256": "796dc1f05495bcae647f1669a4d52145dbc4afc35e09ef89b0ae0c3ccd3a717b",
+        "size_bytes": 241552,
+        "sample_seconds": 10.5
+      }
+    ],
+    "render_source_files": [
+      {
+        "source_file": "Sources/Companion/CompanionApp.swift",
+        "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+        "sha256": "650ee2f0dcc3e0af90b714df9b113e69538ca7020f33b0ea1d0b6fc95ad18a0f"
+      },
+      {
+        "source_file": "Sources/Companion/CompanionVisualFixtures.swift",
+        "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+        "sha256": "84b7e00803e66864050649640d04f0a52c3e6038a5d358920e390847ac0bdb84"
+      },
+      {
+        "source_file": "Sources/Companion/CompanionNamePill.swift",
+        "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+        "sha256": "0b950e6b40f17491b3687741f0fc6ee9e4d50fc822a2e61d6943fc233a66718b"
+      },
+      {
+        "source_file": "Vendor/OpenClawKit/Sources/OpenClawChatUI/CompanionCharacterView.swift",
+        "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+        "sha256": "4f64df65e30297e30a6e29412d3464fcc55fed2edebd36ab610d7791cbc2bdd1"
+      }
+    ],
+    "matching_executable_sha256": {
+      "Companion": "619421965f0c2716403c84dc47a040eb708dbfc52d5eee597c79c1bd0ec35570",
+      "Frameworks/CompanionCore.framework/CompanionCore": "d1930ebf545f852c475fd94237eaea9440f2285ff5514c1d7424923ca6af3c61"
+    },
+    "video_metadata": {
+      "duration_seconds": 12.011667,
+      "codec": "h264",
+      "width": 1170,
+      "height": 2532,
+      "size_bytes": 2151808
+    },
+    "recording_attempts": 1,
+    "observations": [
+      "Welcome pixels show blue four-lobed body, dark oval eyes, small blue bump, glass dot name pill and disconnected connection entry.",
+      "Four individually viewed video frames at0.5/3.5/6.5/10.5s show real labelled gallery content with small pose/gaze changes.",
+      "The gallery displays three fixed visual moods simultaneously; it does not demonstrate a server event changing the mood."
+    ],
+    "limits": [
+      "Welcome is the standard disconnected landing screen with --ui-testing to pause mascot and empty endpoint.",
+      "Motion is a DEBUG labelled simultaneous state gallery, not live server work or state transitions.",
+      "No FPS/frame-time performance claim, real taps, VoiceOver or OS accessibility verification.",
+      "No source changes, build, installation, account/server setup or model calls in this follow-up."
+    ],
+    "library_deliverables": [
+      {
+        "file_name": "Companion-f869cbc-welcome.png",
+        "library_file_id": "libfile_7c4881d842a481919ca51d557dfdc696",
+        "file_id": "file_00000000e4608209aa838ccb0dd60711",
+        "current_version_number": 0,
+        "path": "/Companion-f869cbc-welcome.png",
+        "original_file": "welcome-motion/Companion-f869cbc-welcome.png",
+        "sha256": "7c2f76d76cb0264c4720d28d3aa58a806f336423fe73258da173cf025faec122",
+        "local_identity_saved": true
+      },
+      {
+        "file_name": "Companion-f869cbc-state-gallery-12s.mp4",
+        "library_file_id": "libfile_0e82b1008ee481918b9d051c78b568df",
+        "file_id": "file_000000009ecc8209ad3e379ac1d8bd9c",
+        "current_version_number": 0,
+        "path": "/Companion-f869cbc-state-gallery-12s.mp4",
+        "original_file": "welcome-motion/Companion-f869cbc-state-gallery-12s.mp4",
+        "sha256": "76e60c2de36ef146e1b2b28e1e271d47cb2a18bda4cb99a7e2749faf777271c7",
+        "local_identity_saved": true
+      }
+    ]
+  }
 }

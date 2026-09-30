@@ -1,0 +1,22 @@
+RUNNER_STARTED_UTC=2026-09-30T21:43:48Z
+SOURCE_COMMIT=5f82a488adb9ba2657b7cadb0396ac2e5b7d492f
+CLEAN_SNAPSHOT=verified_all_603_tracked_blobs_match_git_commit
+SCOPE=source attribution for the following validation command
+VALIDATION_COMMAND_SCOPE=see command output below; snapshot header is source attribution only
+APPLICATION_BUILD_SOURCE=f869cbc116c9bb553ddd54bb9d0d8e44bdc963da
+CAPTURE_HARNESS_SNAPSHOT=5f82a488adb9ba2657b7cadb0396ac2e5b7d492f
+APPLICATION_INPUT_DIFF=empty
+LAUNCH=com.cmkang131.companion: 53071
+WELCOME_CAPTURED=7c2f76d76cb0264c4720d28d3aa58a806f336423fe73258da173cf025faec122
+LAUNCH=com.cmkang131.companion: 53447
+Note: No display specified. Defaulting to display: 102D6C32-5027-4EFD-A0BD-E895ACA7E2CA (screenID: 1, name: LCD)
+Recording started
+Recording completed. Writing to disk.
+
+Wrote video to: /Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/Validation/question-renders-f869cbc/welcome-motion/Companion-f869cbc-state-gallery-12s.mp4
+
+GALLERY_FINALIZED=76e60c2de36ef146e1b2b28e1e271d47cb2a18bda4cb99a7e2749faf777271c7
+LAUNCH=com.cmkang131.companion: 53567
+PASS: welcome and one labelled state-gallery recording; no live/FPS claim
+
+RUNNER_EXIT=0; ELAPSED_SECONDS=30.5

@@ -1,0 +1,44 @@
+{
+  "programs": [],
+  "stream_groups": [],
+  "streams": [
+    {
+      "codec_name": "h264",
+      "width": 1170,
+      "height": 2532
+    }
+  ],
+  "format": {
+    "duration": "12.011667",
+    "size": "2151808"
+  },
+  "frames": [
+    {
+      "file": "gallery-frame-0.5s.png",
+      "sample_seconds": 0.5,
+      "sha256": "b1c5c29b741bb09739f6e0eac6c1141a5608fe2e4f2207c57df4693f32fe6adb",
+      "size_bytes": 212912
+    },
+    {
+      "file": "gallery-frame-3.5s.png",
+      "sample_seconds": 3.5,
+      "sha256": "1e07b259ff3da381f4f788a37efe1fbe7b391d4f849aa8c13ce6c2a0f6ed7b44",
+      "size_bytes": 225931
+    },
+    {
+      "file": "gallery-frame-6.5s.png",
+      "sample_seconds": 6.5,
+      "sha256": "e2b6dd12d83e299de1fbfb36820ac48c530e6549e1babe88a8ec9e88df2a75cb",
+      "size_bytes": 241951
+    },
+    {
+      "file": "gallery-frame-10.5s.png",
+      "sample_seconds": 10.5,
+      "sha256": "796dc1f05495bcae647f1669a4d52145dbc4afc35e09ef89b0ae0c3ccd3a717b",
+      "size_bytes": 241552
+    }
+  ],
+  "limits": [
+    "Container duration and sampled frames validate the file/content, not UI frame-rate performance or live state transitions."
+  ]
+}

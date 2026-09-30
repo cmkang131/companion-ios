@@ -1,6 +1,14 @@
 # Recovery evidence — 2026-10-01 KST
 
-## Latest rendered question entry points — f869cbc
+## Same-build welcome and motion addendum — f869cbc
+
+Without app-source changes, rebuilding or installation, captured one normal welcome PNG and one12.01-second H.2641170×2532 state-gallery video from the existing f869cbc normal installation. Main/Core installed hashes match the preserved build. The capture command completed in30.5s, recording was attempted once, and the own simulator returned to welcome with its process/hash confirmed.
+
+Library welcome: **`libfile_7c4881d842a481919ca51d557dfdc696`**. Library video: **`libfile_0e82b1008ee481918b9d051c78b568df`**. [Files and exact limits](question-renders-f869cbc/README.md); [updated manifest](question-renders-f869cbc/manifest.json), `welcome_motion_followup`, contains build sourcef869cbc versus capture-harness documentation snapshot5f82a48, renderer source hashes, installed executable SHA, complete flags, raw capture log and media hashes.
+
+The welcome PNG uses `--ui-testing` to pause the mascot. The video explicitly omits that flag and launches only `--ui-motion-gallery` plus Korean locale arguments. It shows three fixed visual moods at once with small pose/gaze changes; the screen labels it disconnected visual validation. Four video frames were directly inspected. **No live server work, live state transitions, FPS/performance, touch interaction or OS accessibility pass is claimed.** Existing114+5/normal-build/privacy results still belong to identical application sourcef869cbc; they were not unnecessarily rerun. Models/server/phone work remains deferred.
+
+## Earlier rendered question entry points — f869cbc
 
 Application/test/script source: **`f869cbc116c9bb553ddd54bb9d0d8e44bdc963da`**. [Manifest](question-renders-f869cbc/manifest.json) joins seven latest original PNGs, eleven raw logs, runtime/flags/hash records and the Library file index. Six curated original PNGs and the small two-panel comparison were saved individually in Library. [Korean image guide](question-renders-f869cbc/README.md) distinguishes what each viewport proves.
 

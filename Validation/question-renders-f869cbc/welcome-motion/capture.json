@@ -1,0 +1,74 @@
+{
+  "application_build_source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+  "capture_harness_snapshot_commit": "5f82a488adb9ba2657b7cadb0396ac2e5b7d492f",
+  "source_equivalence": "No app/test/vendor/script/project/package diff from f869cbc",
+  "simulator_id": "022EC407-377F-4563-A350-CD12D1BA7795",
+  "simulator_name": "Companion Recovery Task5",
+  "normal_build_app_path": "/Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-render-products/f869cbc/Companion.app",
+  "installed_app_path": "/Users/changmin/Library/Developer/CoreSimulator/Devices/022EC407-377F-4563-A350-CD12D1BA7795/data/Containers/Bundle/Application/113A6345-2C98-4D2A-9AEA-1A66E57CDD86/Companion.app",
+  "matching_executable_sha256": {
+    "Companion": "619421965f0c2716403c84dc47a040eb708dbfc52d5eee597c79c1bd0ec35570",
+    "Frameworks/CompanionCore.framework/CompanionCore": "d1930ebf545f852c475fd94237eaea9440f2285ff5514c1d7424923ca6af3c61"
+  },
+  "captures": [
+    {
+      "kind": "welcome",
+      "file": "Companion-f869cbc-welcome.png",
+      "flags": [
+        "--ui-testing",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T21:44:01.971477+00:00",
+      "sha256": "7c2f76d76cb0264c4720d28d3aa58a806f336423fe73258da173cf025faec122",
+      "size_bytes": 290482
+    },
+    {
+      "kind": "state-gallery",
+      "file": "Companion-f869cbc-state-gallery-12s.mp4",
+      "flags": [
+        "--ui-motion-gallery",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "recording_started_utc": "2026-09-30T21:44:06.497905+00:00",
+      "finalized_utc": "2026-09-30T21:44:18.708629+00:00",
+      "requested_recording_seconds": 12,
+      "record_command": [
+        "xcrun",
+        "simctl",
+        "io",
+        "022EC407-377F-4563-A350-CD12D1BA7795",
+        "recordVideo",
+        "--codec=h264",
+        "Validation/question-renders-f869cbc/welcome-motion/Companion-f869cbc-state-gallery-12s.mp4"
+      ],
+      "sha256": "76e60c2de36ef146e1b2b28e1e271d47cb2a18bda4cb99a7e2749faf777271c7",
+      "size_bytes": 2151808
+    }
+  ],
+  "limits": [
+    "Welcome is the standard disconnected landing screen with --ui-testing to pause mascot and empty endpoint.",
+    "Motion is a DEBUG labelled simultaneous state gallery, not live server work or state transitions.",
+    "No FPS/frame-time performance claim, real taps, VoiceOver or OS accessibility verification.",
+    "No source changes, build, installation, account/server setup or model calls in this follow-up."
+  ],
+  "gallery_runtime": {
+    "own_launch_service": "53447\t0\tUIKitApplication:com.cmkang131.companion[a869][rb-legacy]",
+    "own_process": "53447 00:17 Ss   /Users/changmin/Library/Developer/CoreSimulator/Devices/022EC407-377F-4563-A350-CD12D1BA7795/data/Containers/Bundle/Application/113A6345-2C98-4D2A-9AEA-1A66E57CDD86/Companion.app/Companion",
+    "observed_utc": "2026-09-30T21:44:19.038713+00:00"
+  },
+  "restored_welcome_launch": "com.cmkang131.companion: 53567",
+  "restored_utc": "2026-09-30T21:44:19.294141+00:00",
+  "restored_welcome_runtime": {
+    "process": "53567 02:54 Ss   /Users/changmin/Library/Developer/CoreSimulator/Devices/022EC407-377F-4563-A350-CD12D1BA7795/data/Containers/Bundle/Application/113A6345-2C98-4D2A-9AEA-1A66E57CDD86/Companion.app/Companion",
+    "observed_utc": "2026-09-30T21:47:13.476988+00:00",
+    "main_sha256": "619421965f0c2716403c84dc47a040eb708dbfc52d5eee597c79c1bd0ec35570"
+  }
+}
