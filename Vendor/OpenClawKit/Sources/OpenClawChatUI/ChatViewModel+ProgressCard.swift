@@ -137,7 +137,7 @@ extension OpenClawChatViewModel {
             // Explicit denial removes its content while preserving the canonical retry target.
             self.logDiagnostic(
                 "chat.ui progress card fetch failed sessionKey=\(session.key) "
-                    + "error=\(error.localizedDescription)")
+                    + "error=\(GatewayErrorDiagnostics.category(for: error))")
         }
     }
 

@@ -346,7 +346,7 @@ extension OpenClawChatViewModel {
             self.updateSwarmProjection()
         } catch {
             guard isCurrent() else { return }
-            chatUILogger.debug("swarm refresh failed \(error.localizedDescription, privacy: .public)")
+            chatUILogger.debug("swarm refresh failed \(error.localizedDescription, privacy: .private)")
             self.scheduleSwarmCapabilityRetry(sessionSnapshot: session, retryAttempt: retryAttempt)
         }
     }

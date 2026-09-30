@@ -1,6 +1,23 @@
 import Foundation
 import OpenClawProtocol
 
+/// Public diagnostics must never echo a remote error message, code, details, or URL.
+/// Keep the original error intact: recovery and outbox decisions use its structured
+/// fields and legacy descriptions. Only these locally defined categories are log safe.
+public enum GatewayErrorDiagnostics {
+    public static func category(for error: Error) -> String {
+        switch error {
+        case is GatewayConnectAuthError: "connect_auth"
+        case is GatewayResponseError: "gateway_response"
+        case is GatewayDecodingError: "gateway_decode"
+        case is GatewayNodeSessionRequestError: "route_changed"
+        case is CancellationError: "cancelled"
+        case is URLError: "network"
+        default: "other"
+        }
+    }
+}
+
 func gatewayErrorDetails(_ error: ErrorShape?) -> [String: OpenClawProtocol.AnyCodable] {
     var details = error?.details?.value as? [String: OpenClawProtocol.AnyCodable] ?? [:]
     if let error {

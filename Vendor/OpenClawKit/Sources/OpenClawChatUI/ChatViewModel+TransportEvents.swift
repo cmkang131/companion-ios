@@ -1156,7 +1156,7 @@ extension OpenClawChatViewModel {
             } catch {
                 self.logDiagnostic(
                     "chat.ui outbox history failed sessionKey=\(target.deliverySessionKey) "
-                        + "error=\(error.localizedDescription)")
+                        + "error=\(GatewayErrorDiagnostics.category(for: error))")
             }
         }
     }
@@ -1191,7 +1191,7 @@ extension OpenClawChatViewModel {
                 hasInFlightRun: hasInFlightRun,
                 sessionHasActiveRun: sessionHasActiveRun)
         } catch {
-            transportEventsLogger.error("refresh history failed \(error.localizedDescription, privacy: .public)")
+            transportEventsLogger.error("refresh history failed \(error.localizedDescription, privacy: .private)")
             var failure = RunHistoryRefreshResult.failed
             if let response = error as? GatewayResponseError,
                response.method == "chat.history", response.code == "UNAVAILABLE",
@@ -1521,7 +1521,7 @@ extension OpenClawChatViewModel {
             for runId in runIds {
                 self.logDiagnostic(
                     "chat.ui pending cleared sessionKey=\(self.sessionKey) "
-                        + "runId=\(runId) reason=\(reason)")
+                        + "runId=\(runId) reason=reported_error")
             }
         }
     }

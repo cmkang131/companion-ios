@@ -195,7 +195,7 @@ public actor GatewayChannelActor {
             } catch {
                 if self.shouldPauseReconnectAfterAuthFailure(error) {
                     self.reconnectPausedForAuthFailure = true
-                    let failure = error.localizedDescription
+                    let failure = GatewayErrorDiagnostics.category(for: error)
                     self.logger.error(
                         """
                         gateway watchdog reconnect paused for non-recoverable auth failure \
@@ -204,7 +204,8 @@ public actor GatewayChannelActor {
                     continue
                 }
                 let wrapped = self.wrap(error, context: "gateway watchdog reconnect")
-                self.logger.error("gateway watchdog reconnect failed \(wrapped.localizedDescription, privacy: .public)")
+                let failureCategory = GatewayErrorDiagnostics.category(for: wrapped)
+                self.logger.error("gateway watchdog reconnect failed \(failureCategory, privacy: .public)")
             }
         }
     }
@@ -378,7 +379,8 @@ public actor GatewayChannelActor {
                 error: wrapped,
                 connectionGeneration: connectionGeneration,
                 shouldReconnect: self.automaticReconnectRequested)
-            self.logger.error("gateway ws connect failed \(wrapped.localizedDescription, privacy: .public)")
+            let failureCategory = GatewayErrorDiagnostics.category(for: wrapped)
+            self.logger.error("gateway ws connect failed \(failureCategory, privacy: .public)")
             throw wrapped
         }
         self.activeConnectAttemptID = nil
@@ -1034,7 +1036,8 @@ extension GatewayChannelActor {
               self.disconnectedConnectionGeneration != connectionGeneration
         else { return }
         let wrapped = self.wrap(err, context: "gateway receive")
-        self.logger.error("gateway ws receive failed \(wrapped.localizedDescription, privacy: .public)")
+        let failureCategory = GatewayErrorDiagnostics.category(for: wrapped)
+        self.logger.error("gateway ws receive failed \(failureCategory, privacy: .public)")
         await self.transitionToDisconnected(
             reason: "receive failed: \(wrapped.localizedDescription)",
             error: wrapped,
@@ -1268,13 +1271,14 @@ extension GatewayChannelActor {
         } catch {
             if self.shouldPauseReconnectAfterAuthFailure(error) {
                 self.reconnectPausedForAuthFailure = true
-                let failure = error.localizedDescription
+                let failure = GatewayErrorDiagnostics.category(for: error)
                 self.logger.error(
                     "gateway reconnect paused for non-recoverable auth failure \(failure, privacy: .public)")
                 return
             }
             let wrapped = self.wrap(error, context: "gateway reconnect")
-            self.logger.error("gateway reconnect failed \(wrapped.localizedDescription, privacy: .public)")
+            let failureCategory = GatewayErrorDiagnostics.category(for: wrapped)
+            self.logger.error("gateway reconnect failed \(failureCategory, privacy: .public)")
             // A pre-socket provider failure leaves this generation owning retries.
             // Once a new socket exists, its disconnect transition owns the next attempt.
             if self.connectionGeneration == connectionGeneration {
@@ -1609,7 +1613,7 @@ extension GatewayChannelActor {
             let data = try self.encoder.encode(frame)
             return (id: id, data: data)
         } catch {
-            let failure = error.localizedDescription
+            let failure = GatewayErrorDiagnostics.category(for: error)
             self.logger.error(
                 "gateway \(kind) encode failed \(method, privacy: .public) error=\(failure, privacy: .public)")
             throw error

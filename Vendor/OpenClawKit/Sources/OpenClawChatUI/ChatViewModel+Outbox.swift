@@ -977,7 +977,7 @@ extension OpenClawChatViewModel {
         } catch {
             // A socket error or timeout is ambiguous: preserve the command for
             // canonical-history reconciliation or explicit user retry.
-            outboxLogger.error("outbox flush send failed \(error.localizedDescription, privacy: .public)")
+            outboxLogger.error("outbox flush send failed \(error.localizedDescription, privacy: .private)")
             return await self.stopAfterUnconfirmedDelivery(command, outbox: outbox)
         }
     }
@@ -1097,7 +1097,7 @@ extension OpenClawChatViewModel {
         outbox: any OpenClawChatCommandOutbox,
         reason: String) async -> OutboxFlushDisposition
     {
-        outboxLogger.error("outbox flush send rejected \(reason, privacy: .public)")
+        outboxLogger.error("outbox flush send rejected \(reason, privacy: .private)")
         let attempts = command.retryCount + 1
         if attempts >= Self.maxOutboxSendAttempts {
             // Terminal failure needs user action; let younger commands

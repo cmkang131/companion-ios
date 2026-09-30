@@ -93,7 +93,7 @@ public final class OpenClawClientDatabases: @unchecked Sendable {
                     defaultAgentID: row["default_agent_id"])
             }
         } catch {
-            databaseLogger.error("client state routing read failed: \(error.localizedDescription, privacy: .public)")
+            databaseLogger.error("client state routing read failed: \(error.localizedDescription, privacy: .private)")
             return nil
         }
     }
@@ -281,7 +281,7 @@ public final class OpenClawClientDatabases: @unchecked Sendable {
             }
         } catch {
             databaseLogger.error(
-                "pending gateway removal read failed: \(error.localizedDescription, privacy: .public)")
+                "pending gateway removal read failed: \(error.localizedDescription, privacy: .private)")
             return
         }
         for row in pending {
@@ -303,7 +303,7 @@ public final class OpenClawClientDatabases: @unchecked Sendable {
             } catch {
                 let reason = error.localizedDescription
                 databaseLogger.error(
-                    "pending removal \(gatewayHash.prefix(12), privacy: .public) failed: \(reason, privacy: .public)")
+                    "pending removal \(gatewayHash.prefix(12), privacy: .public) failed: \(reason, privacy: .private)")
             }
         }
     }
@@ -326,7 +326,7 @@ public final class OpenClawClientDatabases: @unchecked Sendable {
         } catch {
             let reason = error.localizedDescription
             databaseLogger.error(
-                "pending gateway removal check failed: \(reason, privacy: .public)")
+                "pending gateway removal check failed: \(reason, privacy: .private)")
             return true
         }
     }
@@ -619,7 +619,7 @@ extension OpenClawClientDatabases {
                 let filename = legacyURL.lastPathComponent
                 let reason = error.localizedDescription
                 databaseLogger.error(
-                    "legacy import failed: \(filename, privacy: .public): \(reason, privacy: .public)")
+                    "legacy import failed: \(filename, privacy: .public): \(reason, privacy: .private)")
             }
         }
     }

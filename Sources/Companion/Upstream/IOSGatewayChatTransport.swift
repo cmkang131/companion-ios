@@ -595,7 +595,8 @@ struct IOSGatewayChatTransport: OpenClawChatGatewayTransport {
             let observation = try OpenClawChatGatewayPayloadCodec.decodeAgentWaitObservation(res)
             return observation
         } catch {
-            Self.logger.warning("agent.wait failed \(error.localizedDescription, privacy: .public)")
+            let failureCategory = GatewayErrorDiagnostics.category(for: error)
+            Self.logger.warning("agent.wait failed \(failureCategory, privacy: .public)")
             return .unavailable
         }
     }

@@ -139,7 +139,7 @@ public actor OpenClawChatSQLiteTranscriptCache: OpenClawChatTranscriptCache,
                     }
                 } catch {
                     cacheLogger.error(
-                        "gateway session cache decode failed: \(error.localizedDescription, privacy: .public)")
+                        "gateway session cache decode failed: \(error.localizedDescription, privacy: .private)")
                     // Decode and cleanup share one agent partition transaction;
                     // corruption in one roster must not erase another agent.
                     try db.execute(
@@ -158,7 +158,7 @@ public actor OpenClawChatSQLiteTranscriptCache: OpenClawChatTranscriptCache,
                 }
             }
         } catch {
-            cacheLogger.error("gateway session cache read failed: \(error.localizedDescription, privacy: .public)")
+            cacheLogger.error("gateway session cache read failed: \(error.localizedDescription, privacy: .private)")
             return []
         }
     }
@@ -188,7 +188,7 @@ public actor OpenClawChatSQLiteTranscriptCache: OpenClawChatTranscriptCache,
                     }
                 } catch {
                     cacheLogger.error(
-                        "gateway transcript cache decode failed: \(error.localizedDescription, privacy: .public)")
+                        "gateway transcript cache decode failed: \(error.localizedDescription, privacy: .private)")
                     // Keep the failed read and partition cleanup atomic; an
                     // overlapping history write must survive this recovery.
                     try db.execute(
@@ -201,7 +201,7 @@ public actor OpenClawChatSQLiteTranscriptCache: OpenClawChatTranscriptCache,
                 }
             }
         } catch {
-            cacheLogger.error("gateway transcript cache read failed: \(error.localizedDescription, privacy: .public)")
+            cacheLogger.error("gateway transcript cache read failed: \(error.localizedDescription, privacy: .private)")
             return []
         }
     }
@@ -282,7 +282,7 @@ public actor OpenClawChatSQLiteTranscriptCache: OpenClawChatTranscriptCache,
                 }
             }
         } catch {
-            cacheLogger.error("gateway session cache write failed: \(error.localizedDescription, privacy: .public)")
+            cacheLogger.error("gateway session cache write failed: \(error.localizedDescription, privacy: .private)")
         }
     }
 
@@ -316,7 +316,7 @@ public actor OpenClawChatSQLiteTranscriptCache: OpenClawChatTranscriptCache,
                     messages: canonicalOnly)
             }
         } catch {
-            cacheLogger.error("gateway transcript cache write failed: \(error.localizedDescription, privacy: .public)")
+            cacheLogger.error("gateway transcript cache write failed: \(error.localizedDescription, privacy: .private)")
         }
     }
 
@@ -366,7 +366,7 @@ public actor OpenClawChatSQLiteTranscriptCache: OpenClawChatTranscriptCache,
                     messages: cached)
             }
         } catch {
-            cacheLogger.error("gateway transcript cache merge failed: \(error.localizedDescription, privacy: .public)")
+            cacheLogger.error("gateway transcript cache merge failed: \(error.localizedDescription, privacy: .private)")
         }
     }
 
@@ -404,7 +404,7 @@ public actor OpenClawChatSQLiteTranscriptCache: OpenClawChatTranscriptCache,
                     ])
             }
         } catch {
-            cacheLogger.error("client state routing write failed: \(error.localizedDescription, privacy: .public)")
+            cacheLogger.error("client state routing write failed: \(error.localizedDescription, privacy: .private)")
         }
     }
 
@@ -575,7 +575,7 @@ extension OpenClawChatSQLiteTranscriptCache {
                 return true
             }
         } catch {
-            cacheLogger.error("outbox enqueue failed: \(error.localizedDescription, privacy: .public)")
+            cacheLogger.error("outbox enqueue failed: \(error.localizedDescription, privacy: .private)")
             return false
         }
     }
@@ -593,7 +593,7 @@ extension OpenClawChatSQLiteTranscriptCache {
                 return try Self.readCommands(db, gatewayID: gatewayID)
             }
         } catch {
-            cacheLogger.error("outbox read failed: \(error.localizedDescription, privacy: .public)")
+            cacheLogger.error("outbox read failed: \(error.localizedDescription, privacy: .private)")
             return nil
         }
     }
@@ -675,7 +675,7 @@ extension OpenClawChatSQLiteTranscriptCache {
             }
             return result.0
         } catch {
-            cacheLogger.error("outbox claim failed: \(error.localizedDescription, privacy: .public)")
+            cacheLogger.error("outbox claim failed: \(error.localizedDescription, privacy: .private)")
             return nil
         }
     }
@@ -836,7 +836,7 @@ extension OpenClawChatSQLiteTranscriptCache {
             }
             return true
         } catch {
-            cacheLogger.error("outbox settings-failure park failed: \(error.localizedDescription, privacy: .public)")
+            cacheLogger.error("outbox settings-failure park failed: \(error.localizedDescription, privacy: .private)")
             return false
         }
     }

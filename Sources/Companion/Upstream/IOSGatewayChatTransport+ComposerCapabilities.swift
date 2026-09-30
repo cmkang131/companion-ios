@@ -336,7 +336,8 @@ extension IOSGatewayChatTransport {
             Self.logger.info("chat.send skipped because the captured route changed before dispatch")
             throw OpenClawChatTransportSendError.notDispatched
         } catch {
-            Self.logger.error("chat.send failed \(error.localizedDescription, privacy: .public)")
+            let failureCategory = GatewayErrorDiagnostics.category(for: error)
+            Self.logger.error("chat.send failed \(failureCategory, privacy: .public)")
             throw error
         }
     }

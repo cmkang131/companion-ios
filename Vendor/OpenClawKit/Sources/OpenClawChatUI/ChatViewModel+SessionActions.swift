@@ -169,7 +169,7 @@ extension OpenClawChatViewModel {
                 await self.performReset()
                 return self.isCurrentSession(initiatingSession)
             }
-            chatUILogger.error("sessions.create failed \(error.localizedDescription, privacy: .public)")
+            chatUILogger.error("sessions.create failed \(error.localizedDescription, privacy: .private)")
             self.errorText = error.localizedDescription
             return false
         }
@@ -522,7 +522,7 @@ extension OpenClawChatViewModel {
                 self.errorText = error.localizedDescription
                 let failure = error.localizedDescription
                 chatSessionActionsLogger.error(
-                    "sessions.patch(\(field.rawValue, privacy: .public)) failed \(failure, privacy: .public)")
+                    "sessions.patch(\(field.rawValue, privacy: .public)) failed \(failure, privacy: .private)")
             }
         }
     }
@@ -549,7 +549,7 @@ extension OpenClawChatViewModel {
             guard self.isCurrentSession(initiatingSession) else { return }
             self.errorText = error.localizedDescription
             chatSessionActionsLogger.error(
-                "sessions.create(fork) failed \(error.localizedDescription, privacy: .public)")
+                "sessions.create(fork) failed \(error.localizedDescription, privacy: .private)")
         }
     }
 
@@ -592,7 +592,7 @@ extension OpenClawChatViewModel {
             guard self.isCurrentSession(initiatingSession) else { return }
             self.errorText = error.localizedDescription
             chatSessionActionsLogger.error(
-                "sessions.rewind failed \(error.localizedDescription, privacy: .public)")
+                "sessions.rewind failed \(error.localizedDescription, privacy: .private)")
         }
     }
 
@@ -708,7 +708,7 @@ extension OpenClawChatViewModel {
                 return false
             }
             chatSessionActionsLogger.debug(
-                "sessions.branches.list failed \(error.localizedDescription, privacy: .public)")
+                "sessions.branches.list failed \(error.localizedDescription, privacy: .private)")
             let branchingUnsupported = Self.branchListingIsUnsupported(error)
             switch purpose {
             case .readOnly:
@@ -785,7 +785,7 @@ extension OpenClawChatViewModel {
             guard self.isCurrentSessionBranchSwitchActivity(switchActivity) else { return }
             self.errorText = error.localizedDescription
             chatSessionActionsLogger.error(
-                "sessions.branches.switch failed \(error.localizedDescription, privacy: .public)")
+                "sessions.branches.switch failed \(error.localizedDescription, privacy: .private)")
         }
     }
 
@@ -829,7 +829,7 @@ extension OpenClawChatViewModel {
             guard self.isCurrentSession(initiatingSession) else { return }
             self.errorText = error.localizedDescription
             chatSessionActionsLogger.error(
-                "sessions.fork failed \(error.localizedDescription, privacy: .public)")
+                "sessions.fork failed \(error.localizedDescription, privacy: .private)")
         }
     }
 
@@ -898,7 +898,7 @@ extension OpenClawChatViewModel {
                 self.refreshSessions()
                 self.errorText = error.localizedDescription
                 chatSessionActionsLogger.error(
-                    "sessions.patch(unread) failed \(error.localizedDescription, privacy: .public)")
+                    "sessions.patch(unread) failed \(error.localizedDescription, privacy: .private)")
             }
         }
     }
@@ -1022,7 +1022,7 @@ extension OpenClawChatViewModel {
         } catch {
             self.errorText = error.localizedDescription
             chatSessionActionsLogger.error(
-                "sessions.patch(archived=false) failed \(error.localizedDescription, privacy: .public)")
+                "sessions.patch(archived=false) failed \(error.localizedDescription, privacy: .private)")
             return false
         }
     }
@@ -1064,7 +1064,7 @@ extension OpenClawChatViewModel {
         } catch {
             guard self.unreadPatchGuard.patchFailed(key: identityKey, revision: revision) else { return }
             chatSessionActionsLogger.error(
-                "sessions.patch(unread=false) failed \(error.localizedDescription, privacy: .public)")
+                "sessions.patch(unread=false) failed \(error.localizedDescription, privacy: .private)")
         }
     }
 }

@@ -740,7 +740,7 @@ extension OpenClawChatViewModel {
                 let outcome = deliveryIsAmbiguous ? "delivery unconfirmed" : "queued after route change"
                 logDiagnostic(
                     "chat.ui send \(outcome) sessionKey=\(attempt.draft.session.key) "
-                        + "localRunId=\(attempt.runId) error=\(error.localizedDescription)")
+                        + "localRunId=\(attempt.runId) error=\(GatewayErrorDiagnostics.category(for: error))")
                 return
             }
             guard isCurrentSession(attempt.draft.session) else { return }
@@ -752,8 +752,8 @@ extension OpenClawChatViewModel {
         clearPendingRun(attempt.runId, hapticEvent: .runFailed)
         logDiagnostic(
             "chat.ui send failed sessionKey=\(attempt.draft.session.key) "
-                + "localRunId=\(attempt.runId) error=\(error.localizedDescription)")
-        chatSendingLogger.error("chat transport send failed \(error.localizedDescription, privacy: .public)")
+                + "localRunId=\(attempt.runId) error=\(GatewayErrorDiagnostics.category(for: error))")
+        chatSendingLogger.error("chat transport send failed \(error.localizedDescription, privacy: .private)")
     }
 
     private func restoreDraftAfterLiveSendFailure(_ attempt: LiveSendAttempt) {

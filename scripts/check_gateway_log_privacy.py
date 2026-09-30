@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+"""Check chat/gateway log policy and run production error code with synthetic data.
+
+Runs a small Swift interpreter harness, never an app or package build. Only local
+source and temporary files are used; there are no server, keychain, or UI calls.
+This targeted source guard is not a general Swift taint analyser or an OSLog capture.
+"""
+
+import argparse
+import os
+from pathlib import Path
+import re
+import subprocess
+import tempfile
+
+ROOT = Path(__file__).resolve().parents[1]
+KIT = ROOT / "Vendor/OpenClawKit/Sources/OpenClawKit"
+CHAT = ROOT / "Vendor/OpenClawKit/Sources/OpenClawChatUI"
+PROTOCOL = ROOT / "Vendor/OpenClawKit/Sources/OpenClawProtocol"
+
+
+def closing(text, start, left="(", right=")"):
+    depth = 1
+    for index in range(start + 1, len(text)):
+        if text[index] == left:
+            depth += 1
+        elif text[index] == right:
+            depth -= 1
+            if depth == 0:
+                return index
+    raise AssertionError("Unbalanced source fragment in privacy guard")
+
+
+def unsafe(expression, preceding, seen=frozenset()):
+    expression = expression.strip()
+    if re.fullmatch(r"GatewayErrorDiagnostics\.category\(for: \w+\)", expression):
+        return False
+    if re.fullmatch(r"\w+", expression) and expression not in seen:
+        assignments = list(re.finditer(
+            rf"\b(?:let|var)\s+{re.escape(expression)}\s*=\s*([^\n]+)", preceding))
+        if assignments:
+            assignment = assignments[-1]
+            return unsafe(assignment[1], preceding[:assignment.start()], seen | {expression})
+    # NSError's numeric code is safe; its domain and userInfo are arbitrary strings.
+    if re.fullmatch(r"\w+\.code", expression) and expression.startswith("nsError."):
+        return False
+    return bool(re.search(
+        r"localizedDescription|errorDescription|\.message\b|\.userInfo\b|"
+        r"\b(?:error|wrapped|failure|reason|nsError)\b|SYNTHETIC_SERVER_ECHO", expression))
+
+
+def violations(source):
+    found = []
+    for match in re.finditer(r"\\\(", source):
+        end = closing(source, match.start() + 1)
+        expression = source[match.end():end]
+        public = re.search(r",\s*privacy:\s*\.public\s*$", expression)
+        if public and unsafe(expression[:public.start()], source[:match.start()]):
+            found.append((source.count("\n", 0, match.start()) + 1, "public error interpolation"))
+    for match in re.finditer(r"\blogDiagnostic\s*\(", source):
+        end = closing(source, match.end() - 1)
+        argument = source[match.end():end]
+        for interpolation in re.finditer(r"\\\(", argument):
+            stop = closing(argument, interpolation.start() + 1)
+            expression = argument[interpolation.end():stop]
+            if unsafe(expression, source[:match.start()]):
+                found.append((source.count("\n", 0, match.start()) + 1, "raw diagnostic callback"))
+    return found
+
+
+def policy_check():
+    # Reproduce direct, aliased, concatenated, and callback leaks. Private fields
+    # and local categories must pass; a guard that accepts everything fails here.
+    bad = [
+        r'logger.error("failed \(error.localizedDescription, privacy: .public)")',
+        'let failure = error.localizedDescription\n'
+        + r'logger.error("failed \(failure, privacy: .public)")',
+        'let failure = "SYNTHETIC_SERVER_ECHO_3BC4"\n'
+        + r'logger.error("failed \(failure, privacy: .public)")',
+        r'logDiagnostic("failed " + "error=\(error.localizedDescription)")',
+    ]
+    good = [
+        r'logger.error("failed \(error.localizedDescription, privacy: .private)")',
+        'let failure = GatewayErrorDiagnostics.category(for: error)\n'
+        + r'logger.error("failed \(failure, privacy: .public)")',
+        r'logDiagnostic("failed error=\(GatewayErrorDiagnostics.category(for: error))")',
+    ]
+    assert all(violations(sample) for sample in bad), "Source guard missed a synthetic leak"
+    assert not any(violations(sample) for sample in good), "Source guard rejects safe diagnostics"
+    paths = sorted(set(
+        list(KIT.glob("Gateway*.swift"))
+        + list(CHAT.glob("*.swift"))
+        + list((ROOT / "Sources/Companion/Upstream").glob("*.swift"))))
+    failures = [f"{path.relative_to(ROOT)}:{line}: {reason}"
+                for path in paths for line, reason in violations(path.read_text())]
+    if failures:
+        raise SystemExit("\n".join(failures))
+    print(f"PASS: public error/diagnostic policy in {len(paths)} source files; synthetic leak mutations rejected")
+
+
+def declaration(source, signature):
+    start = source.index(signature)
+    opening = source.index("{", start)
+    return source[start:closing(source, opening, "{", "}") + 1]
+
+
+def runtime_check():
+    errors = (KIT / "GatewayErrors.swift").read_text()
+    # Flatten only the module boundary. These are the real production models,
+    # AnyCodable implementation, diagnostics helper, and legacy outbox classifier.
+    errors = errors.replace("import OpenClawProtocol\n", "")
+    errors = errors.replace("OpenClawProtocol.AnyCodable", "AnyCodable")
+    outbox = (CHAT / "ChatViewModel+Outbox.swift").read_text()
+    source = "\n".join([
+        (PROTOCOL / "AnyCodable.swift").read_text(),
+        (KIT / "AnyCodable+Helpers.swift").read_text(),
+        (KIT / "String+TrimmedNonEmpty.swift").read_text(),
+        declaration((PROTOCOL / "GatewayModels.swift").read_text(), "public struct ErrorShape:"),
+        errors,
+        "enum OutboxProbe {\nstruct BranchListingUnadvertisedError: Error {}\n"
+        + declaration(outbox, "static func branchListingIsUnsupported(") + "\n}",
+        (ROOT / "scripts/gateway_log_privacy_runtime.swift").read_text(),
+    ])
+    with tempfile.TemporaryDirectory(prefix="companion-log-privacy-") as directory:
+        script = Path(directory) / "privacy.swift"
+        script.write_text(source)
+        env = dict(os.environ)
+        env["CLANG_MODULE_CACHE_PATH"] = str(Path(directory) / "module-cache")
+        subprocess.run(["swift", "-module-cache-path", env["CLANG_MODULE_CACHE_PATH"], str(script)],
+                       check=True, env=env, timeout=60)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source-only", action="store_true", help="Skip the Swift interpreter harness")
+    options = parser.parse_args()
+    policy_check()
+    if not options.source_only:
+        runtime_check()

@@ -791,7 +791,8 @@ public actor GatewayNodeSession {
             }
             return true
         } catch {
-            self.logger.error("node event failed: \(error.localizedDescription, privacy: .public)")
+            let failureCategory = GatewayErrorDiagnostics.category(for: error)
+            self.logger.error("node event failed: \(failureCategory, privacy: .public)")
             return false
         }
     }
@@ -1120,7 +1121,8 @@ extension GatewayNodeSession {
             self.pluginSurfaceUrls[surface] = refreshed
             return refreshed
         } catch {
-            self.logger.debug("\(method, privacy: .public) failed: \(error.localizedDescription, privacy: .public)")
+            let failureCategory = GatewayErrorDiagnostics.category(for: error)
+            self.logger.debug("\(method, privacy: .public) failed: \(failureCategory, privacy: .public)")
             return nil
         }
     }
@@ -1139,7 +1141,8 @@ extension GatewayNodeSession {
                 let input: NodeInvokeInputEvent = try self.decodeEventPayload(from: payload)
                 await onInvokeInput(input)
             } catch {
-                self.logger.error("node invoke input decode failed: \(error.localizedDescription, privacy: .public)")
+                let failureCategory = GatewayErrorDiagnostics.category(for: error)
+                self.logger.error("node invoke input decode failed: \(failureCategory, privacy: .public)")
             }
             return
         }
@@ -1152,7 +1155,8 @@ extension GatewayNodeSession {
                     admissionGeneration: admissionGeneration)
                 await self.onInvokeCancel?(cancel.invokeid)
             } catch {
-                self.logger.error("node invoke cancel decode failed: \(error.localizedDescription, privacy: .public)")
+                let failureCategory = GatewayErrorDiagnostics.category(for: error)
+                self.logger.error("node invoke cancel decode failed: \(failureCategory, privacy: .public)")
             }
             return
         }
@@ -1193,7 +1197,8 @@ extension GatewayNodeSession {
                     socketGeneration: socketGeneration)
             }
         } catch {
-            self.logger.error("node invoke decode failed: \(error.localizedDescription, privacy: .public)")
+            let failureCategory = GatewayErrorDiagnostics.category(for: error)
+            self.logger.error("node invoke decode failed: \(failureCategory, privacy: .public)")
         }
     }
 
@@ -1649,7 +1654,7 @@ extension GatewayNodeSession {
             self.logger.error(
                 """
                 node invoke result failed id=\(request.id, privacy: .public) \
-                error=\(error.localizedDescription, privacy: .public)
+                error=\(GatewayErrorDiagnostics.category(for: error), privacy: .public)
                 """)
         }
     }
