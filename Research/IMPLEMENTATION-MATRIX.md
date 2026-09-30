@@ -6,8 +6,9 @@
 
 Muse/dot 공개 설명은 제품이 지향하는 행동의 근거다. 이 앱의 기능·계정 권한·서버
 호환성의 증거는 아니다. 아래의 “구현”은 생산 코드 경로가 있다는 뜻이며 실서버
-검증을 뜻하지 않는다. 기존 66 integration / 5 core 테스트는 macOS의 controlled
-fake 경계 검증이다. iOS 실기기·실서버·실제 탭 조작은 검증하지 못했다.
+검증을 뜻하지 않는다. 최신 `99ba308`의 105 integration / 5 core 테스트도 macOS의 controlled
+fake 경계 검증이다. `Validation/controls-99ba308/manifest.json`에 정상 빌드·실행·10개
+원본 렌더와 9개 원문 로그를 귀속했다. iOS 실기기·실서버·실제 탭 조작은 검증하지 못했다.
 
 ## 요구-구현 matrix
 
@@ -16,7 +17,7 @@ fake 경계 검증이다. iOS 실기기·실서버·실제 탭 조작은 검증�
 | 지속 대화, 다른 일을 기다리지 않고 입력 — 공식 설명 | MIT OpenClawChatUI의 timeline, session 전환, 별도 draft/첨부/reply 및 send ledger. compact composer와 대화 목록 | **서버·제품 의미**: 여러 대화의 실행과 한 대화에서 동시에 보내기는 다름. upstream blocking-run 정책을 임의 해제하지 않음. draft는 메모리 보관이라 프로세스 종료까지 보장 못함 | 안정된 데이터 보존 경로 유지 |
 | 캐릭터와 상태 capsule — 공식 홍보 화면 | 파란 원본 코드 캐릭터, 검정 눈·bump·glass name pill. 실제 owned response 상태와 연동. correlated nonempty final만 “응답 도착” | **검증**: live 상태 전환/실제 OS Reduce Motion 미검증. 응답 도착은 요청 성취·전달 완료가 아님 | capsule을 실제 현재 대화 활동 화면으로 연결 |
 | 진행·활동·동시 작업 — 공식 설명 | `sessions.list`, `chat.history`, `agent`/`chat` 및 session events. 서버 `progressCard.get`와 `progressCard.changed`, upstream legacy progress fallback. chat 안에 진행 카드 재사용 | **앱 통합**: global `audit.activity.list` 미연결. 대화별 run metadata는 전체 durable task 모델이 아님. 결과 검증·외부 delivery 필드 없는 응답을 완료 업무로 표시할 수 없음 | 현재 대화의 실행·진행·질문 접근을 한 곳에 모음. 임의 퍼센트/가짜 작업 행 없음 |
-| 중단·취소·복구 — 공식 설명 | 실제 `chat.abort(sessionKey, runId)` RPC 상속. 기존 pending cleanup은 terminal/history 처리에 의존 | **앱 결함**: 기존 `try?`로 실패 무시, 새 draft 작성 시 composer의 stop이 숨음. mutable route로 late 요청 가능 | 최우선: 독립 stop 진입, 정확 run/route 소유권, 요청/서버 접수/종료 확인/실패·불확실을 구분. 취소는 이미 수행한 외부 행동의 rollback이 아님 |
+| 중단·취소·복구 — 공식 설명 | 실제 `chat.abort(sessionKey, runId)` RPC 상속. 기존 pending cleanup은 terminal/history 처리에 의존 | **해결한 기존 앱 결함**: `try?` 실패 무시, 새 draft로 stop 진입 소실, mutable route의 late 요청. 새 activity와 per-run lease로 보완; live 취소 전파는 미검증 | 최우선: 독립 stop 진입, 정확 run/route 소유권, 요청/서버 접수/종료 확인/실패·불확실을 구분. 취소는 이미 수행한 외부 행동의 rollback이 아님 |
 | 질문·명시적 결정 — 공식 설명 | 실제 `question.list/get/resolve`, requested/resolved events 및 native question cards. skip은 `question.resolve(cancel:true)` | **검증**: 권한·만료·중복·late response 경합의 앱 경계 검증 부족. 질문을 결제/실행 승인으로 표현하면 안 됨 | 두 번째: 기존 질문 응답·건너뛰기·서버 확인 경계 검증, 발견한 lifecycle 결함 최소 수정 |
 | 실행·구매·접근 승인 — 공식 설명 | 현재 연결은 `operator.read/write`. 생성된 approval 데이터 타입은 있지만 `exec/plugin/openclaw.approval.*` adapter/event/UI 통합 없음 | **추가 권한 + 앱 통합 + 실서버**: `operator.approvals` 및 action/scope/expiry 검증 필요. 정책 변경은 admin 영역 | 권한을 늘리거나 허수 승인 버튼을 추가하지 않음 |
 | browser preview·takeover·return control — 공식 설명/홍보 화면 | connected inline widget resolver만 구현. 이것은 원격 browser 소유권 제어가 아님 | **별도 backend 계약 + 권한 + 앱 통합**: viewing/control ownership/credential handoff의 안전한 계약 미연결 | 지원한다고 표시하지 않음 |
@@ -71,8 +72,9 @@ terminal을 생산 model/adapter에 통과시켜 검증한다. 접수 ACK만으�
 - 세션을 지정하지 않은 질문은 “대화가 지정되지 않은 질문”으로 분리한다. 질문 객체와
   작성 중인 답변은 보존하며, 현재 대화의 요청이라고 추정하지 않는다.
 
-새 exact source commit에서 macOS tests, iOS build, privacy snapshot 검사, 필요한 native
-fixture renders를 직렬 수행한다. 각 raw log에 commit과 snapshot 귀속을 남기고 manifest에
+`99ba308b5f02911072d76dc5ad76d3b08834b3dd`에서 macOS tests, 정상 iOS build,
+privacy snapshot 검사와 native fixture renders를 완료했다. nil/빈 문자열/공백 질문은
+미지정으로 동일 처리하며 세션 전환 뒤에도 범위를 추정하지 않는 회귀를 통과했다. 각 raw log에 commit과 snapshot 귀속을 남기고 manifest에
 파일 hash·실행 모드·제약을 연결한다. fixture는 서버 미연결 표시를 유지하며 live 성공으로
 제시하지 않는다. 실제 UI 조작은 자동화 초기화 timeout 때문에 미검증이다. 동일 실패를
 장시간 반복하지 않는다.

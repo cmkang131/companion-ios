@@ -1,0 +1,365 @@
+RUNNER_STARTED_UTC=2026-09-30T20:12:15Z
+SOURCE_COMMIT=99ba308b5f02911072d76dc5ad76d3b08834b3dd
+CLEAN_SNAPSHOT=verified_all_543_tracked_blobs_match_git_commit
+SCOPE=source attribution for the following validation command
+VALIDATION_COMMAND_SCOPE=see command output below; snapshot header is source attribution only
+Building for debugging...
+[Computing dependencies]
+[Using on-disk description]
+[1 / 5] OpenClawChatUI
+Build complete! (0.75초)
+Test Suite 'All tests' started at 2026-10-01 05:12:19.122.
+Test Suite 'All tests' passed at 2026-10-01 05:12:19.123.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.002) seconds
+Test Suite 'All tests' started at 2026-10-01 05:12:19.204.
+Test Suite 'All tests' passed at 2026-10-01 05:12:19.204.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite ConnectionTests started.
+◇ Suite QuestionLifecycleTests started.
+◇ Suite AttachmentSnapshotTests started.
+◇ Suite InlineWidgetAvailabilityTests started.
+◇ Suite ModelSignInPresentationTests started.
+◇ Suite MediaArtifactAvailabilityTests started.
+◇ Suite SendRecoveryTests started.
+◇ Suite CharacterStateTests started.
+◇ Suite AttachmentContractTests started.
+◇ Suite QuestionScopeTests started.
+◇ Test credentialActionsValidateEndpointBeforeStorageAccess() started.
+◇ Test olderHistoryCompletionCannotReplaceLatestSuccess(oldFails:) started.
+◇ Test structuredConnectionErrorsExplainTheRecovery(detail:expected:) started.
+◇ Test cancelledRetryKeepsEveryDraftAndTokenAndFencesLateSuccess() started.
+◇ Test disconnectedTransportRefusesDispatch() started.
+◇ Test deniedMutationClearsSecretDraftAndAllowsFreshAttempt(skip:) started.
+◇ Test canonicalSessionCannotBeReroutedBySelectedAgent() started.
+◇ Test missingPendingQuestionRecoversThroughGet(outcome:) started.
+◇ Test emptiedCurrentDraftDoesNotResurrectOlderSavedText() started.
+◇ Test sameConnectionSessionSwitchKeepsTheOriginalQuestionCompletion() started.
+◇ Test otherEndpointAndExplicitDisconnectNeverRestoreSelectedAttachments(otherEndpoint:) started.
+◇ Test invalidEndpointNeverStartsConnection() started.
+◇ Test cancellingBeforeAttemptStartsStillPreservesRetryInput() started.
+◇ Test everySessionDraftSurvivesFailedRetryToNormalizedEndpoint() started.
+◇ Suite RunControlTests started.
+◇ Test selectedAttachmentBytesReplyAndTextSurviveFailedAndCancelledRetries() started.
+◇ Test submittedReplyDoesNotReappearAfterLateAckOrOverwriteNewComposer(hasNewDraft:) started.
+◇ Test repeatedDisconnectClearsSensitiveInput() started.
+◇ Test confirmedMutationOutranksUnavailableRecoveryWithoutReinsertingCard(skip:) started.
+◇ Test tokenRevocationWinsOverDelayedSuccessEvenAfterReoptIn(deleteFails:) started.
+◇ Test terminalEventIgnoresLateMutationFailure(skip:) started.
+◇ Test unconfirmedSkipRecoversAnAuthoritativeAnswerWithoutClaimingSkipped() started.
+◇ Test retiredPhysicalRouteCannotPublishFallbackModelAfterMainKeyAwait() started.
+◇ Test replacedLeaseCannotDispatchOnTheNewConnection() started.
+◇ Test replacementRouteDiscardsResponseEvenBeforeRouteEvent(skip:) started.
+◇ Test missingImportBytesProduceOfflineNoticeAcrossFailedAndCancelledRetries() started.
+◇ Test anotherEndpointNeverReceivesRetainedDrafts() started.
+◇ Test answerAndSkipAreSingleFlightAndTerminal(skip:) started.
+◇ Test unconfirmedSkipRemainsActionableAndRecoversInsteadOfClaimingSkipped(payload:) started.
+◇ Test disconnectInvalidatesHistoryAndBlocksSessionChanges() started.
+◇ Test previewHistoryIsReadableWithoutDispatchCapability() started.
+◇ Test olderHistoryCannotClearLatestSpinnerAndCancellationCannotPublish() started.
+◇ Test interruptedCaptureOwnerIsReportedWithoutInventingAttachmentBytes() started.
+◇ Test emptyTokenNeverStartsConnection() started.
+◇ Test terminalEventCannotBeOverwrittenByLateMutation(status:skip:) started.
+◇ Test detachedOwnerDiscardsLateMutation(skip:fails:) started.
+◇ Test lateOldRouteCannotClearTheNewRoutesQuestionSubmission(skip:) started.
+◇ Test localExpiryDuringMutationAllowsOnlyConfirmedServerOutcome(skip:succeeds:) started.
+◇ Test gatewayCancellationRequiresTheCancelledContract(payload:) started.
+◇ Test unavailableRecoveryRetiresPendingControls(unadvertised:) started.
+◇ Test invalidatedQuestionCannotDispatchAfterDelayedLeaseAcquisition(reason:) started.
+◇ Test optedInAdapterLosesMediaActionsWhenDisconnected() started.
+◇ Test disabledOpenDoesNotRequestAndUnsupportedOpenExplainsFailure() started.
+◇ Test explicitDisconnectErasesAllDraftsAndInputButKeepsSavedToken() started.
+◇ Test productionAdapterDoesNotClaimMediaSupportWhenChatHealthChanges() started.
+◇ Test invalidatedOpenCannotReplaceOrClearANewerRequest() started.
+◇ Test cancelledMainKeyAwaitCannotPublishIntoReplacement() started.
+◇ Test sessionChangeDiscardsDelayedContextWithoutUnsupportedNotice() started.
+◇ Test interruptedRealImportKeepsReadyBytesAndNeverOverwritesReplacementDraft() started.
+◇ Test implementedResolverWaitsForConnectionThenRetriesAfterRecovery() started.
+◇ Test cancelledRefreshCannotReplaceNewerCatalogNoticeOrDraft(fails:) started.
+◇ Test detachedOwnerCannotPublishContextForTheSameSessionKey(returnsContext:) started.
+◇ Test cancelledContextCannotChangeNewerErrorOrDraft(returnsContext:) started.
+◇ Test failureNeverOverwritesNewerComposerDraft() started.
+◇ Test emptyFinalAndDetachedTransportNeverAcknowledge() started.
+◇ Test refreshIsSingleFlightAndCanRunAgainAfterCompletion() started.
+◇ Test defaultResolverReportsUnsupportedWithoutRequestingConnection() started.
+◇ Test failureAfterNavigationRetainsOriginalInItsSession(newConversation:) started.
+◇ Test endpointReplacementCannotImportOrReviveOldRecovery() started.
+◇ Test pdfFilePayloadRoundTripsThroughProductionRequestEncoder() started.
+◇ Test nonFinalEventsNeverAcknowledgeCompletion(state:) started.
+◇ Test foreignSessionOrLateFinalNeverAcknowledges() started.
+◇ Test recoveryCannotOverwriteNewReplySelection() started.
+◇ Test changedGatewayBudgetRejectsTheCombinedDraftBeforeSending() started.
+◇ Test onlyCanonicalMatchingUserHistoryRetiresUnconfirmedSend() started.
+◇ Test case passing 1 argument oldFails → false to olderHistoryCompletionCannotReplaceLatestSuccess(oldFails:) started.
+◇ Test case passing 1 argument oldFails → true to olderHistoryCompletionCannotReplaceLatestSuccess(oldFails:) started.
+◇ Test failedAttachmentSendRetainsBytesAndDoesNotOverwriteNewAttachment() started.
+◇ Test emptyAndOversizedFilesDoNotDisplaceAnAcceptedAttachment() started.
+◇ Test case passing 2 arguments detail → "PAIRING_REQUIRED", expected → "승인" to structuredConnectionErrorsExplainTheRecovery(detail:expected:) started.
+◇ Test case passing 2 arguments detail → "AUTH_TOKEN_MISMATCH", expected → "토큰" to structuredConnectionErrorsExplainTheRecovery(detail:expected:) started.
+◇ Test historyReviewOfEarlierAttemptCannotAuthorizeRetriedSameKey() started.
+◇ Test cancelledHistoryReviewCannotAuthorizeUncertainRestoration() started.
+◇ Test case passing 2 arguments detail → "PROTOCOL_MISMATCH", expected → "규격" to structuredConnectionErrorsExplainTheRecovery(detail:expected:) started.
+◇ Test missingCorrelationNeverAcknowledges(missingRun:missingSession:) started.
+◇ Test case passing 1 argument outcome → "answered" to missingPendingQuestionRecoversThroughGet(outcome:) started.
+◇ Test case passing 1 argument skip → false to deniedMutationClearsSecretDraftAndAllowsFreshAttempt(skip:) started.
+◇ Test onlyOwnedFinalOutputAcknowledgesOnce() started.
+◇ Test case passing 1 argument skip → true to deniedMutationClearsSecretDraftAndAllowsFreshAttempt(skip:) started.
+◇ Test scopeProjectionReusesQuestionIdentityAndPreservesDraft() started.
+◇ Test case passing 1 argument outcome → "expired" to missingPendingQuestionRecoversThroughGet(outcome:) started.
+◇ Test case passing 1 argument outcome → "notFound" to missingPendingQuestionRecoversThroughGet(outcome:) started.
+◇ Test case passing 1 argument otherEndpoint → false to otherEndpointAndExplicitDisconnectNeverRestoreSelectedAttachments(otherEndpoint:) started.
+◇ Test case passing 1 argument otherEndpoint → true to otherEndpointAndExplicitDisconnectNeverRestoreSelectedAttachments(otherEndpoint:) started.
+◇ Test recoveryEligibilityAllowsOriginalReplyAndRechecksNewerDraft() started.
+◇ Test case passing 1 argument hasNewDraft → false to submittedReplyDoesNotReappearAfterLateAckOrOverwriteNewComposer(hasNewDraft:) started.
+◇ Test case passing 1 argument hasNewDraft → true to submittedReplyDoesNotReappearAfterLateAckOrOverwriteNewComposer(hasNewDraft:) started.
+◇ Test terminalFailureAckRetainsTextAndRemainsUncertain(status:) started.
+◇ Test recoveryNavigationHonorsEndpointConnectionAndAttachmentGuards() started.
+◇ Test unscopedQuestionsNeverAcquireCurrentConversationLabel(unscopedKey:) started.
+◇ Test failedOrCancelledRetryKeepsOfflineRecoveryReadableAndEndpointScoped(retryFails:) started.
+◇ Test case passing 1 argument skip → false to terminalEventIgnoresLateMutationFailure(skip:) started.
+◇ Test lateAcceptedAckRemovesTransferredRecoveryWithoutTouchingNewDraft() started.
+◇ Test case passing 1 argument skip → true to terminalEventIgnoresLateMutationFailure(skip:) started.
+◇ Test case passing 1 argument deleteFails → false to tokenRevocationWinsOverDelayedSuccessEvenAfterReoptIn(deleteFails:) started.
+◇ Test case passing 1 argument skip → false to confirmedMutationOutranksUnavailableRecoveryWithoutReinsertingCard(skip:) started.
+◇ Test acceptedAckAfterSessionSwitchNeverResurrectsSubmittedText(status:) started.
+◇ Test historyCheckBeforePendingRPCSettlesCannotAuthorizeLaterRestoration(historyCompletesFirst:) started.
+◇ Test case passing 1 argument skip → true to confirmedMutationOutranksUnavailableRecoveryWithoutReinsertingCard(skip:) started.
+◇ Test case passing 1 argument deleteFails → true to tokenRevocationWinsOverDelayedSuccessEvenAfterReoptIn(deleteFails:) started.
+◇ Test case passing 1 argument skip → true to replacementRouteDiscardsResponseEvenBeforeRouteEvent(skip:) started.
+◇ Test case passing 1 argument skip → false to replacementRouteDiscardsResponseEvenBeforeRouteEvent(skip:) started.
+◇ Test case passing 1 argument skip → false to answerAndSkipAreSingleFlightAndTerminal(skip:) started.
+◇ Test case passing 1 argument skip → true to answerAndSkipAreSingleFlightAndTerminal(skip:) started.
+◇ Test cancelledSendRetainsUnconfirmedDraftAndDoesNotReplay() started.
+◇ Test case passing 1 argument payload → "{}" to unconfirmedSkipRemainsActionableAndRecoversInsteadOfClaimingSkipped(payload:) started.
+◇ Test unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test case passing 1 argument payload → "{"status":"rejected"}" to unconfirmedSkipRemainsActionableAndRecoversInsteadOfClaimingSkipped(payload:) started.
+◇ Test editingRestoredDraftUsesNewDeduplicationKey() started.
+◇ Test case passing 1 argument payload → "{"status":"answered","answers":{"answers":{}}}" to unconfirmedSkipRemainsActionableAndRecoversInsteadOfClaimingSkipped(payload:) started.
+◇ Test recoveryOpensUnlistedNewSessionAndRestoresAttachmentWithOriginalKey() started.
+◇ Test case passing 1 argument skip → false to lateOldRouteCannotClearTheNewRoutesQuestionSubmission(skip:) started.
+◇ Test case passing 2 arguments skip → false, fails → false to detachedOwnerDiscardsLateMutation(skip:fails:) started.
+◇ Test case passing 1 argument skip → true to lateOldRouteCannotClearTheNewRoutesQuestionSubmission(skip:) started.
+◇ Test reconnectKeepsUnconfirmedSendUntilHistoryReviewAndExplicitRestore() started.
+◇ Test case passing 2 arguments skip → false, fails → true to detachedOwnerDiscardsLateMutation(skip:fails:) started.
+◇ Test case passing 2 arguments skip → false, succeeds → false to localExpiryDuringMutationAllowsOnlyConfirmedServerOutcome(skip:succeeds:) started.
+◇ Test case passing 2 arguments skip → true, fails → false to detachedOwnerDiscardsLateMutation(skip:fails:) started.
+◇ Test case passing 1 argument unadvertised → false to unavailableRecoveryRetiresPendingControls(unadvertised:) started.
+◇ Test failedHistoryCheckCannotAuthorizeUncertainRestoration() started.
+◇ Test case passing 2 arguments skip → true, fails → true to detachedOwnerDiscardsLateMutation(skip:fails:) started.
+◇ Test case passing 2 arguments skip → true, succeeds → false to localExpiryDuringMutationAllowsOnlyConfirmedServerOutcome(skip:succeeds:) started.
+◇ Test case passing 1 argument unadvertised → true to unavailableRecoveryRetiresPendingControls(unadvertised:) started.
+◇ Test case passing 1 argument payload → "{}" to gatewayCancellationRequiresTheCancelledContract(payload:) started.
+◇ Test case passing 2 arguments skip → true, succeeds → true to localExpiryDuringMutationAllowsOnlyConfirmedServerOutcome(skip:succeeds:) started.
+◇ Test case passing 2 arguments skip → false, succeeds → true to localExpiryDuringMutationAllowsOnlyConfirmedServerOutcome(skip:succeeds:) started.
+◇ Test case passing 1 argument reason → "expiry" to invalidatedQuestionCannotDispatchAfterDelayedLeaseAcquisition(reason:) started.
+◇ Test case passing 1 argument payload → "{"status":"answered","answers":{"answers":{}}}" to gatewayCancellationRequiresTheCancelledContract(payload:) started.
+◇ Test case passing 1 argument reason → "route" to invalidatedQuestionCannotDispatchAfterDelayedLeaseAcquisition(reason:) started.
+◇ Test case passing 1 argument payload → "{"status":"rejected"}" to gatewayCancellationRequiresTheCancelledContract(payload:) started.
+◇ Test case passing 1 argument payload → "not-json" to gatewayCancellationRequiresTheCancelledContract(payload:) started.
+◇ Test case passing 1 argument returnsContext → false to detachedOwnerCannotPublishContextForTheSameSessionKey(returnsContext:) started.
+◇ Test case passing 1 argument fails → false to cancelledRefreshCannotReplaceNewerCatalogNoticeOrDraft(fails:) started.
+◇ Test case passing 1 argument returnsContext → true to detachedOwnerCannotPublishContextForTheSameSessionKey(returnsContext:) started.
+◇ Test case passing 1 argument fails → true to cancelledRefreshCannotReplaceNewerCatalogNoticeOrDraft(fails:) started.
+◇ Test case passing 2 arguments status → .answered, skip → false to terminalEventCannotBeOverwrittenByLateMutation(status:skip:) started.
+◇ Test case passing 1 argument returnsContext → false to cancelledContextCannotChangeNewerErrorOrDraft(returnsContext:) started.
+◇ Test case passing 1 argument newConversation → false to failureAfterNavigationRetainsOriginalInItsSession(newConversation:) started.
+◇ Test case passing 1 argument newConversation → true to failureAfterNavigationRetainsOriginalInItsSession(newConversation:) started.
+◇ Test case passing 1 argument state → "aborted" to nonFinalEventsNeverAcknowledgeCompletion(state:) started.
+◇ Test case passing 2 arguments status → .answered, skip → true to terminalEventCannotBeOverwrittenByLateMutation(status:skip:) started.
+◇ Test case passing 2 arguments status → .expired, skip → false to terminalEventCannotBeOverwrittenByLateMutation(status:skip:) started.
+◇ Test case passing 2 arguments status → .expired, skip → true to terminalEventCannotBeOverwrittenByLateMutation(status:skip:) started.
+◇ Test case passing 1 argument state → "error" to nonFinalEventsNeverAcknowledgeCompletion(state:) started.
+◇ Test case passing 1 argument returnsContext → true to cancelledContextCannotChangeNewerErrorOrDraft(returnsContext:) started.
+◇ Test case passing 2 arguments status → .cancelled, skip → false to terminalEventCannotBeOverwrittenByLateMutation(status:skip:) started.
+◇ Test case passing 2 arguments missingRun → true, missingSession → false to missingCorrelationNeverAcknowledges(missingRun:missingSession:) started.
+◇ Test case passing 2 arguments missingRun → false, missingSession → true to missingCorrelationNeverAcknowledges(missingRun:missingSession:) started.
+◇ Test case passing 2 arguments status → .cancelled, skip → true to terminalEventCannotBeOverwrittenByLateMutation(status:skip:) started.
+◇ Test case passing 2 arguments missingRun → true, missingSession → true to missingCorrelationNeverAcknowledges(missingRun:missingSession:) started.
+◇ Test acceptedRequestNeedsExactTerminalAndPreservesComposer() started.
+◇ Test localSendWithoutAcknowledgementAndUnknownRunCannotBeStopped() started.
+◇ Test adapterLeaseRejectsRouteBeforeDispatchAndKeepsExactTarget() started.
+◇ Test retryingNewRunDoesNotRepeatAlreadyAcknowledgedStop() started.
+◇ Test immediateNavigationCannotRetargetReservedStop() started.
+◇ Test case passing 1 argument state → "delta" to nonFinalEventsNeverAcknowledgeCompletion(state:) started.
+◇ Test adapterLeaseRejectsLatePayloadOrErrorAfterRouteReplacement(error:) started.
+◇ Test confirmedOldStopDoesNotHideAnotherAdvertisedRun() started.
+◇ Test refreshNeedsTypedTerminalAndNeverResendsStop() started.
+◇ Test cancelledTaskBeforeDispatchDoesNotAbort() started.
+◇ Test abortReceiptRequiresExactAcceptedRun(payload:) started.
+◇ Test cancelledPendingTaskCannotPublishLateAcceptedReceipt() started.
+◇ Test overlappingStopTrackingPreservesEachOriginalObservationLease() started.
+◇ Test failedOrUnconfirmedStopRetriesOnlyByExplicitRequest(knownFailure:) started.
+◇ Test staleOrForeignAgentLifecycleCannotConfirmStop() started.
+◇ Test oldStopCompletionCannotSettleAnotherConversationRequest() started.
+◇ Test waitCodecDistinguishesAbortFromOtherTerminalAndQueueTimeout() started.
+◇ Test allCapturedRunsRequireTheirOwnTerminalEvidence() started.
+◇ Test case passing 1 argument status → "timeout" to terminalFailureAckRetainsTextAndRemainsUncertain(status:) started.
+◇ Test case passing 1 argument status → "error" to terminalFailureAckRetainsTextAndRemainsUncertain(status:) started.
+◇ Test case passing 1 argument retryFails → false to failedOrCancelledRetryKeepsOfflineRecoveryReadableAndEndpointScoped(retryFails:) started.
+◇ Test case passing 1 argument retryFails → true to failedOrCancelledRetryKeepsOfflineRecoveryReadableAndEndpointScoped(retryFails:) started.
+◇ Test case passing 1 argument status → "ok" to acceptedAckAfterSessionSwitchNeverResurrectsSubmittedText(status:) started.
+◇ Test case passing 1 argument status → "started" to acceptedAckAfterSessionSwitchNeverResurrectsSubmittedText(status:) started.
+◇ Test case passing 1 argument status → "accepted" to acceptedAckAfterSessionSwitchNeverResurrectsSubmittedText(status:) started.
+◇ Test case passing 1 argument historyCompletesFirst → false to historyCheckBeforePendingRPCSettlesCannotAuthorizeLaterRestoration(historyCompletesFirst:) started.
+◇ Test case passing 1 argument unscopedKey → nil to unscopedQuestionsNeverAcquireCurrentConversationLabel(unscopedKey:) started.
+◇ Test case passing 1 argument unscopedKey → "" to unscopedQuestionsNeverAcquireCurrentConversationLabel(unscopedKey:) started.
+◇ Test case passing 1 argument status → "in_flight" to acceptedAckAfterSessionSwitchNeverResurrectsSubmittedText(status:) started.
+◇ Test case passing 1 argument status → "" to unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test case passing 1 argument unscopedKey → "  
+	 " to unscopedQuestionsNeverAcquireCurrentConversationLabel(unscopedKey:) started.
+◇ Test case passing 1 argument status → "queued" to unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test case passing 1 argument status → "OK" to unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test adapterLeaseRejectsReceiptAfterTaskCancellation() started.
+◇ Test case passing 1 argument status → " started " to unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test case passing 1 argument error → false to adapterLeaseRejectsLatePayloadOrErrorAfterRouteReplacement(error:) started.
+◇ Test case passing 1 argument error → true to adapterLeaseRejectsLatePayloadOrErrorAfterRouteReplacement(error:) started.
+◇ Test case passing 1 argument status → "future_status" to unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test detachedOrReplacedRouteCannotAcceptLateStopReceipt(detach:) started.
+◇ Test case passing 1 argument status → "pending" to unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) started.
+◇ Test case passing 1 argument payload → "{"ok":true,"aborted":true,"runIds":["foreign"]}" to abortReceiptRequiresExactAcceptedRun(payload:) started.
+◇ Test case passing 1 argument payload → "{"ok":true}" to abortReceiptRequiresExactAcceptedRun(payload:) started.
+◇ Test case passing 1 argument knownFailure → false to failedOrUnconfirmedStopRetriesOnlyByExplicitRequest(knownFailure:) started.
+◇ Test case passing 1 argument detach → false to detachedOrReplacedRouteCannotAcceptLateStopReceipt(detach:) started.
+◇ Test case passing 1 argument historyCompletesFirst → true to historyCheckBeforePendingRPCSettlesCannotAuthorizeLaterRestoration(historyCompletesFirst:) started.
+◇ Test case passing 1 argument payload → "{"ok":true,"aborted":true,"runIds":["run-a"]}" to abortReceiptRequiresExactAcceptedRun(payload:) started.
+◇ Test case passing 1 argument payload → "{"ok":true,"aborted":false,"runIds":[]}" to abortReceiptRequiresExactAcceptedRun(payload:) started.
+◇ Test acceptedStopDoesNotBlockNewRunOrLoseEitherTerminal(firstEndsBeforeSecondAck:) started.
+◇ Test case passing 1 argument detach → true to detachedOrReplacedRouteCannotAcceptLateStopReceipt(detach:) started.
+◇ Test case passing 1 argument knownFailure → true to failedOrUnconfirmedStopRetriesOnlyByExplicitRequest(knownFailure:) started.
+◇ Test case passing 1 argument firstEndsBeforeSecondAck → false to acceptedStopDoesNotBlockNewRunOrLoseEitherTerminal(firstEndsBeforeSecondAck:) started.
+◇ Test case passing 1 argument firstEndsBeforeSecondAck → true to acceptedStopDoesNotBlockNewRunOrLoseEitherTerminal(firstEndsBeforeSecondAck:) started.
+✔ Test repeatedDisconnectClearsSensitiveInput() passed after 0.019 seconds.
+✔ Test implementedResolverWaitsForConnectionThenRetriesAfterRecovery() passed after 0.030 seconds.
+✔ Test defaultResolverReportsUnsupportedWithoutRequestingConnection() passed after 0.032 seconds.
+✔ Suite InlineWidgetAvailabilityTests passed after 0.032 seconds.
+✔ Test disconnectedTransportRefusesDispatch() passed after 0.044 seconds.
+✔ Test previewHistoryIsReadableWithoutDispatchCapability() passed after 0.049 seconds.
+✔ Test credentialActionsValidateEndpointBeforeStorageAccess() passed after 0.058 seconds.
+✔ Test canonicalSessionCannotBeReroutedBySelectedAgent() passed after 0.069 seconds.
+✔ Test structuredConnectionErrorsExplainTheRecovery(detail:expected:) with 3 test cases passed after 0.069 seconds.
+✔ Test invalidEndpointNeverStartsConnection() passed after 0.069 seconds.
+✔ Test emptiedCurrentDraftDoesNotResurrectOlderSavedText() passed after 0.069 seconds.
+✔ Test interruptedCaptureOwnerIsReportedWithoutInventingAttachmentBytes() passed after 0.069 seconds.
+✔ Test emptyTokenNeverStartsConnection() passed after 0.069 seconds.
+✔ Test optedInAdapterLosesMediaActionsWhenDisconnected() passed after 0.069 seconds.
+✔ Test productionAdapterDoesNotClaimMediaSupportWhenChatHealthChanges() passed after 0.069 seconds.
+✔ Suite MediaArtifactAvailabilityTests passed after 0.070 seconds.
+✔ Test disabledOpenDoesNotRequestAndUnsupportedOpenExplainsFailure() passed after 0.070 seconds.
+✔ Test emptyFinalAndDetachedTransportNeverAcknowledge() passed after 0.070 seconds.
+✔ Test sessionChangeDiscardsDelayedContextWithoutUnsupportedNotice() passed after 0.070 seconds.
+✔ Test pdfFilePayloadRoundTripsThroughProductionRequestEncoder() passed after 0.070 seconds.
+✔ Test foreignSessionOrLateFinalNeverAcknowledges() passed after 0.070 seconds.
+✔ Test missingCorrelationNeverAcknowledges(missingRun:missingSession:) with 3 test cases passed after 0.073 seconds.
+✔ Test onlyOwnedFinalOutputAcknowledgesOnce() passed after 0.073 seconds.
+✔ Test scopeProjectionReusesQuestionIdentityAndPreservesDraft() passed after 0.073 seconds.
+✔ Test nonFinalEventsNeverAcknowledgeCompletion(state:) with 3 test cases passed after 0.073 seconds.
+✔ Suite CharacterStateTests passed after 0.074 seconds.
+✔ Test unscopedQuestionsNeverAcquireCurrentConversationLabel(unscopedKey:) with 3 test cases passed after 0.073 seconds.
+✔ Suite QuestionScopeTests passed after 0.074 seconds.
+✔ Test abortReceiptRequiresExactAcceptedRun(payload:) with 4 test cases passed after 0.074 seconds.
+✔ Test waitCodecDistinguishesAbortFromOtherTerminalAndQueueTimeout() passed after 0.074 seconds.
+✔ Test replacedLeaseCannotDispatchOnTheNewConnection() passed after 0.078 seconds.
+✔ Test detachedOwnerCannotPublishContextForTheSameSessionKey(returnsContext:) with 2 test cases passed after 0.079 seconds.
+✔ Test cancelledContextCannotChangeNewerErrorOrDraft(returnsContext:) with 2 test cases passed after 0.079 seconds.
+✔ Test immediateNavigationCannotRetargetReservedStop() passed after 0.081 seconds.
+✔ Test cancelledTaskBeforeDispatchDoesNotAbort() passed after 0.081 seconds.
+✔ Test otherEndpointAndExplicitDisconnectNeverRestoreSelectedAttachments(otherEndpoint:) with 2 test cases passed after 0.084 seconds.
+✔ Test tokenRevocationWinsOverDelayedSuccessEvenAfterReoptIn(deleteFails:) with 2 test cases passed after 0.084 seconds.
+✔ Test submittedReplyDoesNotReappearAfterLateAckOrOverwriteNewComposer(hasNewDraft:) with 2 test cases passed after 0.084 seconds.
+✔ Test unavailableRecoveryRetiresPendingControls(unadvertised:) with 2 test cases passed after 0.084 seconds.
+✔ Test invalidatedQuestionCannotDispatchAfterDelayedLeaseAcquisition(reason:) with 2 test cases passed after 0.084 seconds.
+✔ Test failureNeverOverwritesNewerComposerDraft() passed after 0.084 seconds.
+✔ Test cancelledRefreshCannotReplaceNewerCatalogNoticeOrDraft(fails:) with 2 test cases passed after 0.084 seconds.
+✔ Test failedAttachmentSendRetainsBytesAndDoesNotOverwriteNewAttachment() passed after 0.084 seconds.
+✔ Test emptyAndOversizedFilesDoNotDisplaceAnAcceptedAttachment() passed after 0.085 seconds.
+✔ Test recoveryEligibilityAllowsOriginalReplyAndRechecksNewerDraft() passed after 0.085 seconds.
+✔ Test recoveryCannotOverwriteNewReplySelection() passed after 0.085 seconds.
+✔ Test terminalFailureAckRetainsTextAndRemainsUncertain(status:) with 2 test cases passed after 0.085 seconds.
+✔ Test invalidatedOpenCannotReplaceOrClearANewerRequest() passed after 0.086 seconds.
+✔ Test refreshIsSingleFlightAndCanRunAgainAfterCompletion() passed after 0.086 seconds.
+✔ Suite ModelSignInPresentationTests passed after 0.087 seconds.
+✔ Test adapterLeaseRejectsLatePayloadOrErrorAfterRouteReplacement(error:) with 2 test cases passed after 0.086 seconds.
+✔ Test staleOrForeignAgentLifecycleCannotConfirmStop() passed after 0.087 seconds.
+✔ Test adapterLeaseRejectsReceiptAfterTaskCancellation() passed after 0.087 seconds.
+✔ Test gatewayCancellationRequiresTheCancelledContract(payload:) with 4 test cases passed after 0.091 seconds.
+✔ Test acceptedAckAfterSessionSwitchNeverResurrectsSubmittedText(status:) with 4 test cases passed after 0.091 seconds.
+✔ Test cancelledSendRetainsUnconfirmedDraftAndDoesNotReplay() passed after 0.091 seconds.
+✔ Test changedGatewayBudgetRejectsTheCombinedDraftBeforeSending() passed after 0.092 seconds.
+✔ Suite AttachmentContractTests passed after 0.092 seconds.
+✔ Test localSendWithoutAcknowledgementAndUnknownRunCannotBeStopped() passed after 0.092 seconds.
+✔ Test detachedOrReplacedRouteCannotAcceptLateStopReceipt(detach:) with 2 test cases passed after 0.093 seconds.
+✔ Test cancellingBeforeAttemptStartsStillPreservesRetryInput() passed after 0.095 seconds.
+✔ Test missingPendingQuestionRecoversThroughGet(outcome:) with 3 test cases passed after 0.095 seconds.
+✔ Test retiredPhysicalRouteCannotPublishFallbackModelAfterMainKeyAwait() passed after 0.095 seconds.
+✔ Test failedHistoryCheckCannotAuthorizeUncertainRestoration() passed after 0.096 seconds.
+✔ Test acceptedRequestNeedsExactTerminalAndPreservesComposer() passed after 0.095 seconds.
+✔ Test cancelledPendingTaskCannotPublishLateAcceptedReceipt() passed after 0.095 seconds.
+✔ Test unsupportedAckRetainsTextAttachmentsAndReplyWithoutSuccess(status:) with 6 test cases passed after 0.096 seconds.
+✔ Test failureAfterNavigationRetainsOriginalInItsSession(newConversation:) with 2 test cases passed after 0.098 seconds.
+✔ Test allCapturedRunsRequireTheirOwnTerminalEvidence() passed after 0.098 seconds.
+✔ Test selectedAttachmentBytesReplyAndTextSurviveFailedAndCancelledRetries() passed after 0.100 seconds.
+✔ Test missingImportBytesProduceOfflineNoticeAcrossFailedAndCancelledRetries() passed after 0.100 seconds.
+✔ Test explicitDisconnectErasesAllDraftsAndInputButKeepsSavedToken() passed after 0.100 seconds.
+✔ Test endpointReplacementCannotImportOrReviveOldRecovery() passed after 0.100 seconds.
+✔ Test failedOrCancelledRetryKeepsOfflineRecoveryReadableAndEndpointScoped(retryFails:) with 2 test cases passed after 0.100 seconds.
+✔ Test terminalEventIgnoresLateMutationFailure(skip:) with 2 test cases passed after 0.101 seconds.
+✔ Test onlyCanonicalMatchingUserHistoryRetiresUnconfirmedSend() passed after 0.101 seconds.
+✔ Test replacementRouteDiscardsResponseEvenBeforeRouteEvent(skip:) with 2 test cases passed after 0.101 seconds.
+✔ Test detachedOwnerDiscardsLateMutation(skip:fails:) with 4 test cases passed after 0.101 seconds.
+✔ Test answerAndSkipAreSingleFlightAndTerminal(skip:) with 2 test cases passed after 0.102 seconds.
+✔ Test adapterLeaseRejectsRouteBeforeDispatchAndKeepsExactTarget() passed after 0.100 seconds.
+✔ Test localExpiryDuringMutationAllowsOnlyConfirmedServerOutcome(skip:succeeds:) with 4 test cases passed after 0.102 seconds.
+✔ Test disconnectInvalidatesHistoryAndBlocksSessionChanges() passed after 0.102 seconds.
+✔ Test cancelledHistoryReviewCannotAuthorizeUncertainRestoration() passed after 0.102 seconds.
+✔ Test recoveryNavigationHonorsEndpointConnectionAndAttachmentGuards() passed after 0.102 seconds.
+✔ Test lateAcceptedAckRemovesTransferredRecoveryWithoutTouchingNewDraft() passed after 0.102 seconds.
+✔ Test terminalEventCannotBeOverwrittenByLateMutation(status:skip:) with 6 test cases passed after 0.103 seconds.
+✔ Test cancelledMainKeyAwaitCannotPublishIntoReplacement() passed after 0.105 seconds.
+✔ Test interruptedRealImportKeepsReadyBytesAndNeverOverwritesReplacementDraft() passed after 0.106 seconds.
+✔ Suite AttachmentSnapshotTests passed after 0.106 seconds.
+✔ Test editingRestoredDraftUsesNewDeduplicationKey() passed after 0.105 seconds.
+✔ Test oldStopCompletionCannotSettleAnotherConversationRequest() passed after 0.105 seconds.
+✔ Test failedOrUnconfirmedStopRetriesOnlyByExplicitRequest(knownFailure:) with 2 test cases passed after 0.105 seconds.
+✔ Test acceptedStopDoesNotBlockNewRunOrLoseEitherTerminal(firstEndsBeforeSecondAck:) with 2 test cases passed after 0.105 seconds.
+✔ Test cancelledRetryKeepsEveryDraftAndTokenAndFencesLateSuccess() passed after 0.108 seconds.
+✔ Test anotherEndpointNeverReceivesRetainedDrafts() passed after 0.107 seconds.
+✔ Test everySessionDraftSurvivesFailedRetryToNormalizedEndpoint() passed after 0.108 seconds.
+✔ Test olderHistoryCompletionCannotReplaceLatestSuccess(oldFails:) with 2 test cases passed after 0.108 seconds.
+✔ Test olderHistoryCannotClearLatestSpinnerAndCancellationCannotPublish() passed after 0.108 seconds.
+✔ Suite ConnectionTests passed after 0.108 seconds.
+✔ Test confirmedMutationOutranksUnavailableRecoveryWithoutReinsertingCard(skip:) with 2 test cases passed after 0.108 seconds.
+✔ Test unconfirmedSkipRemainsActionableAndRecoversInsteadOfClaimingSkipped(payload:) with 3 test cases passed after 0.108 seconds.
+✔ Test historyReviewOfEarlierAttemptCannotAuthorizeRetriedSameKey() passed after 0.108 seconds.
+✔ Test unconfirmedSkipRecoversAnAuthoritativeAnswerWithoutClaimingSkipped() passed after 0.109 seconds.
+✔ Test confirmedOldStopDoesNotHideAnotherAdvertisedRun() passed after 0.108 seconds.
+✔ Test retryingNewRunDoesNotRepeatAlreadyAcknowledgedStop() passed after 0.108 seconds.
+✔ Test sameConnectionSessionSwitchKeepsTheOriginalQuestionCompletion() passed after 0.110 seconds.
+✔ Test recoveryOpensUnlistedNewSessionAndRestoresAttachmentWithOriginalKey() passed after 0.109 seconds.
+✔ Test refreshNeedsTypedTerminalAndNeverResendsStop() passed after 0.109 seconds.
+✔ Test historyCheckBeforePendingRPCSettlesCannotAuthorizeLaterRestoration(historyCompletesFirst:) with 2 test cases passed after 0.110 seconds.
+✔ Test reconnectKeepsUnconfirmedSendUntilHistoryReviewAndExplicitRestore() passed after 0.110 seconds.
+✔ Suite SendRecoveryTests passed after 0.111 seconds.
+✔ Test lateOldRouteCannotClearTheNewRoutesQuestionSubmission(skip:) with 2 test cases passed after 0.110 seconds.
+✔ Test deniedMutationClearsSecretDraftAndAllowsFreshAttempt(skip:) with 2 test cases passed after 0.111 seconds.
+✔ Suite QuestionLifecycleTests passed after 0.111 seconds.
+✔ Test overlappingStopTrackingPreservesEachOriginalObservationLease() passed after 0.109 seconds.
+✔ Suite RunControlTests passed after 0.111 seconds.
+✔ Test run with 105 tests in 11 suites passed after 0.111 seconds.
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Test rejectsUnsafeInputs() started.
+◇ Test secureEndpoint() started.
+◇ Test preservesMessageIdentity() started.
+◇ Test rejectsInvalidPortsAndWhitespace() started.
+◇ Test endpointPreservesProxyPathAndNormalizesScheme() started.
+✔ Test endpointPreservesProxyPathAndNormalizesScheme() passed after 0.001 seconds.
+✔ Test preservesMessageIdentity() passed after 0.001 seconds.
+✔ Test secureEndpoint() passed after 0.001 seconds.
+✔ Test rejectsInvalidPortsAndWhitespace() passed after 0.001 seconds.
+✔ Test rejectsUnsafeInputs() passed after 0.001 seconds.
+✔ Test run with 5 tests in 0 suites passed after 0.001 seconds.
+
+RUNNER_EXIT=0; ELAPSED_SECONDS=3.7

@@ -1,0 +1,305 @@
+{
+  "source_commit": "99ba308b5f02911072d76dc5ad76d3b08834b3dd",
+  "simulator_id": "022EC407-377F-4563-A350-CD12D1BA7795",
+  "simulator_name": "Companion Recovery Task5",
+  "normal_build_app_path": "/Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-render-products/99ba308/Companion.app",
+  "built_executable_sha256": "403a6bfd55743da38f9a946b17fd56311341474f6d6a58224d400378612bf595",
+  "installed_executable_sha256": "403a6bfd55743da38f9a946b17fd56311341474f6d6a58224d400378612bf595",
+  "captures": [
+    {
+      "file": "questions-ax5-footer.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "--ui-questions-end",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T20:13:12.096076+00:00",
+      "sha256": "312542bb6af55fbbd18104edf6d3e3d1c4a533198358ef7fabfce25dd215876a",
+      "size_bytes": 171021
+    },
+    {
+      "file": "compact.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:14:06.513027+00:00",
+      "sha256": "90a397b7d48788e393da186b703e94813c0c55ed91b5b8d4c924f9f1a854338e",
+      "size_bytes": 280629
+    },
+    {
+      "file": "activity.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:14:21.479595+00:00",
+      "sha256": "85acde03cfb6f7a470a11dd30bd322a652061b5e81cab2e59f194f68aca2925e",
+      "size_bytes": 199821
+    },
+    {
+      "file": "activity-ax5.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T20:14:36.470625+00:00",
+      "sha256": "ab11ee1e2482ede4cfa58efd0da800bd67154836e9e435b09ff38bab75e8a373",
+      "size_bytes": 196748
+    },
+    {
+      "file": "stop-requested.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-stop",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:14:51.504953+00:00",
+      "sha256": "60d2d1e341a0ddc788f3ea08a8a8fb534839564e88d84d939174e71a854ef820",
+      "size_bytes": 197588
+    },
+    {
+      "file": "stop-confirmed.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-stop",
+        "--ui-stop-confirmed",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:15:07.455760+00:00",
+      "sha256": "a54fb097eec94958e522b81501dd15746eea0aaf61fdcbcdd806ed444cbc0ddd",
+      "size_bytes": 201686
+    },
+    {
+      "file": "stop-failed.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-stop",
+        "--ui-stop-failed",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:15:22.463175+00:00",
+      "sha256": "0be085fc96d17a5f1fe7bef55cd7e9a675c3699d3b4cd861cac6fcb78431ad89",
+      "size_bytes": 209841
+    },
+    {
+      "file": "questions.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:15:37.515830+00:00",
+      "sha256": "b32939ba755a83afa60f187d0edfbae05165413af2e009b45cb4fceca973cd08",
+      "size_bytes": 241774
+    },
+    {
+      "file": "questions-unscoped.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-unscoped-questions",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:15:52.429765+00:00",
+      "sha256": "93b51e646fcff228f3a66805e46c43be5c5912255b22f60f95cee5a4bf48e927",
+      "size_bytes": 244684
+    },
+    {
+      "file": "questions-ax5.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T20:16:08.361171+00:00",
+      "sha256": "ab0a3865a064ef4584a4c6220e78844d22456bbb78173414414f9d62277a4868",
+      "size_bytes": 190535
+    }
+  ],
+  "limits": [
+    "Debug synthetic fixtures, no live server",
+    "Programmatic launch/keyboard focus, not tap interaction",
+    "Simulator content-size category only; no VoiceOver or OS Reduce Motion verification",
+    "macOS production-model tests use controlled fake gateway/credential boundaries; not live or iOS test execution",
+    "Question options/submit/skip and activity controls disabled in disconnected preview; programmatic stop fixture invokes production model with a synthetic lease",
+    "AX5 screenshots use programmatic top/bottom scroll positions; real scroll, taps, sheet repetition and keyboard interaction remain unverified",
+    "All captures use --ui-testing, so character motion is paused; no new motion video/FPS/state-transition evidence",
+    "No live server, authentication, real sending, approvals, remote artifact download, browser takeover or phone/signing validation",
+    "Run control covers confirmed responses in the current conversation, not global durable tasks; incoming questions are not execution/purchase approvals",
+    "Recovery retains drafts/attachments in memory only; process termination persistence not implemented"
+  ],
+  "validation_logs": [
+    {
+      "file": "logs/build-normal-99ba308.log",
+      "sha256": "70136c80925cd8b2aed9473d81735231fd939d8fa9c9f70b1c273d5215f59bd2",
+      "source_commit": "99ba308b5f02911072d76dc5ad76d3b08834b3dd",
+      "result": "PASS",
+      "scope": "native normal Simulator build"
+    },
+    {
+      "file": "logs/install-99ba308.log",
+      "sha256": "d2c3373b143e4f265c3232250b81b03a97d8ce356accac4e8cbf1dc81b67251d",
+      "source_commit": "99ba308b5f02911072d76dc5ad76d3b08834b3dd",
+      "result": "PASS",
+      "scope": "normal app install on dedicated simulator"
+    },
+    {
+      "file": "logs/tests-99ba308.log",
+      "sha256": "11536f716a2a0791d42801960b1e6f20dbf7b0d9ef43e04758016dd49f0481f6",
+      "source_commit": "99ba308b5f02911072d76dc5ad76d3b08834b3dd",
+      "result": "PASS",
+      "scope": "macOS controlled-boundary 105 integration in 11 suites + 5 core"
+    },
+    {
+      "file": "logs/privacy-99ba308.log",
+      "sha256": "8cb243b8be69d87db43ca2e23d25b583b23c579b2bcc9b8c690fab1a9aa567ac",
+      "source_commit": "99ba308b5f02911072d76dc5ad76d3b08834b3dd",
+      "result": "PASS",
+      "scope": "exact git archive lexical guard 182 sources + synthetic helper 8 cases / 7 categories"
+    },
+    {
+      "file": "logs/wiring-99ba308.log",
+      "sha256": "fc384c4360909679934a92bdac1ebe6e1fe0c4851992b5c37e75dc98ae37d81a",
+      "source_commit": "99ba308b5f02911072d76dc5ad76d3b08834b3dd",
+      "result": "PASS",
+      "scope": "cancel/activity source wiring + mutations, no taps"
+    },
+    {
+      "file": "logs/bundle-99ba308.log",
+      "sha256": "067ab6f6214060fe967c5b7d70ad5814571e2634fcf0fa64e681c92daa88af60",
+      "source_commit": "99ba308b5f02911072d76dc5ad76d3b08834b3dd",
+      "result": "PASS",
+      "scope": "Simulator platform/metadata/resources/library paths"
+    },
+    {
+      "file": "logs/capture-footer-99ba308.log",
+      "sha256": "bde4f3d8bff242d21d4d5e4ebe758d2be86b446bfe826b78f9688fec7e999cc8",
+      "source_commit": "99ba308b5f02911072d76dc5ad76d3b08834b3dd",
+      "result": "PASS",
+      "scope": "AX5 question footer programmatic render"
+    },
+    {
+      "file": "logs/capture-controls-99ba308.log",
+      "sha256": "b04f244f0098205265b698852f3549f37885f2de9cc1d6db70fb9ab11eee8e80",
+      "source_commit": "99ba308b5f02911072d76dc5ad76d3b08834b3dd",
+      "result": "PASS",
+      "scope": "9 programmatic synthetic/disconnected renders"
+    },
+    {
+      "file": "logs/runtime-99ba308.log",
+      "sha256": "e3546b0d59ebcacd1de9d2b4b74ed8377bd72f14fb00f6b2af7ee393cda988cd",
+      "source_commit": "99ba308b5f02911072d76dc5ad76d3b08834b3dd",
+      "result": "PASS",
+      "scope": "owned app process and built/installed executable comparison"
+    }
+  ],
+  "runtime_record": {
+    "file": "runtime.json",
+    "sha256": "baaa2d03436f4c32c8d9fd8b691ed8129f25cfc8857d381ed62cea6a2ef273ae"
+  },
+  "capture_index": {
+    "file": "captures.json",
+    "sha256": "e842f7ef7ac8d4dbd0ab193a840b67c9590c1770b7c8bc87dce58ef49d3d556d"
+  },
+  "contact_sheet": {
+    "file": "Companion-99ba308-activity-question-renders.png",
+    "sha256": "0d1cee0c629400a46bc37e639b6258bb1816407ba0769e477fa26bcf2994464f",
+    "original_png_count": 9,
+    "library_file_id": "libfile_c1b249b350708191b24c4a2321c6e369",
+    "library_file_name": "Companion-99ba308-activity-question-renders.png",
+    "composition": "Uncropped scaled original Simulator PNGs with captions; questions-ax5 upper viewport available separately"
+  },
+  "built_settings": {
+    "xcode": "27",
+    "sdk": "iphonesimulator27.0",
+    "configuration": "Debug",
+    "action": "build",
+    "ARCHS": "arm64",
+    "ONLY_ACTIVE_ARCH": "YES",
+    "ENABLE_DEBUG_DYLIB": "NO",
+    "CODE_SIGNING_ALLOWED": "NO",
+    "jobs": 2,
+    "destination": "generic/platform=iOS Simulator"
+  },
+  "source_snapshot": {
+    "tracked_blobs_checked": 543,
+    "verification": "All tracked blob contents matched source commit before each bounded validation; privacy executed from exact git archive",
+    "later_evidence_commit": "Documentation and captured evidence only; source commit remains authoritative"
+  },
+  "tested_behavior": [
+    "Nil, empty and whitespace question session keys remain explicitly unscoped",
+    "New B stop while A awaits termination does not repeat A; each route lease and terminal evidence remains distinct",
+    "Cancellation requires pinned cancelled payload; empty/answered/rejected/invalid payload stays unconfirmed",
+    "Question expiry, server terminal vs late mutation, owner retirement and physical route replacement races",
+    "Earlier message/draft/attachment/reply recovery, uncertain delivery ledger, model presentation cancellation and source privacy regressions"
+  ],
+  "render_recovery": {
+    "failed_source_commit": "9051adbf82204c58fc49a14226fb382b49589af6",
+    "failed_product": "build-for-testing product",
+    "observation": "Blank screen; sampled own app main thread remained in dyld prepareSim/loadDependents/mapFileReadOnly before app entry",
+    "recovery": "Normal build with ENABLE_DEBUG_DYLIB=NO, preserved app directory, reinstall, verify actual content plus matching installed executable",
+    "root_cause": "Not isolated",
+    "excluded_from_render_evidence": "All blank 9051adb PNGs; retained locally as diagnostics only"
+  },
+  "created_utc": "2026-09-30T20:19:05.377532+00:00"
+}

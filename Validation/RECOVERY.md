@@ -1,6 +1,38 @@
 # Recovery evidence — 2026-10-01 KST
 
-## Current authoritative follow-up — 58d9ef8
+## Current activity/question checkpoint — 99ba308
+
+Authoritative application/test/script source: **`99ba308b5f02911072d76dc5ad76d3b08834b3dd`** on `recovery/task-controls`. The earlier reviewed stable branch `recovery/safe-follow-up` remains at `e8afca70b87ae945c870a31a41a903c6a078b7af`. The follow-up adds current-conversation control to the stable composer/data-recovery work; it does not establish full Muse/dot parity.
+
+See [`controls-99ba308/manifest.json`](controls-99ba308/manifest.json) for ten original Simulator PNGs, nine raw validation logs, the runtime record, contact sheet, source/hash attribution and limits. Every new raw log identifies the full source commit and verifies all 543 tracked blobs against it. Privacy ran from a fresh exact `git archive`. Later evidence/documentation commits do not alter the application/test/script source.
+
+- Avatar/status entry opens native current-conversation activity. Actual run metadata, upstream progress and incoming question components are reused. It is not a global task dashboard.
+- Stop distinguishes request admission, server acceptance, confirmed termination, failed dispatch and unconfirmed outcome. Per-run session/physical-route leases protect against navigation, replacement connections, late ACKs and unrelated terminal events. A new B remains stoppable while A awaits termination, without sending another stop for A. Draft text/attachments/reply are retained.
+- Question cancellation requires the pinned `cancelled` result. Empty, answered, rejected and invalid payloads do not create a false skipped state. Server terminal events outrank late mutation responses; expiry and route/owner retirement have explicit recovery behavior.
+- Current-conversation questions and unspecified-scope questions are separate. Nil, empty and whitespace session keys all remain unspecified, including after navigation. Questions are not execution/purchase approvals; access scopes remain unchanged.
+
+| Check at exact source 99ba308 | Observed result | Scope |
+|---|---|---|
+| macOS production-model regression | PASS, 105 test functions in 11 suites + 5 core, 3.7 s | Controlled fake gateway/credential boundaries; parameterized cases are not counted as extra functions. No iOS test or live execution claim. |
+| Normal native Simulator build | PASS, 7.3 s | Xcode 27, Debug normal `build`, arm64, jobs 2, signing disabled, `ENABLE_DEBUG_DYLIB=NO`. |
+| Dedicated Simulator install | PASS, 1.1 s | Only task5's own simulator/bundle. Not phone installation. |
+| Privacy exact-archive check | PASS, 182 Swift sources; 8 helper cases / 7 categories | Lexical diagnostic guard plus production helper/legacy outbox synthetic harness. Not general dataflow, control-flow proof or an OSLog sink capture. |
+| UI source wiring / bundle validation | PASS | Cancel/activity call-site and mutation guards; platform, resources and path checks. Not tap interaction. |
+| Native content captures | PASS within fixture scope, 10 PNGs | Nine modes in 140.6 s; separate AX5 footer in 16.5 s. All use `--ui-testing`; no motion evidence. |
+| Runtime product attribution | PASS | Running own app process observed; installed/built main executable and CompanionCore hashes independently matched. |
+| Real UI interaction / OS accessibility / live server | NOT VERIFIED | Earlier XCTest setup timeout remains unresolved. No new accounts, server, credentials or live model calls. |
+
+Normal app preserved at `.build-render-products/99ba308/Companion.app`; installed main executable SHA-256 is `403a6bfd55743da38f9a946b17fd56311341474f6d6a58224d400378612bf595`. `runtime.json` and its raw log record the actual container, process, observation time and companion framework hash. The evidence files use only synthetic chat/questions.
+
+The earlier `9051adb` **build-for-testing** app produced blank screens. A bounded sample of its own process showed main-thread dynamic-loader work before application entry. Those blank PNGs are excluded from final render evidence. A normal build with Debug dylib disabled, preserved separately and reinstalled, produced actual content. This is an observed recovery, not a proven root-cause diagnosis. Test products must not overwrite the preserved render source.
+
+Direct pixel review confirms the compact composer; distinct stop accepted/confirmed/failure copy; current versus unspecified question scope; persistent disconnected-preview label; AX5 activity controls; and vertically stacked AX5 question actions visible at the lower viewport. The question upper and lower screenshots use programmatic scroll positions. They do not establish real scrolling, touch targets, VoiceOver order or interactive dismissal. The footer buttons and all preview server controls remain disabled; stop-state fixtures exercise the production model via a synthetic lease.
+
+Library: **Companion-99ba308-activity-question-renders.png**, `libfile_c1b249b350708191b24c4a2321c6e369`. Nine uncropped, scaled screenshots form the sheet; the tenth original is the AX5 question upper viewport. Earlier motion footage is separate and does not prove live state transitions, frame rate or OS Reduce Motion behavior.
+
+Remaining product gaps and backend/permission/validation blockers are explicit in [`Research/IMPLEMENTATION-MATRIX.md`](../Research/IMPLEMENTATION-MATRIX.md). No real approval, browser takeover, remote artifact download, voice, memory or durable-task integration is claimed. Data recovery is still memory-only. **This checkpoint is reviewable progress, not a complete-app or release certification.**
+
+## Earlier preserved composer/data-recovery checkpoint — 58d9ef8
 
 Application/test source: **`58d9ef8311663acf8ca427fa55d8f2b18154af62`**. This supersedes 72cc293 and intermediate 7539fec for current UI and recovery behavior. Later documentation/evidence commits do not change this source. See [`followup-58d9ef8/manifest.json`](followup-58d9ef8/manifest.json): seven actual PNGs, raw logs, SHA-256 values, launch flags, UTC capture times, build settings and directly compared installed/built executable hashes are joined there.
 

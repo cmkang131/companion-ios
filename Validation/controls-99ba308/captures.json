@@ -1,0 +1,184 @@
+{
+  "source_commit": "99ba308b5f02911072d76dc5ad76d3b08834b3dd",
+  "simulator_id": "022EC407-377F-4563-A350-CD12D1BA7795",
+  "simulator_name": "Companion Recovery Task5",
+  "normal_build_app_path": "/Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-render-products/99ba308/Companion.app",
+  "built_executable_sha256": "403a6bfd55743da38f9a946b17fd56311341474f6d6a58224d400378612bf595",
+  "installed_executable_sha256": "403a6bfd55743da38f9a946b17fd56311341474f6d6a58224d400378612bf595",
+  "captures": [
+    {
+      "file": "questions-ax5-footer.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "--ui-questions-end",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T20:13:12.096076+00:00",
+      "sha256": "312542bb6af55fbbd18104edf6d3e3d1c4a533198358ef7fabfce25dd215876a",
+      "size_bytes": 171021
+    },
+    {
+      "file": "compact.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:14:06.513027+00:00",
+      "sha256": "90a397b7d48788e393da186b703e94813c0c55ed91b5b8d4c924f9f1a854338e",
+      "size_bytes": 280629
+    },
+    {
+      "file": "activity.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:14:21.479595+00:00",
+      "sha256": "85acde03cfb6f7a470a11dd30bd322a652061b5e81cab2e59f194f68aca2925e",
+      "size_bytes": 199821
+    },
+    {
+      "file": "activity-ax5.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T20:14:36.470625+00:00",
+      "sha256": "ab11ee1e2482ede4cfa58efd0da800bd67154836e9e435b09ff38bab75e8a373",
+      "size_bytes": 196748
+    },
+    {
+      "file": "stop-requested.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-stop",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:14:51.504953+00:00",
+      "sha256": "60d2d1e341a0ddc788f3ea08a8a8fb534839564e88d84d939174e71a854ef820",
+      "size_bytes": 197588
+    },
+    {
+      "file": "stop-confirmed.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-stop",
+        "--ui-stop-confirmed",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:15:07.455760+00:00",
+      "sha256": "a54fb097eec94958e522b81501dd15746eea0aaf61fdcbcdd806ed444cbc0ddd",
+      "size_bytes": 201686
+    },
+    {
+      "file": "stop-failed.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-stop",
+        "--ui-stop-failed",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:15:22.463175+00:00",
+      "sha256": "0be085fc96d17a5f1fe7bef55cd7e9a675c3699d3b4cd861cac6fcb78431ad89",
+      "size_bytes": 209841
+    },
+    {
+      "file": "questions.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:15:37.515830+00:00",
+      "sha256": "b32939ba755a83afa60f187d0edfbae05165413af2e009b45cb4fceca973cd08",
+      "size_bytes": 241774
+    },
+    {
+      "file": "questions-unscoped.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-unscoped-questions",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T20:15:52.429765+00:00",
+      "sha256": "93b51e646fcff228f3a66805e46c43be5c5912255b22f60f95cee5a4bf48e927",
+      "size_bytes": 244684
+    },
+    {
+      "file": "questions-ax5.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T20:16:08.361171+00:00",
+      "sha256": "ab0a3865a064ef4584a4c6220e78844d22456bbb78173414414f9d62277a4868",
+      "size_bytes": 190535
+    }
+  ],
+  "limits": [
+    "Debug synthetic fixtures, no live server",
+    "Programmatic launch/keyboard focus, not tap interaction",
+    "Simulator content-size category only; no VoiceOver or OS Reduce Motion verification"
+  ]
+}

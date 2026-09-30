@@ -13,7 +13,9 @@ Private, single-user SwiftUI iOS 26+ client built around the official MIT OpenCl
 - Connected input attachments use upstream encoding and server-advertised limits. Unsupported output downloads and disconnected widget previews show explicit availability instead of nonfunctional actions.
 - Revision/generation guards for token deletion, delayed connection callbacks and out-of-order history requests.
 - Raw server error text removed from public diagnostics or made private, with narrow synthetic regression checks.
-- Read-only, explicitly disconnected preview fixtures. Sending, attachments and model sign-in remain unavailable in preview.
+- Current-conversation activity exposes real run metadata, upstream progress cards and questions. Stop admission retains exact run/session and physical-route ownership; server acceptance and confirmed termination are separate states. New runs remain stoppable while earlier requests await termination.
+- Incoming questions are separated by current-conversation versus unspecified scope. Skip requires a verified cancelled response; late RPCs cannot overwrite an authoritative terminal event or a replacement route. Questions are not execution/purchase approvals.
+- Read-only, explicitly disconnected preview fixtures. Sending, attachments, question decisions, activity controls and model sign-in remain unavailable in preview.
 - Dynamic Type, a visible connection action at AX5, semantic labels, and reduced-motion/transparency drawing paths.
 
 Read [AGENTS.md](AGENTS.md) before changes. Reuse is an architectural preference; no measured custom-code percentage is claimed.
@@ -23,12 +25,12 @@ Read [AGENTS.md](AGENTS.md) before changes. Reuse is an architectural preference
 See [Validation/RECOVERY.md](Validation/RECOVERY.md) for exact source hashes, actual screenshots/video, commands and limitations.
 
 - Native iOS Simulator build, installation, launch and real screenshot capture succeeded on a dedicated recovery simulator.
-- macOS SwiftPM tests exercised the production connection store/model with controlled fake boundaries: 66 integration tests in 8 suites and 5 portable core tests passed at source `58d9ef8`.
+- macOS SwiftPM tests exercised the production connection store/model with controlled fake boundaries: 105 integration test functions in 11 suites and 5 portable core tests passed at source `99ba308`. Parameterized cases are additional coverage, not added to this function count.
 - Exact-commit privacy guard and synthetic production helper checks passed. These are not OSLog sink or live-server security tests.
-- Actual renders cover disconnected welcome, synthetic chat/history, local address validation, keyboard, AX5 and a labelled static drawing fixture.
+- Latest exact-source renders cover compact chat, activity/progress, stop accepted/confirmed/failed, scoped/unscoped questions and AX5 top/footer positions. Earlier attributed evidence covers disconnected welcome/history, local validation and keyboard. Programmatic fixture launch/focus/scroll is separate from interaction testing.
 - A rebuilt test runner at `58d9ef8` also stalled during automation-session setup and reached the 100-second outer timeout. Repeated interactive sheet/navigation QA is not passed; screenshots alone do not prove it.
 
-Still unverified: live pairing/authentication, real sending/streaming/reconnect, server approvals/artifacts/browser control, VoiceOver interaction, real OS Reduce Motion/Transparency settings, phone installation/signing and release distribution. The app does not implement fake activity, purchase approval, browser takeover or voice success surfaces.
+Still unverified: live pairing/authentication, real sending/streaming/reconnect, server approvals/artifacts/browser control, VoiceOver interaction, real OS Reduce Motion/Transparency settings, phone installation/signing and release distribution. Activity is limited to current-conversation response control, not a global durable-task dashboard. Execution/purchase approvals, browser takeover and voice are not implemented. See [the implementation matrix](Research/IMPLEMENTATION-MATRIX.md) for protocol support, integration gaps and blockers.
 
 ## Build on macOS
 
@@ -43,7 +45,7 @@ xcodebuild -project Companion.xcodeproj -scheme Companion \
   CODE_SIGNING_ALLOWED=NO build
 ```
 
-This produces `.build-xcode/Build/Products/Debug-iphonesimulator/Companion.app`, not a phone-installable IPA. The recovery machine's earlier `build-for-testing` product stalled in the dynamic loader; the normal build above rendered successfully. The exact cause was not isolated.
+This produces `.build-xcode/Build/Products/Debug-iphonesimulator/Companion.app`, not a phone-installable IPA. The recovery machine's earlier `build-for-testing` product stalled in the dynamic loader; the normal build above rendered successfully. The exact cause was not isolated. Preserve the normal build in a separate directory before any subsequent test build; screenshots in `Validation/controls-99ba308` explicitly record its installed executable hash.
 
 ```sh
 COMPANION_CONNECTION_TESTS=1 swift test --scratch-path .build-connection --jobs 2 --disable-sandbox
@@ -56,7 +58,7 @@ The macOS test target omits app entry views and replaces gateway/credential boun
 
 ## Debug rendering fixtures
 
-Launch arguments: `--ui-testing` (paused mascot/empty endpoint), `--ui-preview`, `--ui-history`, `--ui-settings`, `--ui-keyboard`, `--ui-invalid-address`, `--ui-model-settings` (also requires preview/settings), `--ui-motion-gallery`, `--ui-send-recovery` and `--ui-artifact-preview` (the latter two also require `--ui-preview`). Preview content is synthetic and visually labelled. `--ui-accessibility-static` exercises static/opaque drawing branches with an on-screen label; it does not alter system accessibility preferences. Fixtures are Debug-only.
+Launch arguments: `--ui-testing` (paused mascot/empty endpoint), `--ui-preview`, `--ui-history`, `--ui-settings`, `--ui-keyboard`, `--ui-invalid-address`, `--ui-model-settings` (also requires preview/settings), `--ui-motion-gallery`, `--ui-send-recovery` and `--ui-artifact-preview` (the latter two also require `--ui-preview`). Preview content is synthetic and visually labelled. `--ui-accessibility-static` exercises static/opaque drawing branches with an on-screen label; it does not alter system accessibility preferences. Current activity fixtures additionally use `--ui-activity`, `--ui-stop`, `--ui-stop-confirmed`, `--ui-stop-failed`, `--ui-questions` or `--ui-unscoped-questions`; these require preview/activity. `--ui-questions-end` selects the lower question viewport for AX5 capture. Stop fixtures exercise the production model with a controlled synthetic route, never a live service. Fixtures are Debug-only.
 
 ## Sources and licenses
 

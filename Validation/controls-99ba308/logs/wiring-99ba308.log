@@ -1,0 +1,9 @@
+RUNNER_STARTED_UTC=2026-09-30T20:13:20Z
+SOURCE_COMMIT=99ba308b5f02911072d76dc5ad76d3b08834b3dd
+CLEAN_SNAPSHOT=verified_all_543_tracked_blobs_match_git_commit
+SCOPE=source attribution for the following validation command
+VALIDATION_COMMAND_SCOPE=see command output below; snapshot header is source attribution only
+PASS: production cancel button wiring and destructive mutation guard (source check only)
+PASS: activity header/production control wiring and mutations (source check only; no taps)
+
+RUNNER_EXIT=0; ELAPSED_SECONDS=0.2
