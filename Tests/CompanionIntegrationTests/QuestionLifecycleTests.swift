@@ -93,6 +93,38 @@ struct QuestionLifecycleTests {
         }
     }
 
+    @Test(arguments: ["server-answer", "server-cancel", "server-expiry", "local-expiry"], [false, true])
+    func policyLossCannotReplaceTerminalOrExpiryDuringLeaseAcquisition(outcome: String, skip: Bool) async throws {
+        var allowed = true
+        let fixture = try QuestionFixture(questionActionsAllowed: { allowed })
+        defer { fixture.cleanup() }
+        let card = try fixture.addQuestion()
+        card.setOtherText(questionID: "answer", value: "draft retired on terminal")
+        fixture.boundary.holdLeaseAcquisition = true
+        let callbacks = OpenClawConversationQuestionsView(viewModel: fixture.model, scope: .all)
+            .cards(for: .currentConversation).actions
+        let action = Task { if skip { await callbacks.skip(card) } else { await callbacks.submit(card) } }
+        defer { action.cancel() }
+        try await self.waitUntil { fixture.boundary.leaseRequestCount == 1 }
+        allowed = false
+        if outcome == "local-expiry" {
+            #expect(card.observeLocalExpiry(at: Date(timeIntervalSince1970: Double(card.record.expiresatms) / 1000 + 1)))
+        } else {
+            let status: QuestionStatus = outcome == "server-answer" ? .answered :
+                outcome == "server-cancel" ? .cancelled : .expired
+            fixture.model.resolveQuestionEvent(.init(id: card.id, status: status,
+                answers: status == .answered ? QuestionAnswers(answers: ["answer": AnyCodable(["Confirmed elsewhere"])]) : nil))
+        }
+        let terminal = card.status()
+        fixture.boundary.releaseLeaseAcquisition()
+        await action.value
+        #expect(fixture.boundary.mutations.isEmpty)
+        #expect(card.status() == terminal)
+        #expect(card.errorText == nil)
+        #expect(card.otherText.isEmpty)
+        #expect(!card.isSubmitting && !card.isSkipping)
+    }
+
     @Test(arguments: [OpenClawConversationQuestionScope.all, .currentConversation], [false, true])
     func retainedCallbackCannotStartForeignSessionQuestion(scope: OpenClawConversationQuestionScope,
                                                           skip: Bool) async throws {

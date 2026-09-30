@@ -2920,6 +2920,7 @@ struct ChatViewModelTests {
             },
             cancelQuestionHook: { _ in })
         let viewModel = OpenClawChatViewModel(sessionKey: "main", transport: transport)
+        viewModel.healthOK = true // Mutation fixtures explicitly represent a connected transport.
         viewModel.questionRefreshRetryDelaysMs = [0]
         viewModel.upsertQuestion(recovering)
         viewModel.upsertQuestion(unrelated)
@@ -3063,6 +3064,7 @@ struct ChatViewModelTests {
                 return try OpenClawChatGatewayPayloadCodec.decodeQuestionAnswer(response)
             })
         let viewModel = OpenClawChatViewModel(sessionKey: "main", transport: transport)
+        viewModel.healthOK = true // Mutation fixtures explicitly represent a connected transport.
         viewModel.upsertQuestion(QuestionRecord(
             id: "ask_secret",
             questions: [.init(
@@ -3094,6 +3096,7 @@ struct ChatViewModelTests {
                 await cancelledIDs.append(id)
             })
         let viewModel = OpenClawChatViewModel(sessionKey: "main", transport: transport)
+        viewModel.healthOK = true // Mutation fixtures explicitly represent a connected transport.
         viewModel.upsertQuestion(chatQuestionRecord(id: "ask_skip"))
 
         await viewModel.skipQuestion(viewModel.questionCards[0])

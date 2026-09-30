@@ -23,3 +23,5 @@ are not enabled by these changes.
 Cross-compilation compatibility patch: enable Swift cross-import overlays in the vendored Swift targets, so AVKit + SwiftUI exposes VideoPlayer under the open-source Linux compiler. No API replacement or feature stub is used. Generated Mermaid resources were built from the same pinned upstream source; their bundled NOTICE.txt is retained.
 
 Simulator packaging: the app Info.plist is corrected to iPhoneSimulator only after the binary load commands prove it is an iOS Simulator executable. UIUserInterfaceStyle is set to Light.
+
+Question entry-point follow-up: the local adaptation shares scoped question presentation across transcript/activity, adds a host/health dispatch policy before mutations and after route acquisition, and updates connected-state preconditions in three upstream question tests. MIT attribution remains unchanged.
