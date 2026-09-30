@@ -43,6 +43,9 @@ def sha(path):
 parser = argparse.ArgumentParser()
 parser.add_argument('--output', required=True, type=Path)
 parser.add_argument('--source', required=True)
+parser.add_argument('--built-app', type=Path,
+                    default=Path('.build-xcode/Build/Products/Debug-iphonesimulator/Companion.app'),
+                    help='Preserved normal-build app; never install a build-for-testing product for render evidence')
 parser.add_argument('--mode', action='append', choices=MODES)
 args = parser.parse_args()
 assert run(['git', 'rev-parse', 'HEAD']) == args.source
@@ -51,12 +54,13 @@ devices = json.loads(run(['xcrun', 'simctl', 'list', 'devices', '-j']))
 device = next(d for group in devices['devices'].values() for d in group if d['udid'] == DEVICE)
 assert device['name'] == DEVICE_NAME and device['state'] == 'Booted'
 installed = Path(run(['xcrun', 'simctl', 'get_app_container', DEVICE, BUNDLE, 'app']))
-built = Path('.build-xcode/Build/Products/Debug-iphonesimulator/Companion.app/Companion')
+built = args.built_app / 'Companion'
 assert sha(installed / 'Companion') == sha(built), 'Installed executable differs from current build'
 args.output.mkdir(parents=True, exist_ok=True)
 index = args.output / 'captures.json'
 data = json.loads(index.read_text()) if index.exists() else {
     'source_commit': args.source, 'simulator_id': DEVICE, 'simulator_name': DEVICE_NAME,
+    'normal_build_app_path': str(args.built_app.resolve()),
     'built_executable_sha256': sha(built), 'installed_executable_sha256': sha(installed / 'Companion'),
     'captures': [], 'limits': ['Debug synthetic fixtures, no live server',
         'Programmatic launch/keyboard focus, not tap interaction',

@@ -674,7 +674,8 @@ extension OpenClawChatViewModel {
 
     public var visibleQuestionCards: [OpenClawQuestionCardModel] {
         self.questionCards.filter { card in
-            guard let key = card.record.sessionkey else { return true }
+            guard let key = card.record.sessionkey?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  !key.isEmpty else { return true }
             return self.matchesCurrentSessionKey(
                 incoming: key,
                 agentId: card.record.agentid,

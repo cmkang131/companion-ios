@@ -6,12 +6,13 @@ import Testing
 
 @MainActor
 struct QuestionScopeTests {
-    @Test func unscopedQuestionsNeverAcquireCurrentConversationLabel() {
+    @Test(arguments: [nil, "", "  \n\t "] as [String?])
+    func unscopedQuestionsNeverAcquireCurrentConversationLabel(unscopedKey: String?) {
         let model = OpenClawChatViewModel(sessionKey: "agent:main:a", transport: PreviewTransport())
         defer { model.detachTransport() }
         model.upsertQuestion(record("a", session: "agent:main:a"))
         model.upsertQuestion(record("b", session: "agent:main:b"))
-        model.upsertQuestion(record("unknown", session: nil))
+        model.upsertQuestion(record("unknown", session: unscopedKey))
         #expect(model.visibleQuestionCards(scope: .currentConversation).map(\.id) == ["a"])
         #expect(model.visibleQuestionCards(scope: .unscoped).map(\.id) == ["unknown"])
         #expect(Set(model.visibleQuestionCards(scope: .all).map(\.id)) == ["a", "unknown"])
