@@ -933,10 +933,15 @@ public protocol OpenClawChatTransport: Sendable {
     func cancelQuestion(id: String) async throws
     func waitForRunCompletion(runId: String, timeoutMs: Int) async -> OpenClawChatRunObservation
     func events() -> AsyncStream<OpenClawChatTransportEvent>
+    /// Opt in when a capability-scoped inline widget resolver is implemented.
+    var supportsInlineWidgetLoading: Bool { get }
     func resolveInlineWidgetResource(
         path: String,
         replacing failedResource: OpenClawChatWidgetResource?) async -> OpenClawChatWidgetResource?
     func resolveInlineWidgetURL(path: String, replacing failedURL: URL?) async -> URL?
+    /// Opt in only when this adapter implements managed artifact retrieval.
+    /// A healthy chat channel alone does not imply a media loader is available.
+    var supportsMediaArtifactLoading: Bool { get }
     func loadMediaArtifact(
         sessionKey: String,
         artifactId: String,
@@ -995,6 +1000,10 @@ extension OpenClawChatTransport {
         nil
     }
 
+    public var supportsMediaArtifactLoading: Bool {
+        false
+    }
+
     public func loadMediaArtifact(
         sessionKey _: String,
         artifactId _: String,
@@ -1037,6 +1046,10 @@ extension OpenClawChatTransport {
 
     public func requestFullMessage(sessionKey _: String, messageID _: String) async throws -> OpenClawChatMessage? {
         nil
+    }
+
+    public var supportsInlineWidgetLoading: Bool {
+        false
     }
 
     public func resolveInlineWidgetResource(

@@ -243,6 +243,7 @@ struct OpenClawChatAttachmentsStrip: View {
 
 #if !os(macOS)
 struct OpenClawChatAttachmentMenu<ExtraItems: View>: View {
+    @Environment(\.openClawCompactConversation) private var compactConversation
     @Binding var showsPhotoPicker: Bool
     @Binding var showsFileImporter: Bool
     @Binding var showsCameraPicker: Bool
@@ -269,7 +270,7 @@ struct OpenClawChatAttachmentMenu<ExtraItems: View>: View {
                 self.showsPhotoPicker = true
             } label: {
                 Label {
-                    Text("Photo Library")
+                    Text(self.compactConversation ? "사진 보관함" : "Photo Library")
                         .font(OpenClawChatTypography.body)
                 } icon: {
                     Image(systemName: "photo.on.rectangle")
@@ -282,7 +283,7 @@ struct OpenClawChatAttachmentMenu<ExtraItems: View>: View {
                 self.showsCameraPicker = true
             } label: {
                 Label {
-                    Text("Camera")
+                    Text(self.compactConversation ? "카메라" : "Camera")
                         .font(OpenClawChatTypography.body)
                 } icon: {
                     Image(systemName: "camera")
@@ -297,7 +298,7 @@ struct OpenClawChatAttachmentMenu<ExtraItems: View>: View {
                 self.showsFileImporter = true
             } label: {
                 Label {
-                    Text("File")
+                    Text(self.compactConversation ? "파일" : "File")
                         .font(OpenClawChatTypography.body)
                 } icon: {
                     Image(systemName: "folder")
@@ -305,13 +306,13 @@ struct OpenClawChatAttachmentMenu<ExtraItems: View>: View {
             }
             .disabled(!self.isAttachmentInputEnabled)
 
-            Divider()
+            if !self.compactConversation { Divider() }
             self.extraItems
         } label: {
             CompactChatAttachmentLabel()
         }
-        .help("Composer options")
-        .accessibilityLabel("Composer options")
+        .help(self.compactConversation ? "첨부 추가" : "Composer options")
+        .accessibilityLabel(self.compactConversation ? "첨부 추가" : "Composer options")
         .accessibilityIdentifier("chat-attachment-picker")
         .buttonStyle(.plain)
     }

@@ -506,6 +506,8 @@ struct IOSGatewayChatTransport: OpenClawChatGatewayTransport {
             agentID: OpenClawChatSessionKey.agentID(from: target.sessionKey) ?? target.agentID)
     }
 
+    var supportsInlineWidgetLoading: Bool { true }
+
     func resolveInlineWidgetResource(
         path: String,
         replacing failedResource: OpenClawChatWidgetResource?) async -> OpenClawChatWidgetResource?

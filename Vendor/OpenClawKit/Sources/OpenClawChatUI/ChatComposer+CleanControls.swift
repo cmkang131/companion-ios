@@ -22,12 +22,14 @@ extension OpenClawChatComposer {
             showsCameraPicker: self.cameraPickerPresentation,
             isAttachmentInputEnabled: self.isAttachmentInputEnabled)
         {
+            if !self.compactConversation {
             if self.viewModel.sessionBranches.count > 1 {
                 self.branchMenu
             }
             self.verbosityPicker
                 .disabled(!self.viewModel.composerEffortMutationAvailable)
             self.cleanComposerCapabilityItems
+            }
         }
         .task(id: self.viewModel.composerCapabilityOwnerID) {
             await self.viewModel.loadComposerCapabilities()
@@ -36,7 +38,7 @@ extension OpenClawChatComposer {
     }
 
     var sendButtonAccessibilityLabel: String {
-        "Send message"
+        self.compactConversation ? "메시지 보내기" : "Send message"
     }
 
     #if os(iOS)

@@ -31,6 +31,11 @@
 		E47F3624DB68D6EC6EAA70E5 /* OpenClawProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = E9ED1F1BB9688E9F67128494 /* OpenClawProtocol */; };
 		EEEE6BA1CBA97EC7A99AFCB6 /* CompanionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7BF1521C40F90DAD5B4A6E0 /* CompanionApp.swift */; };
 		FD15B00CFD5928396FFC5B8D /* OpenClawChatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 93480F1659991FCD5AF5D6D3 /* OpenClawChatUI */; };
+		757733EFF28E1538F0ADF49D /* AttachmentContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60FF6D68DDC67E6E32D168C /* AttachmentContractTests.swift */; };
+		CBE3C10E111D1A71BA157868 /* InlineWidgetAvailabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2DCC95C1C4B1ED3D1740F1D /* InlineWidgetAvailabilityTests.swift */; };
+		3B33E833BEADD8A05E4AD085 /* MediaArtifactAvailabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075DA13298645598C734A167 /* MediaArtifactAvailabilityTests.swift */; };
+		19968207ED753D0A82CAEC27 /* SendRecoveryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE745B2A58D788F063FD5840 /* SendRecoveryTests.swift */; };
+		DB074C4BD16D5C43EEDCCC04 /* AttachmentSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB26F089476A99E055D6E16E /* AttachmentSnapshotTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +116,11 @@
 		F664F37472ACCC57C3E78CEF /* IOSGatewayChatTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSGatewayChatTransport.swift; sourceTree = "<group>"; };
 		F67FBC11C8584A93491EF7EA /* ThirdPartyNotices.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ThirdPartyNotices.txt; sourceTree = "<group>"; };
 		F73858C7CEC3436D21867897 /* ConnectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTests.swift; sourceTree = "<group>"; };
+		B60FF6D68DDC67E6E32D168C /* AttachmentContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentContractTests.swift; sourceTree = "<group>"; };
+		A2DCC95C1C4B1ED3D1740F1D /* InlineWidgetAvailabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineWidgetAvailabilityTests.swift; sourceTree = "<group>"; };
+		075DA13298645598C734A167 /* MediaArtifactAvailabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaArtifactAvailabilityTests.swift; sourceTree = "<group>"; };
+		EE745B2A58D788F063FD5840 /* SendRecoveryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendRecoveryTests.swift; sourceTree = "<group>"; };
+		CB26F089476A99E055D6E16E /* AttachmentSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentSnapshotTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +177,11 @@
 			children = (
 				C2E6731290937B1E1F37DCA1 /* CharacterStateTests.swift */,
 				F73858C7CEC3436D21867897 /* ConnectionTests.swift */,
+				CB26F089476A99E055D6E16E /* AttachmentSnapshotTests.swift */,
+				EE745B2A58D788F063FD5840 /* SendRecoveryTests.swift */,
+				075DA13298645598C734A167 /* MediaArtifactAvailabilityTests.swift */,
+				A2DCC95C1C4B1ED3D1740F1D /* InlineWidgetAvailabilityTests.swift */,
+				B60FF6D68DDC67E6E32D168C /* AttachmentContractTests.swift */,
 			);
 			name = CompanionIntegrationTests;
 			path = Tests/CompanionIntegrationTests;
@@ -468,6 +483,11 @@
 			files = (
 				9306C9AE0D742617E48D2D6E /* CharacterStateTests.swift in Sources */,
 				6FB992E41E111A101B97CFB1 /* ConnectionTests.swift in Sources */,
+				DB074C4BD16D5C43EEDCCC04 /* AttachmentSnapshotTests.swift in Sources */,
+				19968207ED753D0A82CAEC27 /* SendRecoveryTests.swift in Sources */,
+				3B33E833BEADD8A05E4AD085 /* MediaArtifactAvailabilityTests.swift in Sources */,
+				CBE3C10E111D1A71BA157868 /* InlineWidgetAvailabilityTests.swift in Sources */,
+				757733EFF28E1538F0ADF49D /* AttachmentContractTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

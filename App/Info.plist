@@ -24,6 +24,8 @@
 	<false/>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>개인 OpenClaw 서버에 연결합니다.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>대화에 첨부할 사진을 촬영합니다.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

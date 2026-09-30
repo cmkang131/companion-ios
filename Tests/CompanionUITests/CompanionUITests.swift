@@ -54,11 +54,24 @@ final class CompanionUITests: XCTestCase {
         let app = launch(["--ui-preview"])
         XCTAssertTrue(app.staticTexts["미리보기 · 서버 미연결"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "오늘은 조금")).firstMatch.waitForExistence(timeout: 10))
+        let composer = app.otherElements["chat-composer-surface"]
+        XCTAssertTrue(composer.waitForExistence(timeout: 5))
+        XCTAssertLessThan(composer.frame.height, 90, "Default-size resting composer should stay compact")
+        XCTAssertFalse(app.buttons["chat-message-actions"].exists)
+        XCTAssertFalse(app.staticTexts["Default"].exists)
         screenshot("05-preview-transcript")
         app.buttons["historyButton"].tap()
         XCTAssertTrue(app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "천천히 시작하는 하루")).firstMatch.waitForExistence(timeout: 10))
         screenshot("06-preview-history")
         app.buttons["완료"].tap()
+    }
+
+    func testUnavailableArtifactExplainsMissingCapability() {
+        let app = launch(["--ui-preview", "--ui-artifact-preview"])
+        XCTAssertTrue(app.staticTexts["검증용 메모.pdf"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["이 연결에서는 첨부 파일을 열 수 없어요."].exists)
+        XCTAssertFalse(app.buttons["Download"].exists)
+        screenshot("09-artifact-capability-unavailable")
     }
 
     func testLargeTextAndKeyboard() {

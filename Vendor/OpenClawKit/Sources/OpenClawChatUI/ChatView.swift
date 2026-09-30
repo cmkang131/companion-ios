@@ -116,6 +116,9 @@ public struct OpenClawChatView: View {
     private let viewModel: OpenClawChatViewModel
     private let resolveComposerModel: (@MainActor () -> OpenClawChatViewModel?)?
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openClawCompactConversation) private var compactConversation
+    @Environment(\.locale) private var locale
+    @Environment(\.timeZone) private var timeZone
     @Environment(\.openClawChatDesktopLayout) private var isDesktopLayout
     @State private var contentWidth: CGFloat = 0
     @State private var scrollerBottomID = UUID()
@@ -722,7 +725,7 @@ extension OpenClawChatView {
             liveToolCalls: self.viewModel.toolActivities.filter {
                 $0.runID != nil && $0.runID == msg.workRunID
             },
-            metadata: metadata,
+            metadata: self.compactConversation ? nil : metadata,
             sourcePreviews: self.viewModel.sourcePreviews(for: msg),
             sourceContextRevision: self.viewModel.sourcePreviewState.revision,
             sourceFaviconsEnabled: self.viewModel.sourcePreviewState.context?.automaticallyFetchFavicons == true,
@@ -747,11 +750,11 @@ extension OpenClawChatView {
                     self.expandedUserMessageIDs.insert(msg.id)
                 }
             },
-            inlineWidgetResolverReady: self.viewModel.healthOK,
+            inlineWidgetAvailability: self.viewModel.inlineWidgetAvailability,
             inlineWidgetResourceResolver: { [weak viewModel] path, failedResource in
                 await viewModel?.resolveInlineWidgetResource(path: path, replacing: failedResource)
             },
-            mediaArtifactResolverReady: self.viewModel.healthOK,
+            mediaArtifactAvailability: self.viewModel.mediaArtifactAvailability,
             mediaPlaybackAllowed: self.mediaPlaybackAllowed,
             loadMediaArtifact: { [weak viewModel] artifactId, kind, playback in
                 guard let viewModel else { return nil }
@@ -777,7 +780,7 @@ extension OpenClawChatView {
                     .padding(.leading, 8)
             }
             #if os(iOS)
-            if !isUser, showsActions {
+            if !isUser, showsActions, !self.compactConversation {
                 self.messageActionsMenu(for: msg)
                     .labelStyle(.iconOnly)
                     .buttonStyle(.borderless)
@@ -825,7 +828,7 @@ extension OpenClawChatView {
             }
         }
         #if os(iOS)
-        if isUser || !showsActions {
+        if isUser || !showsActions || self.compactConversation {
             row.contextMenu { self.messageMenuActions(for: msg) }
         } else {
             row
@@ -847,6 +850,12 @@ extension OpenClawChatView {
 
     @ViewBuilder
     private func messageMenuActions(for message: OpenClawChatMessage) -> some View {
+        if self.compactConversation,
+           let timestamp = ChatMessageTimestampPresentation.make(timestamp: message.timestamp,
+                locale: self.locale, timeZone: self.timeZone) {
+            Text(timestamp.exact)
+            Divider()
+        }
         self.copyMessageButton(for: message)
         #if os(iOS)
         self.selectTextButton(for: message)
@@ -994,7 +1003,7 @@ extension OpenClawChatView {
         }
         .buttonStyle(.plain)
         .foregroundStyle(OpenClawChatTheme.assistantText)
-        .accessibilityLabel("Jump to latest reply")
+        .accessibilityLabel(self.compactConversation ? "최근 답변으로 이동" : "Jump to latest reply")
     }
 
     @ViewBuilder
@@ -1309,7 +1318,7 @@ extension OpenClawChatView {
                 ChatPasteboard.copy(text)
             } label: {
                 Label {
-                    Text("Copy Message")
+                    Text(self.compactConversation ? "메시지 복사" : "Copy Message")
                         .font(OpenClawChatTypography.body)
                 } icon: {
                     Image(systemName: "doc.on.doc")
@@ -1326,7 +1335,7 @@ extension OpenClawChatView {
                 self.selectTextMessage = message
             } label: {
                 Label {
-                    Text("Select Text").font(OpenClawChatTypography.body)
+                    Text(self.compactConversation ? "텍스트 선택" : "Select Text").font(OpenClawChatTypography.body)
                 } icon: {
                     Image(systemName: "text.cursor")
                 }
@@ -1349,7 +1358,7 @@ extension OpenClawChatView {
                     messageID: messageID)
             } label: {
                 Label {
-                    Text("Open Full Message")
+                    Text(self.compactConversation ? "메시지 전체 보기" : "Open Full Message")
                         .font(OpenClawChatTypography.body)
                 } icon: {
                     Image(systemName: "doc.text.magnifyingglass")
@@ -1368,7 +1377,7 @@ extension OpenClawChatView {
                 Task { await self.viewModel.rewindToMessage(message) }
             } label: {
                 Label {
-                    Text("Rewind to Here")
+                    Text(self.compactConversation ? "여기까지 되돌리기" : "Rewind to Here")
                         .font(OpenClawChatTypography.body)
                 } icon: {
                     Image(systemName: "arrow.uturn.backward")
@@ -1388,7 +1397,7 @@ extension OpenClawChatView {
                 Task { await self.viewModel.forkAtMessage(message) }
             } label: {
                 Label {
-                    Text("Fork from Here")
+                    Text(self.compactConversation ? "여기서 새 대화" : "Fork from Here")
                         .font(OpenClawChatTypography.body)
                 } icon: {
                     Image(systemName: "arrow.triangle.branch")
@@ -1414,7 +1423,7 @@ extension OpenClawChatView {
                     senderLabel: self.replySenderLabel(forRole: role))
             } label: {
                 Label {
-                    Text(String(localized: "Reply"))
+                    Text(self.compactConversation ? "답장" : String(localized: "Reply"))
                         .font(OpenClawChatTypography.body)
                 } icon: {
                     Image(systemName: "arrowshape.turn.up.left")
@@ -1424,7 +1433,7 @@ extension OpenClawChatView {
     }
 
     private func replySenderLabel(forRole role: String) -> String {
-        guard role == "assistant" else { return String(localized: "You") }
+        guard role == "assistant" else { return self.compactConversation ? "나" : String(localized: "You") }
         let name = self.assistantName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         return name.isEmpty ? String(localized: "Assistant") : name
     }

@@ -313,11 +313,11 @@ struct ChatMessageBubble: View {
     let contextWindowTokens: Int?
     let userMessageExpanded: Bool
     let onToggleUserMessageExpanded: @MainActor () -> Void
-    let inlineWidgetResolverReady: Bool
+    let inlineWidgetAvailability: ChatInlineWidgetAvailability
     let inlineWidgetResourceResolver: @MainActor @Sendable (
         String,
         OpenClawChatWidgetResource?) async -> OpenClawChatWidgetResource?
-    let mediaArtifactResolverReady: Bool
+    let mediaArtifactAvailability: OpenClawChatMediaArtifactAvailability
     let mediaPlaybackAllowed: @MainActor @Sendable () -> Bool
     let loadMediaArtifact: @MainActor @Sendable (
         String,
@@ -471,7 +471,7 @@ extension ChatMessageBubble {
                         att: self.visibleInlineAttachments[idx],
                         isUser: self.isUser,
                         textColor: textColor,
-                        resolverReady: self.mediaArtifactResolverReady,
+                        availability: self.mediaArtifactAvailability,
                         playbackAllowed: self.mediaPlaybackAllowed,
                         loadMedia: self.loadMediaArtifact)
                 }
@@ -488,7 +488,7 @@ extension ChatMessageBubble {
             ForEach(self.inlineWidgets.indices, id: \.self) { idx in
                 ChatInlineWidgetView(
                     preview: self.inlineWidgets[idx],
-                    resolverReady: self.inlineWidgetResolverReady,
+                    availability: self.inlineWidgetAvailability,
                     resolveResource: self.inlineWidgetResourceResolver)
             }
 
@@ -744,7 +744,7 @@ private struct AttachmentRow: View {
     let att: OpenClawChatMessageContent
     let isUser: Bool
     let textColor: Color
-    let resolverReady: Bool
+    let availability: OpenClawChatMediaArtifactAvailability
     let playbackAllowed: @MainActor @Sendable () -> Bool
     let loadMedia: @MainActor @Sendable (
         String,
@@ -753,44 +753,53 @@ private struct AttachmentRow: View {
 
     var body: some View {
         if let artifactId = self.fetchableArtifactId, let kind = self.att.mediaKind {
-            switch kind {
-            case .file:
-                ChatFileAttachment(
-                    artifactId: artifactId,
-                    label: self.attachmentLabel,
-                    fileName: self.att.fileName ?? self.attachmentLabel,
-                    resolverReady: self.resolverReady,
-                    load: { try await self.loadMedia($0, .file, nil) })
-            case .image:
-                ChatMediaImageAttachment(
-                    artifactId: artifactId,
-                    label: self.attachmentLabel,
-                    resolverReady: self.resolverReady,
-                    load: { try await self.loadMedia($0, .image, nil) })
-            case .audio:
-                ChatMediaAudioAttachment(
-                    artifactId: artifactId,
-                    label: self.attachmentLabel,
-                    durationSeconds: self.att.durationSeconds,
-                    resolverReady: self.resolverReady,
-                    playbackAllowed: self.playbackAllowed,
-                    load: { try await self.loadMedia($0, .audio, self.att.playback) })
-            case .video:
-                ChatMediaVideoAttachment(
-                    artifactId: artifactId,
-                    label: self.attachmentLabel,
-                    width: self.att.width,
-                    height: self.att.height,
-                    resolverReady: self.resolverReady,
-                    playbackAllowed: self.playbackAllowed,
-                    load: { try await self.loadMedia($0, .video, self.att.playback) })
+            if let reason = self.availability.unavailableReason {
+                self.fallbackRow(unavailableReason: reason)
+            } else {
+                self.fetchableRow(artifactId: artifactId, kind: kind)
             }
         } else {
-            self.fallbackRow
+            self.fallbackRow()
         }
     }
 
-    private var fallbackRow: some View {
+    @ViewBuilder
+    private func fetchableRow(artifactId: String, kind: OpenClawChatMediaKind) -> some View {
+        switch kind {
+        case .file:
+            ChatFileAttachment(
+                artifactId: artifactId,
+                label: self.attachmentLabel,
+                fileName: self.att.fileName ?? self.attachmentLabel,
+                resolverReady: self.availability == .available,
+                load: { try await self.loadMedia($0, .file, nil) })
+        case .image:
+            ChatMediaImageAttachment(
+                artifactId: artifactId,
+                label: self.attachmentLabel,
+                resolverReady: self.availability == .available,
+                load: { try await self.loadMedia($0, .image, nil) })
+        case .audio:
+            ChatMediaAudioAttachment(
+                artifactId: artifactId,
+                label: self.attachmentLabel,
+                durationSeconds: self.att.durationSeconds,
+                resolverReady: self.availability == .available,
+                playbackAllowed: self.playbackAllowed,
+                load: { try await self.loadMedia($0, .audio, self.att.playback) })
+        case .video:
+            ChatMediaVideoAttachment(
+                artifactId: artifactId,
+                label: self.attachmentLabel,
+                width: self.att.width,
+                height: self.att.height,
+                resolverReady: self.availability == .available,
+                playbackAllowed: self.playbackAllowed,
+                load: { try await self.loadMedia($0, .video, self.att.playback) })
+        }
+    }
+
+    private func fallbackRow(unavailableReason: String? = nil) -> some View {
         HStack(spacing: 8) {
             Image(systemName: OpenClawChatPickerAttachmentMetadata.fileIcon(
                 mimeType: self.att.mimeType ?? "",
@@ -806,6 +815,12 @@ private struct AttachmentRow: View {
                     Text(ByteCountFormatter.string(fromByteCount: Int64(sizeBytes), countStyle: .file))
                         .font(OpenClawChatTypography.caption)
                         .foregroundStyle(self.textColor.opacity(self.isDesktopLayout ? 0.9 : 0.72))
+                }
+                if let unavailableReason {
+                    Text(unavailableReason)
+                        .font(OpenClawChatTypography.caption)
+                        .foregroundStyle(self.textColor.opacity(self.isDesktopLayout ? 0.9 : 0.72))
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             if self.isAudio, let durationSeconds = self.att.durationSeconds {

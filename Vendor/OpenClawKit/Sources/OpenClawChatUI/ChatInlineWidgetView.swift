@@ -295,7 +295,7 @@ enum ChatInlineWidgetExport {
 @MainActor
 struct ChatInlineWidgetView: View {
     let preview: OpenClawChatCanvasPreview
-    let resolverReady: Bool
+    let availability: ChatInlineWidgetAvailability
     let resolveResource: @MainActor @Sendable (
         String,
         OpenClawChatWidgetResource?) async -> OpenClawChatWidgetResource?
@@ -334,10 +334,14 @@ struct ChatInlineWidgetView: View {
             }
 
             #if canImport(WebKit) && (os(iOS) || os(macOS))
-            if let resolvedResource {
+            if let statusMessage = self.availability.statusMessage {
+                Text(statusMessage)
+                    .font(OpenClawChatTypography.footnote)
+                    .foregroundStyle(OpenClawChatTheme.muted)
+            } else if let resolvedResource {
                 self.renderedWidget(resource: resolvedResource)
             } else if self.unavailable {
-                Text("Widget unavailable")
+                Text("미리보기를 불러올 수 없어요.")
                     .font(OpenClawChatTypography.footnote)
                     .foregroundStyle(OpenClawChatTheme.muted)
             } else {
@@ -346,18 +350,17 @@ struct ChatInlineWidgetView: View {
                     .frame(maxWidth: .infinity, minHeight: 44)
             }
             #else
-            Text("Widget unavailable")
+            Text("이 기기에서는 미리보기를 열 수 없어요.")
                 .font(OpenClawChatTypography.footnote)
                 .foregroundStyle(OpenClawChatTheme.muted)
             #endif
         }
-        .task(id: LoadID(path: self.preview.inlineWidgetPath, resolverReady: self.resolverReady)) {
+        .task(id: LoadID(path: self.preview.inlineWidgetPath, availability: self.availability)) {
             let path = self.preview.inlineWidgetPath
-            if self.activePath != path {
-                self.reset(path: path)
-            }
-            guard self.resolverReady else { return }
+            // Invalidate any prior resource and generation even when disconnected.
+            // Reconnection changes LoadID and retries the same production resolver.
             self.reset(path: path)
+            guard self.availability == .ready else { return }
             guard let path else {
                 self.unavailable = true
                 return
@@ -503,7 +506,7 @@ struct ChatInlineWidgetView: View {
 
     private struct LoadID: Hashable {
         let path: String?
-        let resolverReady: Bool
+        let availability: ChatInlineWidgetAvailability
     }
 
     private func reset(path: String?) {
@@ -520,7 +523,10 @@ struct ChatInlineWidgetView: View {
         replacing failedResource: OpenClawChatWidgetResource?,
         generation: UUID) async
     {
-        let candidate = await self.resolveResource(path, failedResource)
+        let candidate = await self.availability.resolve(
+            path: path,
+            replacing: failedResource,
+            using: self.resolveResource)
         guard !Task.isCancelled,
               self.activePath == path,
               self.loadGeneration == generation

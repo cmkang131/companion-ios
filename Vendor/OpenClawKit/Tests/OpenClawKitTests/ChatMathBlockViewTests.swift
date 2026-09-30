@@ -35,9 +35,9 @@ struct ChatMathBlockViewTests {
                     contextWindowTokens: nil,
                     userMessageExpanded: false,
                     onToggleUserMessageExpanded: {},
-                    inlineWidgetResolverReady: false,
+                    inlineWidgetAvailability: .unsupported,
                     inlineWidgetResourceResolver: { _, _ in nil },
-                    mediaArtifactResolverReady: false,
+                    mediaArtifactAvailability: .unsupported,
                     mediaPlaybackAllowed: { false },
                     loadMediaArtifact: { _, _, _ in nil })
             }

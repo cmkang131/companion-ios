@@ -7,7 +7,10 @@ Private, single-user SwiftUI iOS 26+ client built around the official MIT OpenCl
 - Light-only native chat, history and connection sheets; restrained system Liquid Glass and native typography.
 - Code-drawn blue four-lobed character with dark oval eyes, a small blue bump and glass name pill, based on the latest user reference. The private reference image is excluded from the repository.
 - Existing upstream mascot animator reused for idle and response states. Response acknowledgement requires a nonempty terminal event with explicit current session and owned run correlation; it does not claim external task success.
-- Per-session text drafts survive same-endpoint reconnect failure and cancellation. Explicit disconnect has a separate destructive confirmation. Attachments and history are not promised as persistent drafts.
+- Per-session drafts and ready attachment bytes survive same-endpoint reconnect failure and cancellation in memory. Interrupted imports are identified for reselection. Explicit disconnect has a separate destructive confirmation; process termination does not preserve drafts.
+- Submitted messages retain their original text, attachments and reply until acceptance is known. Uncertain delivery requires history review and explicit restoration, never automatic resending. New composer content is not overwritten.
+- A compact native composer reuses upstream input/attachment/send controls. Model settings move to the connection sheet; message actions and localized timestamps remain in the long-press menu.
+- Connected input attachments use upstream encoding and server-advertised limits. Unsupported output downloads and disconnected widget previews show explicit availability instead of nonfunctional actions.
 - Revision/generation guards for token deletion, delayed connection callbacks and out-of-order history requests.
 - Raw server error text removed from public diagnostics or made private, with narrow synthetic regression checks.
 - Read-only, explicitly disconnected preview fixtures. Sending, attachments and model sign-in remain unavailable in preview.
@@ -53,7 +56,7 @@ The macOS test target omits app entry views and replaces gateway/credential boun
 
 ## Debug rendering fixtures
 
-Launch arguments: `--ui-testing` (paused mascot/empty endpoint), `--ui-preview`, `--ui-history`, `--ui-settings`, `--ui-keyboard`, `--ui-invalid-address`, and `--ui-motion-gallery`. Preview content is synthetic and visually labelled. `--ui-accessibility-static` exercises static/opaque drawing branches with an on-screen label; it does not alter system accessibility preferences. Fixtures are Debug-only.
+Launch arguments: `--ui-testing` (paused mascot/empty endpoint), `--ui-preview`, `--ui-history`, `--ui-settings`, `--ui-keyboard`, `--ui-invalid-address`, `--ui-motion-gallery`, `--ui-send-recovery` and `--ui-artifact-preview` (the latter two also require `--ui-preview`). Preview content is synthetic and visually labelled. `--ui-accessibility-static` exercises static/opaque drawing branches with an on-screen label; it does not alter system accessibility preferences. Fixtures are Debug-only.
 
 ## Sources and licenses
 

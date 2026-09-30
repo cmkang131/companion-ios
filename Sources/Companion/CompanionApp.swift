@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import OpenClawChatUI
 
 @main
@@ -26,7 +27,7 @@ struct CompanionHome: View {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.scenePhase) private var scenePhase
-    private enum Sheet: String, Identifiable { case connection, history; var id: String { rawValue } }
+    private enum Sheet: String, Identifiable { case connection, history, recovery; var id: String { rawValue } }
 
     var body: some View {
         NavigationStack {
@@ -38,10 +39,12 @@ struct CompanionHome: View {
                         showsAssistantTrace: false, assistantName: "dot",
                         showsAssistantAvatars: false, composerChrome: .clean,
                         isComposerEnabled: connection.canSend,
-                        isAttachmentInputEnabled: false,
-                        messagePlaceholder: connection.canSend ? "메시지" : "서버 연결 후 대화할 수 있어요",
+                        isAttachmentInputEnabled: connection.canSend,
+                        messagePlaceholder: connection.canSend ? "메시지" : "서버 연결 후 메시지",
                         emptyAssistantIntro: "어떤 이야기부터 할까요?", emptyAssistantPrompts: [])
                         .environment(\.openClawAssistantBubblesInCleanChrome, true)
+                        .environment(\.openClawCompactConversation, true)
+                        .environment(\.locale, Locale(identifier: "ko_KR"))
                 } else {
                     welcome
                 }
@@ -68,7 +71,13 @@ struct CompanionHome: View {
                 }
             }
             .safeAreaInset(edge: .top, spacing: 0) {
-                if connection.model != nil {
+                if !connection.presentationSendRecoveries.isEmpty || !connection.interruptedAttachmentSessionKeys.isEmpty {
+                    Button { sheet = .recovery } label: {
+                        Label("확인이 필요한 내용", systemImage: "exclamationmark.circle")
+                            .font(.footnote).padding(.horizontal, 15).padding(.vertical, 8)
+                            .background(Color(white: 0.955), in: Capsule()).frame(minHeight: 44)
+                    }.buttonStyle(.plain).accessibilityIdentifier("sendRecoveryButton")
+                } else if connection.model != nil {
                     Button { sheet = .connection } label: {
                         Text(activityStatus).font(.footnote).foregroundStyle(.secondary)
                             .padding(.horizontal, 15).padding(.vertical, 7)
@@ -81,6 +90,7 @@ struct CompanionHome: View {
                 switch selection {
                 case .connection: ConnectionSettings(connection: connection)
                 case .history: ConversationHistory(connection: connection)
+                case .recovery: SendRecoverySheet(connection: connection, openHistory: { sheet = .history })
                 }
             }
         }
@@ -103,6 +113,11 @@ struct CompanionHome: View {
             let arguments = ProcessInfo.processInfo.arguments
             if arguments.contains("--ui-settings") { sheet = .connection }
             if arguments.contains("--ui-history") { sheet = .history }
+            if arguments.contains("--ui-send-recovery"), connection.isPreview, let model = connection.model {
+                model.input = "검증용 메시지: 오후 일정을 함께 정리해 주세요."
+                await model.send()?.value
+                sheet = .recovery
+            }
             #endif
         }
     }
@@ -135,7 +150,7 @@ struct CompanionHome: View {
             }.padding(.bottom, 28)
             Text("여기 있어요").font(.title2.weight(.semibold))
                 .padding(.bottom, 10)
-            Text("당신의 OpenClaw에 연결하면\n이곳에서 이야기를 이어갈 수 있어요.")
+            Text("OpenClaw에 연결해\n이야기를 시작하세요.")
                 .font(.body).foregroundStyle(.secondary).multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
             if !dynamicTypeSize.isAccessibilitySize { connectButton.padding(.top, 26) }
@@ -166,6 +181,139 @@ struct CompanionHome: View {
         }
         .buttonStyle(.glass).controlSize(.large)
         .accessibilityIdentifier("connectWelcomeButton")
+    }
+}
+
+/// Retained text is visible even when reconnect failed. Restoration never sends.
+struct SendRecoverySheet: View {
+    @Bindable var connection: ConnectionStore
+    let openHistory: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var checkingHistory = false
+    @State private var confirmation: OpenClawChatSendRecovery?
+    @State private var feedback: String?
+
+    var body: some View {
+        NavigationStack {
+            List {
+                if connection.isPreview {
+                    Section { Text("미리보기 · 서버 미연결").foregroundStyle(.secondary) }
+                }
+                if connection.presentationSendRecoveries.isEmpty && connection.interruptedAttachmentSessionKeys.isEmpty {
+                    Text("확인이 필요한 메시지가 없어요.")
+                }
+                if !connection.interruptedAttachmentSessionKeys.isEmpty {
+                    Section("첨부 선택 중 연결이 끊겼어요") {
+                        Text("준비가 끝난 파일과 초안은 보관했어요. 불러오는 중이던 파일은 원래 대화에서 다시 선택해 주세요.")
+                            .font(.subheadline)
+                        if let model = connection.model,
+                           connection.interruptedAttachmentSessionKeys.contains(model.sessionKey) {
+                            Button("확인했어요") {
+                                model.acknowledgeInterruptedAttachmentSelection(sessionKey: model.sessionKey)
+                            }
+                        }
+                        if connection.canSend {
+                            Button("대화 목록 열기", action: openHistory)
+                        } else {
+                            Text("서버 연결 후 원래 대화로 돌아갈 수 있어요.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                ForEach(connection.presentationSendRecoveries) { item in
+                    Section {
+                        Text(item.text.isEmpty ? "첨부 파일이 있는 메시지" : item.text)
+                            .textSelection(.enabled)
+                        if item.attachmentCount > 0 {
+                            Label("첨부 파일 \(item.attachmentCount)개 보관 중", systemImage: "paperclip")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
+                        Text(item.delivery == .notSent
+                            ? "전송하지 못한 내용을 보관했어요."
+                            : "서버에 전달됐을 수 있어요. 다시 보내기 전에 대화 기록을 확인해 주세요.")
+                            .font(.footnote).foregroundStyle(.secondary)
+                        Button("메시지 복사", systemImage: "doc.on.doc") {
+                            UIPasteboard.general.string = item.text
+                            feedback = "메시지를 복사했어요."
+                        }.disabled(item.text.isEmpty)
+                        if isCurrentSession(item) {
+                            Button(checkingHistory ? "기록 확인 중" : "대화 기록 확인", systemImage: "arrow.clockwise") {
+                                Task { await checkHistory() }
+                            }.disabled(!connection.canSend || checkingHistory)
+                            Button("초안에 복원", systemImage: "square.and.pencil") {
+                                if item.delivery == .unconfirmed { confirmation = item }
+                                else { restore(item) }
+                            }.disabled(!canRestore(item))
+                            if item.isAwaitingAcknowledgement {
+                                Text("이전 전송의 응답을 기다리고 있어요. 원문은 복사할 수 있어요.")
+                                    .font(.footnote).foregroundStyle(.secondary)
+                            } else if connection.model?.isSubmittingDraft == true || connection.model?.isSending == true || connection.model?.isAttachmentOwnerPinned == true {
+                                Text("현재 전송이나 첨부 준비가 끝나면 복원할 수 있어요.")
+                                    .font(.footnote).foregroundStyle(.secondary)
+                            } else if connection.model?.input.isEmpty == false || connection.model?.attachments.isEmpty == false || connection.model?.replyTarget != nil {
+                                Text("새 초안과 첨부, 답장 선택은 그대로 유지돼요. 복원하려면 먼저 입력창을 확인해 주세요.")
+                                    .font(.footnote).foregroundStyle(.secondary)
+                            }
+                        } else if connection.canSend {
+                            Button("원래 대화 찾기", action: openHistory)
+                        } else {
+                            Text("연결 후 원래 대화에서 기록 확인과 초안 복원을 할 수 있어요.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                if let feedback { Section { Text(feedback).font(.footnote) } }
+            }
+            .navigationTitle("보관한 내용").navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("완료") { dismiss() } } }
+            .confirmationDialog("이미 전달됐을 수 있어요", isPresented: Binding(
+                get: { confirmation != nil }, set: { if !$0 { confirmation = nil } }),
+                titleVisibility: .visible, presenting: confirmation) { item in
+                Button("초안에 복원") { restore(item); confirmation = nil }
+                Button("취소", role: .cancel) { confirmation = nil }
+            } message: { _ in
+                Text("기록에 없는 메시지도 서버에서 처리 중일 수 있어요. 복원한 내용을 전송하기 전에 중복 요청이 아닌지 확인해 주세요.")
+            }
+        }
+    }
+
+    private func isCurrentSession(_ item: OpenClawChatSendRecovery) -> Bool {
+        connection.model?.currentSendRecoveries.contains(where: { $0.id == item.id }) == true
+    }
+    private func canRestore(_ item: OpenClawChatSendRecovery) -> Bool {
+        connection.canSend && item.canRestore && isCurrentSession(item)
+            && connection.model?.input.isEmpty == true && connection.model?.attachments.isEmpty == true
+            && connection.model?.replyTarget == nil
+            && connection.model?.isSubmittingDraft == false && connection.model?.isSending == false
+            && connection.model?.isAttachmentOwnerPinned == false
+    }
+    private func restore(_ item: OpenClawChatSendRecovery) {
+        guard connection.canSend, connection.model?.restoreSendRecovery(id: item.id) == true else {
+            feedback = "상태가 바뀌었어요. 연결과 입력 중인 초안을 확인해 주세요."
+            return
+        }
+        dismiss()
+    }
+    private func checkHistory() async {
+        guard connection.canSend, let model = connection.model, !checkingHistory else { return }
+        checkingHistory = true
+        defer { checkingHistory = false }
+        let success = await model.refreshSendRecoveryHistory()
+        guard connection.model === model else { return }
+        feedback = success ? "기록을 새로 확인했어요. 전달 여부가 불확실한 메시지는 계속 보관해요."
+            : "기록을 불러오지 못했어요. 원문은 계속 보관해요."
+    }
+}
+
+extension ConnectionStore {
+    /// Read-only presentation fixture; production dispatch remains disabled.
+    fileprivate var presentationSendRecoveries: [OpenClawChatSendRecovery] {
+        #if DEBUG
+        if isPreview && ProcessInfo.processInfo.arguments.contains("--ui-send-recovery") {
+            return model?.allSendRecoveries ?? []
+        }
+        #endif
+        return retainedSendRecoveries
     }
 }
 
@@ -233,6 +381,11 @@ struct ConnectionSettings: View {
                     LabeledContent("앱", value: "Companion 0.2")
                     LabeledContent("연결 방식", value: "OpenClaw Gateway")
                     NavigationLink("오픈소스 라이선스") { LicensesView() }
+                }
+                if let model = connection.model {
+                    Section("대화 설정") {
+                        OpenClawChatSessionSettings(viewModel: model, isEnabled: connection.canSend)
+                    }
                 }
             }
             .onChange(of: validationAttempt) { _, _ in

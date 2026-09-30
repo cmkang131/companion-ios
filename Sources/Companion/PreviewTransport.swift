@@ -6,6 +6,11 @@ import OpenClawChatUI
 struct PreviewTransport: OpenClawChatTransport {
     struct Unavailable: LocalizedError { var errorDescription: String? { "미리보기에서는 메시지를 보낼 수 없어요." } }
     func requestHistory(sessionKey: String) async throws -> OpenClawChatHistoryPayload {
+        if ProcessInfo.processInfo.arguments.contains("--ui-artifact-preview") {
+            // Synthetic metadata only. No real file, URL request or completed delivery.
+            let artifactJSON = #"{"sessionKey":"preview","sessionId":"preview","thinkingLevel":"off","messages":[{"role":"assistant","content":[{"type":"text","text":"파일 표시 확인용 예시예요. 실제 생성된 파일은 아니에요."},{"type":"attachment","attachment":{"kind":"document","label":"검증용 메모.pdf","mimeType":"application/pdf","sizeBytes":1200,"artifactId":"artifact_managed_media_11111111-1111-4111-8111-111111111111"}}]}]}"#
+            return try JSONDecoder().decode(OpenClawChatHistoryPayload.self, from: Data(artifactJSON.utf8))
+        }
         let json = #"{"sessionKey":"preview","sessionId":"preview","thinkingLevel":"off","messages":[{"role":"user","content":[{"type":"text","text":"오늘은 조금 천천히 시작하고 싶어."}],"timestamp":1790776800000},{"role":"assistant","content":[{"type":"text","text":"좋아요. 지금 가장 마음에 걸리는 일 하나만 꺼내 볼까요?\n\n급하게 정리하지 않아도 괜찮아요."}],"timestamp":1790776801000},{"role":"user","content":[{"type":"text","text":"오후에 할 일을 미리 정리해 둘까?"}],"timestamp":1790776810000},{"role":"assistant","content":[{"type":"text","text":"먼저 꼭 해야 하는 일부터 적어 봐요. 그다음에 하고 싶은 일을 더하면 충분해요."}],"timestamp":1790776811000}]}"#
         return try JSONDecoder().decode(OpenClawChatHistoryPayload.self, from: Data(json.utf8))
     }

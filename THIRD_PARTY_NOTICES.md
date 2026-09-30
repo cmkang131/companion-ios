@@ -8,7 +8,7 @@ The application opts out of the default Talk trait. A local manifest patch remov
 
 Research checkouts are references only, excluded from the application's target sources. No Grok/Muse assets have been incorporated.
 
-Local source adaptations are intentionally small compared with the vendored foundation: iOS transport glue; safe gateway diagnostic categories/private error logs; text-draft capture/restore; a read-only response activity/completion projection; native iOS typography; composer accessibility and disconnected-state guards; reduced-motion transitions; and the code-drawn Companion character driven by the existing MIT mascot animator. These are local changes, not upstream behavior guarantees. No measured custom-code percentage is claimed.
+Local source adaptations are intentionally small compared with the vendored foundation: iOS transport glue; safe gateway diagnostic categories/private error logs; endpoint-scoped text/ready-attachment snapshots and submitted-send recovery; a read-only response activity/completion projection; native iOS typography; opt-in compact composer/context-menu presentation with reused settings controls; composer accessibility and disconnected-state guards; explicit attachment/widget output availability; reduced-motion transitions; and the code-drawn Companion character driven by the existing MIT mascot animator. These are local changes, not upstream behavior guarantees. No measured custom-code percentage is claimed.
 
 The current character and app icon are code drawings based on a user-supplied visual reference. The private reference image is not bundled or committed. Companion is an independent OpenClaw client and does not claim to be an official Muse or OpenAI dot application.
 
