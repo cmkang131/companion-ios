@@ -1,0 +1,136 @@
+{
+  "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+  "simulator_id": "022EC407-377F-4563-A350-CD12D1BA7795",
+  "simulator_name": "Companion Recovery Task5",
+  "normal_build_app_path": "/Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-render-products/f869cbc/Companion.app",
+  "built_executable_sha256": "619421965f0c2716403c84dc47a040eb708dbfc52d5eee597c79c1bd0ec35570",
+  "installed_executable_sha256": "619421965f0c2716403c84dc47a040eb708dbfc52d5eee597c79c1bd0ec35570",
+  "captures": [
+    {
+      "file": "transcript-current.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "--ui-question-transcript",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T21:27:50.104630+00:00",
+      "sha256": "55fc007e6acd3f8e9d82ebe9e7091ed85347aea9530bf5415ef4f7d2e6fb82e8",
+      "size_bytes": 331037
+    },
+    {
+      "file": "transcript-unscoped.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-unscoped-questions",
+        "--ui-question-transcript",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T21:28:05.167565+00:00",
+      "sha256": "85a258c961edf6c75b1d8632cb4a7b639ae216432016e1f134a9beece3493813",
+      "size_bytes": 342843
+    },
+    {
+      "file": "questions.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T21:28:53.592563+00:00",
+      "sha256": "4668039e760035fa7ad6af95b2a990a89598d1e875f7a4773672d015e5ba872e",
+      "size_bytes": 243615
+    },
+    {
+      "file": "questions-unscoped.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-unscoped-questions",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T21:29:08.514847+00:00",
+      "sha256": "5a7876de6e1c390cf6f3677a4f8b47c968dd1aff9e61a73951dbf3af80f2d8f7",
+      "size_bytes": 253393
+    },
+    {
+      "file": "transcript-unscoped-ax5.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-unscoped-questions",
+        "--ui-question-transcript",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T21:29:24.535602+00:00",
+      "sha256": "762eb848b6d4b1758c57dd060ba38b961a393497733f322f5a169fe644ead972",
+      "size_bytes": 404021
+    },
+    {
+      "file": "questions-ax5-footer.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "--ui-questions-end",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T21:29:39.684056+00:00",
+      "sha256": "e37c17013b2739e524c5a975944c36c22864c8379197dbc6981d9a0b864a967d",
+      "size_bytes": 175139
+    },
+    {
+      "file": "compact.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T21:30:53.514444+00:00",
+      "sha256": "56f241fdd3d00ab2a16fd4000d2a6b72409f5737af71331ddaa6256451aeefcd",
+      "size_bytes": 282204
+    }
+  ],
+  "limits": [
+    "Debug synthetic fixtures, no live server",
+    "Programmatic launch/keyboard focus, not tap interaction",
+    "Simulator content-size category only; no VoiceOver or OS Reduce Motion verification"
+  ]
+}

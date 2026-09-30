@@ -1,0 +1,400 @@
+{
+  "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+  "prior_reviewed_business_logic_source": "bf8ece67afce77f05bad2af4bec0acb05e9da288",
+  "created_utc": "2026-09-30T21:35:15.514038+00:00",
+  "tracked_blob_count": 574,
+  "change_scope": "Debug-only transcript fixture entry and positioning; capture modes. No production question gate, scope, RPC or Release behavior changes.",
+  "validation_logs": [
+    {
+      "file": "logs/build-normal-f869cbc.log",
+      "sha256": "c8c7c2f561ee77194aa730599bceff81c056c6a242e3c401cfdae0339f8634b2",
+      "size_bytes": 73952,
+      "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "result": "PASS",
+      "scope": "Normal iOS Simulator build, ENABLE_DEBUG_DYLIB=NO, arm64, jobs2; 16.5s"
+    },
+    {
+      "file": "logs/tests-f869cbc.log",
+      "sha256": "02a854613c3d8096c8914642aaef552125f66fdfb66ffd77cb0bb1dc6daaab88",
+      "size_bytes": 43113,
+      "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "result": "PASS",
+      "scope": "114 integration functions / 11 suites + core5; controlled boundaries, not taps; 23.0s"
+    },
+    {
+      "file": "logs/privacy-f869cbc.log",
+      "sha256": "7e08f047cfd2f6bc054c4cb37052f6ae474ce677473db147a0fe9d02a548d442",
+      "size_bytes": 442,
+      "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "result": "PASS",
+      "scope": "Exact Git archive;182 Swift sources,8 helper cases/7 categories; not OSLog sink/general dataflow"
+    },
+    {
+      "file": "logs/wiring-f869cbc.log",
+      "sha256": "6f067d55e80dc4265fa61f0f03b306637d5f63792b241f88b3185f9257f2e83d",
+      "size_bytes": 654,
+      "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "result": "PASS",
+      "scope": "Shared transcript/activity scope and production action gate source/mutation guards; not UI events"
+    },
+    {
+      "file": "logs/bundle-f869cbc.log",
+      "sha256": "4ce40252e79b95585a91c1903dce02116c1cfb45b16c48eaf802528a25398a03",
+      "size_bytes": 453,
+      "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "result": "PASS",
+      "scope": "Simulator bundle platform/resources/light metadata"
+    },
+    {
+      "file": "logs/install-f869cbc.log",
+      "sha256": "f226770e78cc2b2350daa73dfd92167212360509ef51daca1583a2d185a90ebc",
+      "size_bytes": 350,
+      "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "result": "PASS",
+      "scope": "Install preserved normal app on own simulator only; 2.3s"
+    },
+    {
+      "file": "logs/capture-transcript-f869cbc.log",
+      "sha256": "fccb1644206d3cbf639bf986ee2e85a83d46db6945081202831f0167c0c26d96",
+      "size_bytes": 540,
+      "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "result": "PASS",
+      "scope": "2 actual transcript captures; programmatic fixture entry/scroll;32.2s"
+    },
+    {
+      "file": "logs/capture-activity-ax5-f869cbc.log",
+      "sha256": "a810ac6c6a60dbcce2278d5c209a97a9fbaae6954c17664f8ca8f51750efba8a",
+      "size_bytes": 725,
+      "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "result": "PASS",
+      "scope": "4 actual activity/AX5 captures; programmatic entry/scroll;64.5s"
+    },
+    {
+      "file": "logs/capture-compact-f869cbc.log",
+      "sha256": "28f685e7de804147543275a9105f566eda514adf0e309df9767fb849d7fbb52e",
+      "size_bytes": 434,
+      "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "result": "PASS",
+      "scope": "1 actual compact-chat capture;17.4s"
+    },
+    {
+      "file": "logs/runtime-f869cbc.log",
+      "sha256": "a6206de646446601b2907bbdbda05caa13634bc431c703408aa3c99330363f35",
+      "size_bytes": 1743,
+      "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "result": "PASS",
+      "scope": "Own running process and installed/built main/Core SHA equality;1.2s"
+    },
+    {
+      "file": "logs/comparison-f869cbc.log",
+      "sha256": "bee293f0aa7771e0a34a360a2b07b84f64a289441b9fcbbe0cec0e94715a8804",
+      "size_bytes": 428,
+      "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "result": "PASS",
+      "scope": "Uncropped two-panel assembly of real source screenshots;2.0s"
+    }
+  ],
+  "captures": [
+    {
+      "file": "transcript-current.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "--ui-question-transcript",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T21:27:50.104630+00:00",
+      "sha256": "55fc007e6acd3f8e9d82ebe9e7091ed85347aea9530bf5415ef4f7d2e6fb82e8",
+      "size_bytes": 331037
+    },
+    {
+      "file": "transcript-unscoped.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-unscoped-questions",
+        "--ui-question-transcript",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T21:28:05.167565+00:00",
+      "sha256": "85a258c961edf6c75b1d8632cb4a7b639ae216432016e1f134a9beece3493813",
+      "size_bytes": 342843
+    },
+    {
+      "file": "questions.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T21:28:53.592563+00:00",
+      "sha256": "4668039e760035fa7ad6af95b2a990a89598d1e875f7a4773672d015e5ba872e",
+      "size_bytes": 243615
+    },
+    {
+      "file": "questions-unscoped.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-unscoped-questions",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T21:29:08.514847+00:00",
+      "sha256": "5a7876de6e1c390cf6f3677a4f8b47c968dd1aff9e61a73951dbf3af80f2d8f7",
+      "size_bytes": 253393
+    },
+    {
+      "file": "transcript-unscoped-ax5.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-unscoped-questions",
+        "--ui-question-transcript",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T21:29:24.535602+00:00",
+      "sha256": "762eb848b6d4b1758c57dd060ba38b961a393497733f322f5a169fe644ead972",
+      "size_bytes": 404021
+    },
+    {
+      "file": "questions-ax5-footer.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "--ui-questions-end",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T21:29:39.684056+00:00",
+      "sha256": "e37c17013b2739e524c5a975944c36c22864c8379197dbc6981d9a0b864a967d",
+      "size_bytes": 175139
+    },
+    {
+      "file": "compact.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T21:30:53.514444+00:00",
+      "sha256": "56f241fdd3d00ab2a16fd4000d2a6b72409f5737af71331ddaa6256451aeefcd",
+      "size_bytes": 282204
+    }
+  ],
+  "normal_build": {
+    "settings": {
+      "Xcode": "27",
+      "sdk": "iphonesimulator27.0",
+      "action": "build",
+      "configuration": "Debug",
+      "ARCHS": "arm64",
+      "jobs": 2,
+      "ENABLE_DEBUG_DYLIB": "NO",
+      "CODE_SIGNING_ALLOWED": "NO"
+    },
+    "runtime": {
+      "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+      "observed_utc": "2026-09-30T21:31:42.919122+00:00",
+      "normal_build_app_path": "/Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-render-products/f869cbc/Companion.app",
+      "installed_app_path": "/Users/changmin/Library/Developer/CoreSimulator/Devices/022EC407-377F-4563-A350-CD12D1BA7795/data/Containers/Bundle/Application/113A6345-2C98-4D2A-9AEA-1A66E57CDD86/Companion.app",
+      "matching_executable_sha256": {
+        "Companion": "619421965f0c2716403c84dc47a040eb708dbfc52d5eee597c79c1bd0ec35570",
+        "Frameworks/CompanionCore.framework/CompanionCore": "d1930ebf545f852c475fd94237eaea9440f2285ff5514c1d7424923ca6af3c61"
+      },
+      "own_simulator_process": "43975 01:05 Ss   /Users/changmin/Library/Developer/CoreSimulator/Devices/022EC407-377F-4563-A350-CD12D1BA7795/data/Containers/Bundle/Application/113A6345-2C98-4D2A-9AEA-1A66E57CDD86/Companion.app/Companion",
+      "own_launch_service": "43975\t0\tUIKitApplication:com.cmkang131.companion[6507][rb-legacy]",
+      "limitations": [
+        "Process existence and actual pixels do not verify tap delivery, scrolling, dismissal or frame time"
+      ]
+    }
+  },
+  "evidence_records": [
+    {
+      "file": "captures.json",
+      "sha256": "b1417bed2c7f7b69c90c1b91ce258dfe6e02549dee2d1cc04d511635f0988e0c",
+      "size_bytes": 4142
+    },
+    {
+      "file": "runtime.json",
+      "sha256": "34350411168e324e04caa8a35a381e3b7088d141bbe6a3be64d7ddd22d1d9cf7",
+      "size_bytes": 1172
+    },
+    {
+      "file": "library-files.json",
+      "sha256": "94888bc6e13a000e7df782f9bf13c69bd827693e71f925c08e44d2296a1faeb2",
+      "size_bytes": 3116
+    },
+    {
+      "file": "Companion-f869cbc-question-comparison.png",
+      "sha256": "2d96afa574f2541f2a2ee4f007d481653ad3be2e7e450c1f98fea000777f3061",
+      "size_bytes": 336844
+    },
+    {
+      "file": "README.md",
+      "sha256": "66e03281fb7967fb7e4687ac61e7b3e2f545057722a1789c831adc3902fd67a9",
+      "size_bytes": 4276
+    }
+  ],
+  "baseline_before_source_changes": {
+    "application_build_source": "bf8ece67afce77f05bad2af4bec0acb05e9da288",
+    "capture_harness_snapshot": "5f947ac3aaea770a50aa2af269c81d82000f347e",
+    "code_equivalence": "Application/tests/vendor/scripts/project/package diff bf8ece6..5f947ac empty",
+    "files": [
+      {
+        "file": "baseline-bf8ece6/capture-bf8ece6-existing.log",
+        "sha256": "aaeb15b271cfaad4c75051cbf2fbffdbd7f27bd4b4d9b39fd39f0cd6590958e1",
+        "size_bytes": 541
+      },
+      {
+        "file": "baseline-bf8ece6/captures.json",
+        "sha256": "ce2a36e27db79141133d041aa29e1ae8d82af6de12f94c761c94710bdc25d8e7",
+        "size_bytes": 2087
+      },
+      {
+        "file": "baseline-bf8ece6/install-bf8ece6-render.log",
+        "sha256": "c8ddc501fbbb8d7bd56af6753c53281a13534872baa5d05779c3e9b9fc1a8673",
+        "size_bytes": 350
+      },
+      {
+        "file": "baseline-bf8ece6/questions-ax5-footer.png",
+        "sha256": "ac3fa98263932b561d720d150dd08668fb748ffe8e7bc9bca947aa010e44b1c1",
+        "size_bytes": 174541
+      },
+      {
+        "file": "baseline-bf8ece6/questions-unscoped.png",
+        "sha256": "b5eeee855b0f5069d0e64d5cf215fb9323074b9c7cf7faeca670a08fd9c24a4b",
+        "size_bytes": 252993
+      }
+    ]
+  },
+  "library_deliverables": [
+    {
+      "file_name": "Companion-f869cbc-01-chat.png",
+      "library_file_id": "libfile_50a7d08b7c0c81918fb42273c7ecff0e",
+      "file_id": "file_00000000b614820994c4eb5908d51946",
+      "current_version_number": 0,
+      "path": "/Companion-f869cbc-01-chat.png",
+      "original_file": "compact.png",
+      "sha256": "56f241fdd3d00ab2a16fd4000d2a6b72409f5737af71331ddaa6256451aeefcd",
+      "local_identity_saved": true
+    },
+    {
+      "file_name": "Companion-f869cbc-02-current-question.png",
+      "library_file_id": "libfile_0f083876418c8191b7f595bea74767c9",
+      "file_id": "file_000000008c108209a940a4d763b21d0a",
+      "current_version_number": 0,
+      "path": "/Companion-f869cbc-02-current-question.png",
+      "original_file": "transcript-current.png",
+      "sha256": "55fc007e6acd3f8e9d82ebe9e7091ed85347aea9530bf5415ef4f7d2e6fb82e8",
+      "local_identity_saved": true
+    },
+    {
+      "file_name": "Companion-f869cbc-03-unscoped-question.png",
+      "library_file_id": "libfile_ca820ba0270081919ec3c9174c3a4966",
+      "file_id": "file_0000000020408209b88305de2d4434e3",
+      "current_version_number": 0,
+      "path": "/Companion-f869cbc-03-unscoped-question.png",
+      "original_file": "transcript-unscoped.png",
+      "sha256": "85a258c961edf6c75b1d8632cb4a7b639ae216432016e1f134a9beece3493813",
+      "local_identity_saved": true
+    },
+    {
+      "file_name": "Companion-f869cbc-04-activity-question.png",
+      "library_file_id": "libfile_f6d2b1f3619081919506a921c9cb2037",
+      "file_id": "file_00000000a6d0820688e6fe617c451704",
+      "current_version_number": 0,
+      "path": "/Companion-f869cbc-04-activity-question.png",
+      "original_file": "questions-unscoped.png",
+      "sha256": "5a7876de6e1c390cf6f3677a4f8b47c968dd1aff9e61a73951dbf3af80f2d8f7",
+      "local_identity_saved": true
+    },
+    {
+      "file_name": "Companion-f869cbc-05-transcript-AX5.png",
+      "library_file_id": "libfile_f6e6340d14ec81918f5d8d1fc1f08747",
+      "file_id": "file_00000000ca2c8209a06f80497391b700",
+      "current_version_number": 0,
+      "path": "/Companion-f869cbc-05-transcript-AX5.png",
+      "original_file": "transcript-unscoped-ax5.png",
+      "sha256": "762eb848b6d4b1758c57dd060ba38b961a393497733f322f5a169fe644ead972",
+      "local_identity_saved": true
+    },
+    {
+      "file_name": "Companion-f869cbc-06-activity-AX5.png",
+      "library_file_id": "libfile_ffe2201c8da481919a904ea1ed689daa",
+      "file_id": "file_000000007ab48209b918e24e2e9a46dc",
+      "current_version_number": 0,
+      "path": "/Companion-f869cbc-06-activity-AX5.png",
+      "original_file": "questions-ax5-footer.png",
+      "sha256": "e37c17013b2739e524c5a975944c36c22864c8379197dbc6981d9a0b864a967d",
+      "local_identity_saved": true
+    },
+    {
+      "file_name": "Companion-f869cbc-question-comparison.png",
+      "library_file_id": "libfile_473b33cbb8508191879ee8f2246ed525",
+      "file_id": "file_00000000baac82068b7c8607294b0475",
+      "current_version_number": 0,
+      "path": "/Companion-f869cbc-question-comparison.png",
+      "original_file": "Companion-f869cbc-question-comparison.png",
+      "sha256": "2d96afa574f2541f2a2ee4f007d481653ad3be2e7e450c1f98fea000777f3061",
+      "local_identity_saved": true
+    }
+  ],
+  "pixel_observations": [
+    "Normal transcript current question explicitly distinguishes question answers from execution permissions.",
+    "Normal transcript and activity unscoped question show the same title, scope explanation, offline notice and disabled answer/skip/input.",
+    "AX5 transcript shows unspecified-scope heading and beginning of explanation; full text and card continue below viewport. Composer/progress reduce available height; scrolling is required.",
+    "AX5 activity lower viewport shows vertically stacked disabled answer/skip buttons and connect-first explanation. Upper scope heading is outside this viewport.",
+    "Compact chat keeps gray assistant/pale-blue user bubbles, separate compact composer, original blue character and persistent preview/disconnected label."
+  ],
+  "independent_review": {
+    "kind": "read-only source review",
+    "finding": "No blocker; added view state/entry/scroll is guarded by DEBUG; production scope/gate unchanged. Not runtime or touch review."
+  },
+  "limits": [
+    "All new screens are Debug synthetic fixtures on own simulator; no live Gateway, credentials, model call or account flow.",
+    "Programmatic launch/sheet selection/scroll positioning are not real taps, scrolling, dismissal or repeated sheet re-entry.",
+    "No unchanged XCUITest retry; prior automation initialization timeout remains unresolved.",
+    "Simulator AX5 content-size rendering is not VoiceOver or OS Reduce Motion/Transparency validation.",
+    "All new launches use --ui-testing (paused mascot). Earlier motion gallery video is separate; no live motion/FPS claim.",
+    "No phone installation/signing/distribution. Activity is current-conversation response control, not a durable global task dashboard.",
+    "Questions are not execution/purchase approvals; real approvals, browser takeover, voice, memory and output downloads remain incomplete.",
+    "Prior selected upstream tests remain compile-blocked by excluded Talk test types; not rerun or counted as passed.",
+    "No complete-app/release certification; stable checkpoint e8afca7 and earlier evidence are preserved."
+  ]
+}

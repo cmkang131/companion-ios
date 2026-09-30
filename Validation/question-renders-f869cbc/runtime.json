@@ -1,0 +1,15 @@
+{
+  "source_commit": "f869cbc116c9bb553ddd54bb9d0d8e44bdc963da",
+  "observed_utc": "2026-09-30T21:31:42.919122+00:00",
+  "normal_build_app_path": "/Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-render-products/f869cbc/Companion.app",
+  "installed_app_path": "/Users/changmin/Library/Developer/CoreSimulator/Devices/022EC407-377F-4563-A350-CD12D1BA7795/data/Containers/Bundle/Application/113A6345-2C98-4D2A-9AEA-1A66E57CDD86/Companion.app",
+  "matching_executable_sha256": {
+    "Companion": "619421965f0c2716403c84dc47a040eb708dbfc52d5eee597c79c1bd0ec35570",
+    "Frameworks/CompanionCore.framework/CompanionCore": "d1930ebf545f852c475fd94237eaea9440f2285ff5514c1d7424923ca6af3c61"
+  },
+  "own_simulator_process": "43975 01:05 Ss   /Users/changmin/Library/Developer/CoreSimulator/Devices/022EC407-377F-4563-A350-CD12D1BA7795/data/Containers/Bundle/Application/113A6345-2C98-4D2A-9AEA-1A66E57CDD86/Companion.app/Companion",
+  "own_launch_service": "43975\t0\tUIKitApplication:com.cmkang131.companion[6507][rb-legacy]",
+  "limitations": [
+    "Process existence and actual pixels do not verify tap delivery, scrolling, dismissal or frame time"
+  ]
+}

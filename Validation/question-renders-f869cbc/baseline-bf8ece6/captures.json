@@ -1,0 +1,53 @@
+{
+  "simulator_id": "022EC407-377F-4563-A350-CD12D1BA7795",
+  "simulator_name": "Companion Recovery Task5",
+  "normal_build_app_path": "/Users/changmin/Documents/Codex/2026-10-01/task-5/companion-ios/.build-render-products/bf8ece6/Companion.app",
+  "built_executable_sha256": "f2ef67599f67c0229f02089704ce47aaa960fdda00d94aa99c66596d9fca87bf",
+  "installed_executable_sha256": "f2ef67599f67c0229f02089704ce47aaa960fdda00d94aa99c66596d9fca87bf",
+  "captures": [
+    {
+      "file": "questions-unscoped.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-unscoped-questions",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "large",
+      "captured_utc": "2026-09-30T21:24:24.829185+00:00",
+      "sha256": "b5eeee855b0f5069d0e64d5cf215fb9323074b9c7cf7faeca670a08fd9c24a4b",
+      "size_bytes": 252993
+    },
+    {
+      "file": "questions-ax5-footer.png",
+      "flags": [
+        "--ui-testing",
+        "--ui-preview",
+        "--ui-activity",
+        "--ui-questions",
+        "--ui-questions-end",
+        "-AppleLanguages",
+        "(ko)",
+        "-AppleLocale",
+        "ko_KR"
+      ],
+      "content_size": "accessibility-extra-extra-extra-large",
+      "captured_utc": "2026-09-30T21:24:40.137681+00:00",
+      "sha256": "ac3fa98263932b561d720d150dd08668fb748ffe8e7bc9bca947aa010e44b1c1",
+      "size_bytes": 174541
+    }
+  ],
+  "limits": [
+    "Debug synthetic fixtures, no live server",
+    "Programmatic launch/keyboard focus, not tap interaction",
+    "Simulator content-size category only; no VoiceOver or OS Reduce Motion verification"
+  ],
+  "application_build_source_commit": "bf8ece67afce77f05bad2af4bec0acb05e9da288",
+  "capture_harness_snapshot_commit": "5f947ac3aaea770a50aa2af269c81d82000f347e",
+  "source_equivalence": "git diff bf8ece6 5f947ac -- Sources Tests Vendor scripts project.yml Package.swift Package.resolved returned empty; evidence-only HEAD difference",
+  "prior_build_manifest": "../../question-gate-bf8ece6/manifest.json"
+}

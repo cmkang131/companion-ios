@@ -1,0 +1,72 @@
+[
+  {
+    "file_name": "Companion-f869cbc-01-chat.png",
+    "library_file_id": "libfile_50a7d08b7c0c81918fb42273c7ecff0e",
+    "file_id": "file_00000000b614820994c4eb5908d51946",
+    "current_version_number": 0,
+    "path": "/Companion-f869cbc-01-chat.png",
+    "original_file": "compact.png",
+    "sha256": "56f241fdd3d00ab2a16fd4000d2a6b72409f5737af71331ddaa6256451aeefcd",
+    "local_identity_saved": true
+  },
+  {
+    "file_name": "Companion-f869cbc-02-current-question.png",
+    "library_file_id": "libfile_0f083876418c8191b7f595bea74767c9",
+    "file_id": "file_000000008c108209a940a4d763b21d0a",
+    "current_version_number": 0,
+    "path": "/Companion-f869cbc-02-current-question.png",
+    "original_file": "transcript-current.png",
+    "sha256": "55fc007e6acd3f8e9d82ebe9e7091ed85347aea9530bf5415ef4f7d2e6fb82e8",
+    "local_identity_saved": true
+  },
+  {
+    "file_name": "Companion-f869cbc-03-unscoped-question.png",
+    "library_file_id": "libfile_ca820ba0270081919ec3c9174c3a4966",
+    "file_id": "file_0000000020408209b88305de2d4434e3",
+    "current_version_number": 0,
+    "path": "/Companion-f869cbc-03-unscoped-question.png",
+    "original_file": "transcript-unscoped.png",
+    "sha256": "85a258c961edf6c75b1d8632cb4a7b639ae216432016e1f134a9beece3493813",
+    "local_identity_saved": true
+  },
+  {
+    "file_name": "Companion-f869cbc-04-activity-question.png",
+    "library_file_id": "libfile_f6d2b1f3619081919506a921c9cb2037",
+    "file_id": "file_00000000a6d0820688e6fe617c451704",
+    "current_version_number": 0,
+    "path": "/Companion-f869cbc-04-activity-question.png",
+    "original_file": "questions-unscoped.png",
+    "sha256": "5a7876de6e1c390cf6f3677a4f8b47c968dd1aff9e61a73951dbf3af80f2d8f7",
+    "local_identity_saved": true
+  },
+  {
+    "file_name": "Companion-f869cbc-05-transcript-AX5.png",
+    "library_file_id": "libfile_f6e6340d14ec81918f5d8d1fc1f08747",
+    "file_id": "file_00000000ca2c8209a06f80497391b700",
+    "current_version_number": 0,
+    "path": "/Companion-f869cbc-05-transcript-AX5.png",
+    "original_file": "transcript-unscoped-ax5.png",
+    "sha256": "762eb848b6d4b1758c57dd060ba38b961a393497733f322f5a169fe644ead972",
+    "local_identity_saved": true
+  },
+  {
+    "file_name": "Companion-f869cbc-06-activity-AX5.png",
+    "library_file_id": "libfile_ffe2201c8da481919a904ea1ed689daa",
+    "file_id": "file_000000007ab48209b918e24e2e9a46dc",
+    "current_version_number": 0,
+    "path": "/Companion-f869cbc-06-activity-AX5.png",
+    "original_file": "questions-ax5-footer.png",
+    "sha256": "e37c17013b2739e524c5a975944c36c22864c8379197dbc6981d9a0b864a967d",
+    "local_identity_saved": true
+  },
+  {
+    "file_name": "Companion-f869cbc-question-comparison.png",
+    "library_file_id": "libfile_473b33cbb8508191879ee8f2246ed525",
+    "file_id": "file_00000000baac82068b7c8607294b0475",
+    "current_version_number": 0,
+    "path": "/Companion-f869cbc-question-comparison.png",
+    "original_file": "Companion-f869cbc-question-comparison.png",
+    "sha256": "2d96afa574f2541f2a2ee4f007d481653ad3be2e7e450c1f98fea000777f3061",
+    "local_identity_saved": true
+  }
+]

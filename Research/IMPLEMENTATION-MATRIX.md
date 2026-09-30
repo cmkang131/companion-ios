@@ -7,9 +7,12 @@
 Muse/dot 공개 설명은 제품이 지향하는 행동의 근거다. 이 앱의 기능·계정 권한·서버
 호환성의 증거는 아니다. 아래의 “구현”은 생산 코드 경로가 있다는 뜻이며 실서버
 검증을 뜻하지 않는다. 최신 `bf8ece6`의 114 integration / 5 core 테스트도 macOS의 controlled
-fake 경계 검증이다. 새 gate 검증은 `Validation/question-gate-bf8ece6/manifest.json`에
-귀속했다. `Validation/controls-99ba308/manifest.json`의 10개 원본 렌더와 9개 원문 로그는
-이전 화면 증거이며 새 질문 공통 표시의 실제 렌더를 증명하지 않는다. iOS 실기기·실서버·실제 탭 조작은 검증하지 못했다.
+fake 경계 검증이다. 같은114+5회귀는 최신 촬영 소스 `f869cbc`에서도 통과했다.
+`Validation/question-renders-f869cbc/manifest.json`에 본문/활동 질문의 최신 일반·AX5
+실제 렌더와11개 원문 로그, 설치 실행파일 hash를 귀속했다. 변경은 DEBUG 촬영 옵션이며
+production 질문 gate는 `bf8ece6`과 같다. AX5 본문 설명 전체는 스크롤이 필요하고 실제
+스크롤·탭·시트 재열기·OS 접근성·실서버는 여전히 미검증이다. 이전 `99ba308`의10개
+원본 렌더와9개 원문 로그는 중단 상태 등 과거 체크포인트의 별도 증거로 보존한다.
 
 ## 요구-구현 matrix
 
@@ -86,7 +89,8 @@ privacy snapshot 검사와 native fixture renders를 완료했다. nil/빈 문�
 
 최종 질문 gate 후속(`bf8ece6`): 본문과 활동의 실제 공통 callback 및 직접 model 호출을
 모두 검사한다. `ConnectionStore`의 실제 preview/연결 해제 정책과 합성 health의 조합도
-포함한다. iOS 정상 빌드만 실행했고 최신 지시에 따라 설치·새 렌더는 하지 않았다.
+포함한다. 그 체크포인트는 iOS 정상 빌드까지 검증했으며, 후속 명시 승인에 따라
+`f869cbc`의 같은 권한 정책을 전용 Simulator에서 새로 렌더 검증했다.
 upstream 질문 test fixture 세 개의 연결 전제도 수정했지만, 선택 실행은 더 넓은
 upstream Talk 테스트 타깃의 제외된 타입 참조 때문에 컴파일 단계에서 차단됐다.
 이를 통과로 계산하지 않는다. 이전615294e의22개 증거 hash 및 코드 무변경은

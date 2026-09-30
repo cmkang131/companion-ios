@@ -1,6 +1,25 @@
 # Recovery evidence — 2026-10-01 KST
 
-## Latest question entry-point fix — bf8ece6
+## Latest rendered question entry points — f869cbc
+
+Application/test/script source: **`f869cbc116c9bb553ddd54bb9d0d8e44bdc963da`**. [Manifest](question-renders-f869cbc/manifest.json) joins seven latest original PNGs, eleven raw logs, runtime/flags/hash records and the Library file index. Six curated original PNGs and the small two-panel comparison were saved individually in Library. [Korean image guide](question-renders-f869cbc/README.md) distinguishes what each viewport proves.
+
+The source change from reviewed `bf8ece6` is limited to DEBUG transcript fixture entry/positioning and capture modes. Production question authority, scope policy and RPC logic are unchanged; a separate read-only review confirmed no new blocker. Release behavior is unchanged. Before editing, the preserved bf8ece6 normal app was installed and its activity/unscoped and AX5 footer were captured; those two baseline images are separately attributed to build bf8ece6 and capture-harness snapshot5f947ac.
+
+| Latest validation | Result and limit |
+|---|---|
+| Normal iOS build | PASS16.5s, Xcode27 / Simulator27, arm64, jobs2, signingNO, `ENABLE_DEBUG_DYLIB=NO`. Preserved separately from testing products. |
+| Production-model regression | PASS114 integration functions /11suites + core5, 23.0s. Controlled boundaries, not tap events. |
+| Privacy / wiring / bundle | PASS; privacy182 Swift files,8 helper cases/7 categories from exact archive. Narrow lexical/helper checks, not OSLog capture or general dataflow proof. |
+| Dedicated install/runtime | PASS; only task5 simulator. Installed and built main SHA `619421965f0c2716403c84dc47a040eb708dbfc52d5eee597c79c1bd0ec35570`; Core SHA also matches. Actual own running process observed. |
+| Actual native pixels | Normal transcript and activity show scope explanations, preview/offline notices and disabled answer/skip controls. AX5 transcript upper and activity lower viewports captured. All seven latest PNGs directly inspected. |
+| Library delivery | Six1170×2532 originals plus1200×1480 two-panel comparison saved; per-file identity, original mapping and SHA in `library-files.json`. |
+
+AX5 transcript shows the unspecified-scope heading and start of its explanation; the rest requires scrolling. The progress strip and populated composer reduce available transcript height. The AX5 activity footer shows both vertically stacked disabled buttons and the connect-first explanation; its scope header is outside that lower viewport. This is bounded visual evidence, not a blanket accessibility pass.
+
+No real tap, scroll, dismissal/reopening, VoiceOver, OS Reduce Motion/Transparency, live Gateway or phone-install validation occurred. No unchanged automation timeout was retried. All captures use `--ui-testing` (paused mascot), so earlier motion video remains separate. Current-conversation questions are not execution/purchase approvals. Global durable tasks, real approval/browser/voice/memory/output-download integration and process-persistent draft storage remain incomplete. Stable `e8afca7`, reviewed `bf8ece6` and their prior evidence are preserved; this is a completed render-evidence follow-up, **not complete-app/release certification**.
+
+## Earlier question entry-point source fix — bf8ece6
 
 Authoritative source: **`bf8ece67afce77f05bad2af4bec0acb05e9da288`**. Implementation is in `2d12951`; subsequent source commits adjust tests and notices only. [The manifest](question-gate-bf8ece6/manifest.json) ties seven raw logs to their exact source commits. Current successful logs verify all 566 tracked blobs against source bf8ece6. The prior rendered checkpoint is preserved separately below.
 

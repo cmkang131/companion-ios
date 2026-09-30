@@ -1,0 +1,8 @@
+RUNNER_STARTED_UTC=2026-09-30T21:28:03Z
+SOURCE_COMMIT=f869cbc116c9bb553ddd54bb9d0d8e44bdc963da
+CLEAN_SNAPSHOT=verified_all_574_tracked_blobs_match_git_commit
+SCOPE=source attribution for the following validation command
+VALIDATION_COMMAND_SCOPE=see command output below; snapshot header is source attribution only
+PASS: ARM simulator platform, iOS26 minimum, light-mode metadata, renderer resources and library paths
+
+RUNNER_EXIT=0; ELAPSED_SECONDS=0.3

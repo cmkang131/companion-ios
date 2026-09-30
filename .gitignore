@@ -45,3 +45,8 @@ Research/Upstream/
 # Shared question gate follow-up; raw success and blocked logs, no new captures.
 !/Validation/question-gate-bf8ece6/
 !/Validation/question-gate-bf8ece6/logs/*.log
+
+# Latest shared question presentation renders and attributed raw evidence.
+!/Validation/question-renders-f869cbc/
+!/Validation/question-renders-f869cbc/logs/*.log
+!/Validation/question-renders-f869cbc/baseline-bf8ece6/*.log

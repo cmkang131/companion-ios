@@ -1,0 +1,8 @@
+RUNNER_STARTED_UTC=2026-09-30T21:30:36Z
+SOURCE_COMMIT=f869cbc116c9bb553ddd54bb9d0d8e44bdc963da
+CLEAN_SNAPSHOT=verified_all_574_tracked_blobs_match_git_commit
+SCOPE=source attribution for the following validation command
+VALIDATION_COMMAND_SCOPE=see command output below; snapshot header is source attribution only
+Captured compact: 56f241fdd3d00ab2a16fd4000d2a6b72409f5737af71331ddaa6256451aeefcd
+
+RUNNER_EXIT=0; ELAPSED_SECONDS=17.4
